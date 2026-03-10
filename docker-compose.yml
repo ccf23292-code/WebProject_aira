@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: aira_web
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: ./api
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: aira_web
+    depends_on:
+      - postgres
+    volumes:
+      - ./api:/usr/src/app
+      - /usr/src/app/node_modules
+
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./web:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
