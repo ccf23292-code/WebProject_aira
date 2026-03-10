@@ -1,6 +1,6 @@
 # AIRAWeb - 刷题网站
 
-一个基于 Next.js + NestJS + PostgreSQL 的在线刷题平台。
+一个基于 Next.js + NestJS + PostgreSQL 的在线刷题平台。(初期)
 
 ## 技术栈
 
