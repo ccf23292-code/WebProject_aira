@@ -5,3 +5,7 @@ data/data/*
 node_modules/
 **/node_modules/
 
+.next/
+**/.next/
+next-env.d.ts
+**/next-env.d.ts
