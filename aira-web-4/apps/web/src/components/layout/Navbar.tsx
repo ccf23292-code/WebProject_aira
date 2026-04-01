@@ -1,6 +1,6 @@
 /**
  * components/layout/Navbar.tsx
- * 顶部导航 — 课程 / 收藏 / 登录状态
+ * 顶部导航 — 首页 / 课程 / 个人中心 / 登录状态
  */
 
 'use client';
@@ -23,6 +23,7 @@ export function Navbar() {
   };
 
   const links = [
+    { href: '/', label: '首页' },
     { href: '/courses', label: '课程' },
     ...(isLoggedIn ? [{ href: '/profile', label: '个人中心' }] : []),
   ];
@@ -43,7 +44,7 @@ export function Navbar() {
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
       <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/courses" className="flex items-center gap-2 font-semibold text-brand-800">
+        <Link href="/" className="flex items-center gap-2 font-semibold text-brand-800">
           <span className="flex h-7 w-7 items-center justify-center rounded bg-brand-700 text-xs font-bold text-white">
             A
           </span>
