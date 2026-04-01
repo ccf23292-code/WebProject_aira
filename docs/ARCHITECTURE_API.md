@@ -1,109 +1,436 @@
-# 前后端结构解析与接口说明
+# AIRAWeb 架构与接口说明
 
-## 目录结构（核心）
+这份文档描述当前分支的真实代码结构，不再保留“最初原型”的旧接口说明。
+
+## 1. 总体架构
+
+```text
+Browser
+  -> Next.js Web
+    -> /api requests
+      -> Gin Router
+        -> Service
+          -> Gorm
+            -> PostgreSQL
 ```
+
+当前项目分成 5 条主线：
+- 课程与试卷浏览
+- 做题与记录
+- 收藏与错题本
+- 题解协作
+- 用户认证与个人中心
+
+## 2. 仓库结构
+
+```text
 AIRAWeb/
-  aira-web-4/             # 前端（Next.js）
-    apps/web/             # Web 端应用
-    packages/shared/      # 共享类型与枚举
-  back/                   # 后端（Go + Gin）
-  docs/                   # 项目文档
-  scripts/                # 本地启动脚本
+  aira-web-4/
+    apps/web/
+      src/app/                 # Next.js 页面
+      src/components/          # UI 组件
+      src/lib/                 # api/auth 等公共逻辑
+      src/hooks/               # useFetch 等 hooks
+    packages/shared/
+      src/types/               # 前后端共享类型
+  back/
+    cmd/                       # 导入命令
+    middlewares/               # 鉴权与权限
+    models/                    # Gorm 模型
+    routers/                   # HTTP 控制器
+    services/                  # 业务逻辑
+  data/                        # 课程与试卷导入数据
+  docs/                        # 文档
+  scripts/                     # 开发与导入脚本
 ```
 
-## 前端结构（`aira-web-4/apps/web`）
-- `src/app/`：App Router 页面
-  - `login/`、`register/`：登录/注册
-  - `courses/`：课程列表与试卷列表
-  - `papers/[paperId]/`：试卷题目列表与收藏
-  - `favorites/`：收藏列表
-  - `recall/`：回忆卷相关页面（创建题目、评论、支持票等）
-- `src/components/`：通用 UI 组件
-- `src/hooks/`：自定义 hooks
-- `src/lib/`：通用工具
-  - `api.ts`：统一封装 fetch + Bearer Token
-  - `auth.tsx`：登录/注册/登出相关调用与 token 管理
-  - `mock.ts`：Mock 数据（对齐后端响应结构）
+## 3. 前端结构
 
-### 前端 API 约定
-- 基地址：`NEXT_PUBLIC_API_URL`（默认 `http://localhost:3001/api`）
-- 响应格式（后端统一）：`{ code, message, data }`
-- token：存储在 `localStorage`，请求时自动注入 `Authorization: Bearer <token>`
+### 页面
+- `/`：首页
+- `/login`：登录
+- `/register`：注册
+- `/courses`：课程广场，支持课程名 / 课程代码搜索
+- `/courses/[courseId]`：课程详情
+- `/courses/[courseId]/recall`：课程回忆卷页
+- `/papers/[paperId]`：试卷做题页
+- `/profile`：个人资料
+- `/profile/favorites`：按课程分组的收藏
+- `/profile/wrongbook`：按课程分组的错题本
+- `/profile/records`：做题记录
 
-## 后端结构（`back`）
-- `main.go`：Gin 入口，注册路由与中间件
-- `routers/`：控制器
-  - `auth_controller.go`：注册/登录/登出
-  - `paper_controller.go`：课程/试卷/题目浏览
-  - `favorite_controller.go`：收藏
-  - `admin_controller.go`：管理员上传/修改/删除
-  - `recall_controller.go`：回忆卷与协作题库
-- `services/`：业务逻辑
-  - `auth_service.go`：内存用户与 token 管理
-  - `paper_service.go`：课程/试卷/题目与收藏（含种子数据）
-  - `recall_service.go`：回忆卷（PostgreSQL）
-  - `db.go`：PostgreSQL 初始化
-- `middlewares/`：鉴权与管理员权限
-- `models/`：数据模型
-- `utils/response.go`：统一响应结构
+### 关键组件
+- `src/components/layout/Navbar.tsx`
+  - 顶栏导航：首页 / 课程 / 个人中心 / 登录态
+- `src/components/Markdown.tsx`
+  - Markdown + LaTeX 渲染
+- `src/components/problem/ExplanationSection.tsx`
+  - 题解展示、提交、投票
+- `src/components/form/PasswordInput.tsx`
+  - 密码显隐输入框
 
-### 后端启动与数据库
-- 端口：`3001`
-- 数据库环境变量：`DATABASE_URL`
-  - 使用 `back/.env` 或系统环境变量
-  - `recall` 模块依赖 Postgres（自动迁移）
+### 前端基础约定
+- API base：`NEXT_PUBLIC_API_URL`，默认 `http://localhost:3001/api`
+- 响应格式统一为：
 
-## API 接口说明
-### 统一说明
-- Base URL：`/api`
-- 通用响应：
 ```json
-{ "code": 200, "message": "success", "data": {} }
+{
+  "code": 200,
+  "message": "success",
+  "data": {}
+}
 ```
-- 鉴权 Header：`Authorization: Bearer <accessToken>`
 
-### 认证模块（公开）
-- `POST /api/auth/register`
-  - body: `{ username, email, password, confirmPassword, verificationCode, agreeToPolicy }`
-- `POST /api/auth/login`
-  - body: `{ username, password, otp?, rememberMe? }`
-- `POST /api/auth/logout`
-  - body: `{ refreshToken }`
+- 登录态：
+  - `accessToken` / `refreshToken` 存 `localStorage`
+  - 请求时自动注入 `Authorization: Bearer <token>`
 
-### 浏览模块（公开）
-- `GET /api/courses`
-- `GET /api/courses/:course_id/papers`
-- `GET /api/papers/:paper_id/problems`
+## 4. 后端结构
 
-### 收藏模块（需要登录）
-- `GET /api/favorites?page=1&size=10`
-- `POST /api/favorites`
-  - body: `{ problem_id }`
-- `DELETE /api/favorites/:problem_id`
+### 路由层
+- `auth_controller.go`：注册 / 登录 / 登出 / 验证码
+- `paper_controller.go`：课程、试卷、题目浏览
+- `favorite_controller.go`：收藏
+- `answer_controller.go`：做题记录、批量交卷记录
+- `wrongbook_controller.go`：错题本
+- `profile_controller.go`：个人资料、头像上传
+- `problem_explanation_controller.go`：题解列表、投稿、编辑、投票
+- `recall_controller.go`：回忆卷协作
+- `admin_controller.go`：管理员修改试卷 / 题目
 
-### 管理员模块（需要登录 + 管理员权限）
-- `POST /api/admin/papers`
-  - body: `{ course_id, name }`
-- `PUT /api/admin/papers/:paper_id`
-  - body: `{ name }`
-- `DELETE /api/admin/papers/:paper_id`
-- `PUT /api/admin/problems/:problem_id`
-  - body: `{ test?, answer?, options? }`
+### 服务层
+- `auth_service.go`
+  - 用户注册、登录、验证码、token 校验
+  - 现在是数据库版，不再是内存版
+- `course_service.go`
+  - 课程搜索与详情读取
+- `paper_service.go`
+  - 试卷列表、题目列表、题目更新
+- `favorite_service.go`
+  - 收藏持久化，按课程聚合收藏结果
+- `answer_service.go`
+  - 记录单题作答与批量交卷
+- `wrongbook_service.go`
+  - 错题聚合、备注、状态切换、垃圾篓清空
+- `profile_service.go`
+  - 用户资料读取 / 更新，合并 `users + user_profiles`
+- `problem_explanation_service.go`
+  - 同学解析、Top 3、投票、撤回
+- `recall_service.go`
+  - 回忆卷题目、支持票、评论
 
-### 回忆卷模块（需要登录，Postgres）
-- `GET /api/recall/courses/:course_id/papers`
-- `POST /api/recall/courses/:course_id/papers`
-  - body: `{ title }`
-- `GET /api/recall/papers/:paper_id/question-types`
-- `GET /api/recall/papers/:paper_id/questions/top?question_type=xxx`
-- `GET /api/recall/papers/:paper_id/questions?question_type=xxx&sequence=1`
-- `POST /api/recall/papers/:paper_id/questions`
-  - body: `{ question_type, sequence, content, answer, options }`
-- `PATCH /api/recall/questions/:question_id`
-  - body: `{ content?, answer?, options? }`
-- `POST /api/recall/questions/:question_id/support`
-- `GET /api/recall/questions/:question_id/comments?page=1&size=10`
-- `POST /api/recall/questions/:question_id/comments`
-  - body: `{ content }`
+### 中间件
+- `AuthRequired`
+  - 必须登录才能访问
+- `TryAuth`
+  - 可选登录，用于公开接口里补充 `my_vote / my_item`
+- `AdminRequired`
+  - 管理员权限
 
-> 详细字段定义可参考 `back/services/*.go` 中的请求/响应结构体，以及 `back/interface.json`（更完整的接口描述草案）。
+## 5. 当前核心数据模型
+
+### 认证与用户
+- `users`
+  - 登录身份
+- `user_profiles`
+  - `nickname`、`avatar_url`、`level`
+- `auth_sessions`
+  - `accessToken` / `refreshToken` 持久化
+- `email_verifications`
+  - 邮箱验证码与发送节流
+
+### 课程与题目
+- `courses`
+- `test_papers`
+- `problems`
+
+### 学习沉淀
+- `favorites`
+- `answer_records`
+- `wrong_questions`
+- `problem_explanations`
+- `problem_explanation_votes`
+
+### 协作补题
+- `recall_papers`
+- `recall_questions`
+- `recall_question_supports`
+- `recall_question_comments`
+
+## 6. 接口清单
+
+以下仅列当前仓库已经接入并由路由注册的接口。
+
+### 6.1 Auth
+
+#### `POST /api/auth/register`
+
+请求体：
+
+```json
+{
+  "username": "alice",
+  "email": "alice@zju.edu.cn",
+  "password": "Alice123",
+  "confirmPassword": "Alice123",
+  "verificationCode": "123456",
+  "agreeToPolicy": true
+}
+```
+
+返回：
+- `userId`
+- `displayName`
+- `accessToken`
+- `refreshToken`
+- `roles`
+- `expiresIn`
+- `onboardingTasks`
+
+#### `POST /api/auth/login`
+
+请求体：
+
+```json
+{
+  "username": "alice",
+  "password": "Alice123",
+  "rememberMe": false
+}
+```
+
+#### `POST /api/auth/logout`
+
+请求体：
+
+```json
+{
+  "refreshToken": "..."
+}
+```
+
+#### `POST /api/auth/verification-code`
+
+请求体：
+
+```json
+{
+  "email": "alice@zju.edu.cn"
+}
+```
+
+说明：
+- 开发模式下若 `DEV_EMAIL_ECHO=1`，响应会带回验证码
+- 当前仍未接入真实 SMTP
+
+### 6.2 Browse
+
+#### `GET /api/courses?q=关键词`
+- 支持课程名 / 课程代码搜索
+
+#### `GET /api/courses/:course_id`
+- 返回课程详情
+
+#### `GET /api/courses/:course_id/papers`
+- 返回该课程下的试卷
+
+#### `GET /api/papers/:paper_id/problems`
+- 返回该试卷下的题目
+
+题目字段包含：
+- `question_type`
+- `score`
+- `test`
+- `options`
+- `answer`
+- `explanation`
+
+### 6.3 Favorites
+
+#### `GET /api/favorites?page=1&size=10`
+- 返回分页结果
+- 同时返回 `groups`，用于前端按课程聚合显示
+
+#### `GET /api/favorites/ids`
+- 返回当前用户收藏题目 ID 列表
+
+#### `POST /api/favorites`
+
+```json
+{
+  "problem_id": 1001
+}
+```
+
+#### `DELETE /api/favorites/:problem_id`
+
+### 6.4 Answers
+
+#### `POST /api/answers`
+- 单题记录，主要用于刷题模式
+
+```json
+{
+  "paper_id": 1,
+  "problem_id": 1001,
+  "selected_option": "A",
+  "is_correct": false,
+  "mode": "practice"
+}
+```
+
+#### `POST /api/answers/batch`
+- 批量记录，主要用于模拟考交卷
+
+```json
+{
+  "answers": [
+    {
+      "paper_id": 1,
+      "problem_id": 1001,
+      "selected_option": "A",
+      "is_correct": false,
+      "mode": "exam"
+    }
+  ]
+}
+```
+
+#### `GET /api/answers?page=1&size=10`
+- 返回做题记录列表
+
+### 6.5 Wrongbook
+
+#### `GET /api/wrongbook?status=unmastered|mastered|trash`
+- 返回按课程聚合后的错题本
+
+#### `PATCH /api/wrongbook/:problem_id`
+
+```json
+{
+  "note": "这题要复习树的旋转",
+  "status": "mastered"
+}
+```
+
+状态枚举：
+- `unmastered`
+- `mastered`
+- `trash`
+
+#### `DELETE /api/wrongbook/:problem_id`
+- 删除单条错题
+
+#### `DELETE /api/wrongbook/trash`
+- 清空垃圾篓
+
+### 6.6 Profile
+
+#### `GET /api/profile`
+- 返回：
+  - `username`
+  - `email`
+  - `nickname`
+  - `avatar_url`
+  - `level`
+
+#### `PUT /api/profile`
+
+```json
+{
+  "nickname": "Ling"
+}
+```
+
+#### `POST /api/profile/avatar`
+- `multipart/form-data`
+- 字段名：`avatar`
+- 限制：不超过 5MB
+
+### 6.7 Problem Explanations
+
+#### `GET /api/problems/:problem_id/explanations`
+- 公开读
+- 若已登录，会附带：
+  - `my_vote`
+  - `my_item`
+
+返回字段：
+- `official_explanation`
+- `items`：Top 3 同学解析
+- `my_item`：若我的解析未进入 Top 3，则单独返回
+
+#### `POST /api/problems/:problem_id/explanations`
+- 登录后提交或更新我在这道题上的解析
+
+```json
+{
+  "content_md": "这里写 Markdown 和公式 $O(n \\log n)$"
+}
+```
+
+#### `PATCH /api/problems/:problem_id/explanations/:explanation_id`
+- 只能编辑自己的解析
+
+#### `POST /api/problems/:problem_id/explanations/:explanation_id/vote`
+
+```json
+{
+  "value": 1
+}
+```
+
+说明：
+- `1` = 赞
+- `-1` = 踩
+- `0` = 撤回
+
+### 6.8 Recall
+
+#### `GET /api/recall/courses/:course_id/papers`
+#### `POST /api/recall/courses/:course_id/papers`
+#### `GET /api/recall/papers/:paper_id/question-types`
+#### `GET /api/recall/papers/:paper_id/questions/top?question_type=...`
+#### `GET /api/recall/papers/:paper_id/questions?question_type=...&sequence=1`
+#### `POST /api/recall/papers/:paper_id/questions`
+#### `PATCH /api/recall/questions/:question_id`
+#### `POST /api/recall/questions/:question_id/support`
+#### `GET /api/recall/questions/:question_id/comments?page=1&size=10`
+#### `POST /api/recall/questions/:question_id/comments`
+
+### 6.9 Admin
+
+#### `POST /api/admin/papers`
+#### `PUT /api/admin/papers/:paper_id`
+#### `DELETE /api/admin/papers/:paper_id`
+#### `PUT /api/admin/problems/:problem_id`
+
+## 7. 脚本说明
+
+### `scripts/dev.sh`
+- 一键启动前后端
+- 启动前会先 kill 掉占用 3000 / 3001 的进程
+
+### `scripts/dev-backend.sh`
+- 自动检查 Go
+- 自动检查 PostgreSQL
+- 在 mac / linux 上尽量自动安装 / 启动 PostgreSQL
+
+### `scripts/dev-frontend.sh`
+- 检查 `node_modules`
+- 启动前端开发服务器
+
+### `scripts/import-courses.sh`
+- 导入 `data/course` 下的课程
+
+### `scripts/test-import.sh`
+- 清空数据库
+- 导入 FDS 课程
+- 导入 `data/papers/CS1018F` 下的测试题目
+
+## 8. 当前已知边界
+
+- SMTP 还未正式接入，验证码发送仍是开发态方案
+- 课程详情中的老师 / 评分标准 / 留言广场还未完成
+- PDF 自动解析链路还没实现
+- 用户等级当前只有字段，没有业务规则
