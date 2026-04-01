@@ -21,7 +21,7 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
-import type { LoginData, RegisterData } from '@aira/shared';
+import type { LoginData, RegisterData, RegisterDto } from '@aira/shared';
 import { api } from './api';
 
 interface AuthUser {
@@ -35,7 +35,7 @@ interface AuthContextValue {
   isLoggedIn: boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string) => Promise<void>;
+  register: (payload: RegisterDto) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -87,11 +87,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   /** 注册 */
-  const register = useCallback(async (username: string, password: string) => {
-    console.log('[Auth] register request:', { username, url: '/auth/register' });
+  const register = useCallback(async (payload: RegisterDto) => {
+    console.log('[Auth] register request:', { username: payload.username, url: '/auth/register' });
     const data = await api.post<RegisterData>(
       '/auth/register',
-      { username, password },
+      payload,
       true,
     );
     console.log('[Auth] register response:', data);

@@ -1,7 +1,9 @@
 package services
 
 import (
+	"crypto/rand"
 	"fmt"
+	"math/big"
 	"net/http"
 	"regexp"
 	"strings"
@@ -18,6 +20,8 @@ const (
 	accessTokenTTL       = 30 * time.Minute
 	defaultRefreshToken  = 7 * 24 * time.Hour
 	rememberMeRefreshTTL = 30 * 24 * time.Hour
+	verificationCodeTTL  = 10 * time.Minute
+	verificationCooldown = 60 * time.Second
 )
 
 var emailRegex = regexp.MustCompile(`^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$`)
@@ -34,6 +38,12 @@ type accessMetadata struct {
 type refreshMetadata struct {
 	Username  string
 	ExpiresAt time.Time
+}
+
+type verificationEntry struct {
+	Code       string
+	ExpiresAt  time.Time
+	LastSentAt time.Time
 }
 
 // ────────────────────────── ServiceError ──────────────────────────
@@ -60,6 +70,7 @@ type AuthService struct {
 	usersByEmail  map[string]*models.User
 	accessTokens  map[string]*accessMetadata
 	refreshTokens map[string]*refreshMetadata
+	verifications map[string]*verificationEntry
 	idSeq         models.PrimaryKey
 }
 
@@ -70,6 +81,7 @@ func NewAuthService() *AuthService {
 		usersByEmail:  make(map[string]*models.User),
 		accessTokens:  make(map[string]*accessMetadata),
 		refreshTokens: make(map[string]*refreshMetadata),
+		verifications: make(map[string]*verificationEntry),
 	}
 	svc.bootstrapAdmin()
 	return svc
@@ -97,6 +109,10 @@ type LogoutRequest struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type VerificationCodeRequest struct {
+	Email string `json:"email"`
+}
+
 type AuthResponse struct {
 	UserID       string   `json:"userId"`
 	DisplayName  string   `json:"displayName"`
@@ -114,6 +130,12 @@ type RegisterResponse struct {
 type LogoutResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
+}
+
+type VerificationCodeResponse struct {
+	Sent      bool   `json:"sent"`
+	Code      string `json:"code,omitempty"`
+	ExpiresIn int64  `json:"expiresIn"`
 }
 
 // ────────────────────────── 核心业务方法 ──────────────────────────
@@ -313,7 +335,8 @@ func (s *AuthService) validateRegister(req RegisterRequest) *ServiceError {
 	if len(username) > 64 {
 		return newServiceError("invalid_request", http.StatusBadRequest, "username must be <= 64 characters")
 	}
-	if !emailRegex.MatchString(strings.TrimSpace(req.Email)) {
+	email := strings.TrimSpace(req.Email)
+	if !emailRegex.MatchString(email) {
 		return newServiceError("invalid_request", http.StatusBadRequest, "email format is invalid")
 	}
 	if err := validatePassword(req.Password); err != nil {
@@ -327,6 +350,9 @@ func (s *AuthService) validateRegister(req RegisterRequest) *ServiceError {
 	}
 	if !req.AgreeToPolicy {
 		return newServiceError("policy_not_accepted", http.StatusBadRequest, "policy must be accepted before registration")
+	}
+	if err := s.validateVerificationCode(email, req.VerificationCode); err != nil {
+		return err
 	}
 	return nil
 }
@@ -362,6 +388,20 @@ func validatePassword(password string) error {
 
 func generateToken() string { return uuid.NewString() }
 
+func generateVerificationCode() string {
+	const digits = "0123456789"
+	b := make([]byte, 6)
+	for i := range b {
+		n, err := rand.Int(rand.Reader, big.NewInt(10))
+		if err != nil {
+			b[i] = digits[time.Now().UnixNano()%10]
+			continue
+		}
+		b[i] = digits[n.Int64()]
+	}
+	return string(b)
+}
+
 func formatUserID(id models.PrimaryKey) string {
 	return fmt.Sprintf("u-%08d", id)
 }
@@ -382,4 +422,63 @@ func (s *AuthService) bootstrapAdmin() {
 	}
 	s.users[strings.ToLower(admin.Username)] = admin
 	s.usersByEmail[strings.ToLower(admin.Email)] = admin
+}
+
+// SendVerificationCode 生成并缓存邮箱验证码（开发环境可选择回显）。
+func (s *AuthService) SendVerificationCode(email string, echo bool) (*VerificationCodeResponse, error) {
+	email = strings.TrimSpace(email)
+	if !emailRegex.MatchString(email) {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "email format is invalid")
+	}
+
+	now := time.Now().UTC()
+	emailKey := strings.ToLower(email)
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if entry, ok := s.verifications[emailKey]; ok {
+		if now.Sub(entry.LastSentAt) < verificationCooldown {
+			return nil, newServiceError("too_many_requests", http.StatusTooManyRequests, "verification code sent too frequently")
+		}
+	}
+
+	code := generateVerificationCode()
+	s.verifications[emailKey] = &verificationEntry{
+		Code:       code,
+		ExpiresAt:  now.Add(verificationCodeTTL),
+		LastSentAt: now,
+	}
+
+	resp := &VerificationCodeResponse{
+		Sent:      true,
+		ExpiresIn: int64(verificationCodeTTL.Seconds()),
+	}
+	if echo {
+		resp.Code = code
+	}
+	return resp, nil
+}
+
+func (s *AuthService) validateVerificationCode(email, code string) *ServiceError {
+	emailKey := strings.ToLower(strings.TrimSpace(email))
+	code = strings.TrimSpace(code)
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	entry, ok := s.verifications[emailKey]
+	if !ok {
+		return newServiceError("invalid_verification_code", http.StatusUnprocessableEntity, "verification code invalid or expired")
+	}
+	if time.Now().UTC().After(entry.ExpiresAt) {
+		delete(s.verifications, emailKey)
+		return newServiceError("invalid_verification_code", http.StatusUnprocessableEntity, "verification code invalid or expired")
+	}
+	if entry.Code != code {
+		return newServiceError("invalid_verification_code", http.StatusUnprocessableEntity, "verification code invalid or expired")
+	}
+
+	delete(s.verifications, emailKey)
+	return nil
 }

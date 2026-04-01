@@ -2,6 +2,8 @@ package routers
 
 import (
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -24,6 +26,7 @@ func (ctl *AuthController) RegisterRoutes(group *gin.RouterGroup) {
 	group.POST("/register", ctl.Register)
 	group.POST("/login", ctl.Login)
 	group.POST("/logout", ctl.Logout)
+	group.POST("/verification-code", ctl.SendVerificationCode)
 }
 
 // Register 处理用户注册请求。
@@ -72,6 +75,29 @@ func (ctl *AuthController) Logout(c *gin.Context) {
 		return
 	}
 	utils.JSONSuccess(c, http.StatusOK, resp)
+}
+
+// SendVerificationCode 发送注册验证码。
+// POST /api/auth/verification-code
+func (ctl *AuthController) SendVerificationCode(c *gin.Context) {
+	var req services.VerificationCodeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.JSONError(c, http.StatusBadRequest, "invalid_request", "请求体格式不正确", err.Error())
+		return
+	}
+
+	echo := shouldEchoVerificationCode()
+	resp, err := ctl.service.SendVerificationCode(req.Email, echo)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, resp)
+}
+
+func shouldEchoVerificationCode() bool {
+	val := strings.ToLower(strings.TrimSpace(os.Getenv("DEV_EMAIL_ECHO")))
+	return val == "1" || val == "true" || val == "yes"
 }
 
 // handleError 统一处理服务层错误，区分业务错误和内部错误。

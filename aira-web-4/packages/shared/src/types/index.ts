@@ -37,12 +37,28 @@ export interface LoginData {
 /** POST /api/auth/register — 请求 */
 export interface RegisterDto {
   username: string;
+  email: string;
   password: string;
+  confirmPassword: string;
+  verificationCode: string;
+  agreeToPolicy: boolean;
 }
 
 /** POST /api/auth/register — 响应 data */
 export interface RegisterData extends LoginData {
   onboardingTasks: string[];
+}
+
+/** POST /api/auth/verification-code — 请求 */
+export interface VerificationCodeDto {
+  email: string;
+}
+
+/** POST /api/auth/verification-code — 响应 data */
+export interface VerificationCodeData {
+  sent: boolean;
+  code?: string;
+  expiresIn: number;
 }
 
 /** POST /api/auth/logout — 响应 data */
