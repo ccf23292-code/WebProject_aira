@@ -1,0 +1,1937 @@
+[
+  {
+    "id": "q-169",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 1,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given two sorted lists $L1$ and $L2$, the fastest algorithm for computing $L1 \\cup L2$ has time complexity $\\Theta(N \\log N)$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "algorithm-analysis",
+      "merge",
+      "sorted-list"
+    ]
+  },
+  {
+    "id": "q-170",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 2,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "The time complexity of Binary Search will be the same no matter we store the elements in an array or a linked list.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "binary-search",
+      "array",
+      "linked-list"
+    ]
+  },
+  {
+    "id": "q-171",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 3,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In Union/Find algorithm, if Unions are done by size, the depth of any node must be no more than $N / 2$, but not $O(\\log N)$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "union-find",
+      "disjoint-set"
+    ]
+  },
+  {
+    "id": "q-172",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 4,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "The major task of algorithm analysis is to analyze the time complexity and the space complexity.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "algorithm-analysis"
+    ]
+  },
+  {
+    "id": "q-173",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 5,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that a polynomial is represented by a linked list storing its non-zero terms. Given two polynomials with $N_{1}$ and $N_{2}$ non-zero terms, and the highest exponents being $M_{1}$ and $M_{2}$, respectively. Then the time complexity for adding them up is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$O(N_{1} + N_{2})$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$O(M_{1} + M_{2})$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$O(M_{1} \\times M_{2})$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$O(N_{1} \\times N_{2})$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "polynomial",
+      "linked-list",
+      "time-complexity"
+    ]
+  },
+  {
+    "id": "q-174",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 6,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Let $T$ be a tree created by union-by-size with $N$ nodes, then the height of $T$ can be.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "as large as $N$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "at least $\\log_2(N) + 1$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "at most $\\log_2(N) + 1$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "anything that is greater than 1",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "union-find",
+      "disjoint-set",
+      "tree"
+    ]
+  },
+  {
+    "id": "q-175",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 7,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which of the following functions has the fastest growth:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$N \\log N^{2}$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$N^{3}$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$N^{2} \\log N$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$N (\\log N)^{4}$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "algorithm-analysis",
+      "asymptotic-growth"
+    ]
+  },
+  {
+    "id": "q-176",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 8,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Push and pop $\\{1, 2, 3, 4, 5, 6, 7\\}$ sequentially into then out of a stack. Suppose that each number is pushed into a queue right after it gets out of the stack, and the dequeue sequence is $\\{1, 3, 5, 6, 4, 7, 2\\}$. If both the stack and the queue are initially empty, then the minimum size of the stack must be:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "3",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "stack",
+      "queue"
+    ]
+  },
+  {
+    "id": "q-177",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 9,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For a non-empty doubly linked circular list, with $h$ and $t$ pointing to its head and tail nodes, respectively, the TRUE statement is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$h->next == t$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$t->next == h->next$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$h->pre == NULL$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$t->next == h$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "linked-list",
+      "doubly-linked-list"
+    ]
+  },
+  {
+    "id": "q-178",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 10,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The array representation of the disjoint sets is given by $\\{2, -4, 2, 2, -3, 5, 6, 9, -2\\}$. Keep in mind that the elements are numbered from 1 to 9. After invoking Union(Find(7), Find(9)) with union-by-size, which elements will be changed in the resulting array?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "elements of index 7 and 9",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "elements of index 5 and 9",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "elements of index 5 and 7",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "elements of index 5, 7 and 9",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "union-find",
+      "disjoint-set"
+    ]
+  },
+  {
+    "id": "q-179",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 11,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that an array of size 6 is used to store a circular queue, and the values of front and rear are 0 and 4, respectively. Now after 2 dequeues and 2 enqueues, what will the values of front and rear be?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "2 and 6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2 and 0",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "2 and 2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "2 and 4",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "queue",
+      "circular-queue"
+    ]
+  },
+  {
+    "id": "q-180",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 12,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which one of the following is impossible to be the insertion sequence of the given binary search tree?",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期中/image/377ed052143fb2e48544ac4df17b5093b0aa7de6c034b73512b9534bb15432e1.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "12, 8, 18, 21, 15",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "12, 18, 15, 8, 21",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "12, 18, 8, 21, 15",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "12, 8, 15, 18, 21",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-181",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 13,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which one of the following is a possible postorder traversal sequence of a binary search tree?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "2 4 1 5 3 7 10 9 8 6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2 1 4 5 3 7 10 9 8 6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "2 4 1 5 3 7 9 10 8 6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "2 1 4 5 3 10 7 9 8 6",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "binary-search-tree",
+      "tree-traversal",
+      "postorder"
+    ]
+  },
+  {
+    "id": "q-182",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 14,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given the shape of a binary tree shown by the figure below. If its preorder traversal sequence is $\\{E, D, A, F, H, C, B, G\\}$, then the node on the same level of $A$ must be:",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期中/image/cc0329ea223afd939d3cf85792695ae61124564ed18c8e13c769133fae1c98be.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "C and G",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "C",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "B and G",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "H",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-tree",
+      "tree-traversal",
+      "preorder"
+    ]
+  },
+  {
+    "id": "q-183",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 15,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For an in-order threaded binary tree, if the pre-order and in-order traversal sequences are BEACFD and AECBDF respectively, which pair of nodes' left links are both threads?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "C and F",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "E and F",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "B and E",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "C and D",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "threaded-binary-tree",
+      "tree-traversal"
+    ]
+  },
+  {
+    "id": "q-184",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 16,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The following binary tree is called an expression tree. Which one is the arithmetic expression that this tree represents?",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期中/image/28fecbb41b907d1d7ba0702fa104e00ffc24b1e067dd4132b5dd167f96cf7b7c.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "A+B+C /D*E+F-G",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "(A+B+C) / (D*E+(F-G))",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "A+B+C / (D*E) + (F-G)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$(A + B + C) / (D \\times E) + (F - G)$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "expression-tree",
+      "binary-tree"
+    ]
+  },
+  {
+    "id": "q-185",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 17,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The function is to turn an array A[] of N elements into a max-heap.\n\n```c\n#define leftchild(i) (2*(i)+1)\nvoid BuildMaxHeap(ElementType A[], int N)\n{\n    int i, j, child;\n    ElementType Tmp;\n    for (i = (N-1)/2; i >= 0; i--) {\n        j = i;\n        for (Tmp = A[j]; leftchild(j) < N; j = child) {\n            child = leftchild(j);\n            if (A[child] < A[child+1] && child != N-1) /* blank 1 */\n                child++;\n            if (Tmp < A[child]) /* blank 2 */\n                A[j] = A[child];\n            else break;\n        }\n        A[j] = Tmp; /* blank 3 */\n    }\n}\n```\n\nBlank 1: the condition to move to the right child\nBlank 2: the condition to percolate down\nBlank 3: place Tmp in the correct position",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "Blank 1: child != N-1 && A[child] < A[child+1]\nBlank 2: Tmp < A[child]\nBlank 3: A[j] = Tmp",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "heap",
+      "max-heap",
+      "build-heap"
+    ]
+  },
+  {
+    "id": "q-186",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-midterm",
+    "sequenceId": 18,
+    "questionType": "programming",
+    "sourceUrl": "",
+    "content": {
+      "text": "Level-order Traversal (20 pts)\n\nWrite a routine to list out the nodes of a binary tree in \"level-order\". List the root, then nodes at depth 1, followed by nodes at depth 2, and so on. You must do this in linear time.\n\nFormat of functions:\n```c\nvoid Level_order(Tree T, void (*visit)(Tree ThisNode));\n```\n\nwhere `void (*visit)(Tree ThisNode)` is a function that handles ThisNode being visited by Level_order, and Tree is defined as:\n```c\ntypedef struct TreeNode *Tree;\nstruct TreeNode {\n    ElementType Element;\n    Tree Left;\n    Tree Right;\n};\n```\n\nSample Output (for the tree shown in the figure):\nLevel-order: 3 5 6 1 8 10 9",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期中/image/c07ed02ae42c4fa63fd5c8626e8a5665a3208d78faaf9cfa8c1b53349b918a0a.jpg"
+      ]
+    },
+    "options": [],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [],
+      "codeSnippet": "void Level_order(Tree T, void (*visit)(Tree ThisNode))\n{\n    if (T == NULL) return;\n    Tree queue[MaxTree];\n    int front = 0, rear = 0;\n    queue[rear++] = T;\n    while (front < rear) {\n        Tree node = queue[front++];\n        visit(node);\n        if (node->Left) queue[rear++] = node->Left;\n        if (node->Right) queue[rear++] = node->Right;\n    }\n}",
+      "codeLanguage": "C"
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-tree",
+      "level-order-traversal",
+      "queue",
+      "BFS"
+    ]
+  },
+  {
+    "id": "q-187",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 1,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In an undirected acyclic graph G with 4 connected components, the number of edges will be 4 less than the number of vertices.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "tree",
+      "connected-component"
+    ]
+  },
+  {
+    "id": "q-188",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 2,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a tree of degree 4, we have $n_2 + n_3 + n_4 < n_0$, where $n_i$ is the number of degree $i$ nodes for $0 \\leq i \\leq 4$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "degree"
+    ]
+  },
+  {
+    "id": "q-189",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 3,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "An inorder threaded binary tree cannot make the postorder traversal more efficient.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "threaded-binary-tree",
+      "tree-traversal"
+    ]
+  },
+  {
+    "id": "q-190",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 4,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a max-heap with unique keys, there are at least d-1 keys larger than any key in level d (the root level is 1).",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "heap",
+      "max-heap"
+    ]
+  },
+  {
+    "id": "q-191",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 5,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Kruskal's minimum spanning tree algorithm implemented by disjoint set with union-by-rank strategy has $O(|E| \\log |E|)$ time complexity. Further optimization by introducing path compression improves it to $O(|E| \\alpha(|E|, |V|))$ where $\\alpha$ is the functional inverse of Ackermann's function.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "minimum-spanning-tree",
+      "kruskal",
+      "union-find",
+      "time-complexity"
+    ]
+  },
+  {
+    "id": "q-192",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 6,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Quadratic probing isn't equivalent to double hashing with a secondary hash function of $\\text{Hash}_2(k) = k$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "hashing",
+      "quadratic-probing",
+      "double-hashing"
+    ]
+  },
+  {
+    "id": "q-193",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 7,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "$\\{5, 2, 9, 18, 14, 16, 72\\}$ cannot be the result after the second run of quick sort (assuming the pivot is chosen randomly).",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "sorting",
+      "quick-sort"
+    ]
+  },
+  {
+    "id": "q-194",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 8,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Let $n$ be a non-negative integer representing the size of input. The time complexity of the following piece of code is $\\Theta(n^2)$.\n\n```c\nint func(int n) {\n    int sum = 0;\n    for (int i = 1; i < n; i *= 2)\n        for (int j = 0; j < i; j++)\n            sum++;\n    return sum;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "algorithm-analysis",
+      "time-complexity"
+    ]
+  },
+  {
+    "id": "q-195",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 9,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that an array is used to store a circular queue, the value of front may be greater than the value of rear.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "queue",
+      "circular-queue"
+    ]
+  },
+  {
+    "id": "q-196",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 10,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose we are now sorting an initial array (8, 3, 9, 11, 2, 1, 4, 7, 5, 10, 6) using Shellsort. If the sorting result after the first run is (1, 3, 7, 5, 2, 6, 4, 9, 11, 10, 8) and that after the second run is (1, 2, 6, 4, 3, 7, 5, 8, 11, 10, 9), then the increments used for the two sortings are 5 and 3.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "shell-sort"
+    ]
+  },
+  {
+    "id": "q-197",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 11,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The array representation of the disjoint sets is given by S[] with S[i] being initialized to be -1 for all i. Please list the resulting array elements after invoking: union(1,2), union(3,4), union(3,5), union(1,7), union(3,6), union(8,9), union(1,8), union(1,3), and union(9,10). Assume that union-by-size and find-with-path-compression, and the elements are numbered from 1 to 10.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$\\{-3, 1, -4, 3, 3, 3, 1, -2, 8, -1\\}$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$\\{-9, 1, 1, 3, 3, 3, 1, 1, 1, 1\\}$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$\\{-9, 1, 1, 3, 3, 3, 1, 1, 8, -1\\}$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$\\{-10, 1, 1, 3, 3, 3, 1, 1, 1, 1\\}$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "union-find",
+      "disjoint-set",
+      "path-compression"
+    ]
+  },
+  {
+    "id": "q-198",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 12,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For the given disjoint set representation shown in the figure, which of the following statements is TRUE?",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期末/image/39e33e7856a1f2aa90c4d0ea3ed6873819dd3ec80fc19e06cbf00709b9159c0c.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "5 is the right child of 2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "1 is the root",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "3 is a leaf node",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "4 is the right child of 5",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-tree",
+      "tree"
+    ]
+  },
+  {
+    "id": "q-199",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 13,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For the given directed weighted graph of 6 vertices, which one of the following sets of vertices satisfies that the earliest completion time of every member is equal to its latest completion time?",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期末/image/fec4a2476761401806cc16e2b30958adf4e488ad5f7c1c8933b13933f15cea0b.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "V1 V2 V6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "V1 V2 V5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "V1 V4 V6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "V1 V5 V6",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "critical-path",
+      "AOE-network"
+    ]
+  },
+  {
+    "id": "q-200",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 14,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Let $n$ be a non-negative integer representing the size of input. The time complexity of the following piece of code is:\n\n```c\nvoid func(int n) {\n    int i = 1;\n    while (i <= n)\n        i = i * 2;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$O(n)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$O(n^{1/2})$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$O(\\log_2 n)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$O(n^{2})$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "algorithm-analysis",
+      "time-complexity"
+    ]
+  },
+  {
+    "id": "q-201",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 15,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a hash table of size 13 and the hash function $h(x) = x \\% 13$. Double hashing is used to solve collisions with $h(x) = (h(x) + i \\cdot h_2(x)) \\% 13$ for $i = 1, 2, \\ldots, 12$, where $h_2(x) = (x \\% 11) + 1$. After filling in the hash table one by one with input sequence {92, 81, 58, 21, 57, 45, 161, 38, 117}, which number is placed in the position of index 6?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "58",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "81",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "57",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "21",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "hashing",
+      "double-hashing",
+      "collision-resolution"
+    ]
+  },
+  {
+    "id": "q-202",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 16,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "A binary tree with 1325 nodes must have a height _____. (Assume the height of a single node tree is 0.)",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "in the range [10, 1324]",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "in the range [10, 1325]",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "in the range [11, 662]",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "in the range [9, 1324]",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-tree",
+      "tree-height"
+    ]
+  },
+  {
+    "id": "q-203",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 17,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Let us convert a general tree T into a binary tree BT. Suppose that there are $n_0$ leaf nodes in T and $m_0$ leaf nodes in BT. Which of the following relationship between $n_0$ and $m_0$ is true?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$n_0 \\leq m_0$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$n_0 \\geq m_0$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$n_0 = m_0$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "cannot be determined",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "binary-tree",
+      "tree-conversion"
+    ]
+  },
+  {
+    "id": "q-204",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 18,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which sorting method can find the final position of at least one element within the sorted list after each run?\n\n1. selection sort\n2. Shell sort\n3. merge sort\n4. heap sort\n5. quick sort",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "1, 4, 5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "1, 3, 5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1, 2, 5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "1, 4",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "selection-sort",
+      "heap-sort",
+      "quick-sort"
+    ]
+  },
+  {
+    "id": "q-205",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 19,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a weighted undirected graph as shown below, with a given starting vertex. Which of the following is a possible sequence of edges collected by Prim's minimum spanning tree algorithm?",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期末/image/54fb995604a004522df2b13885638674463a02a5e97ebed10ae6f0e0df8b8ed5.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "Starting from A: (A,B) -> (B,D) -> (B,E) -> (A,C) -> (D,F) -> (F,G)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "Starting from B: (B,D) -> (B,E) -> (A,B) -> (A,C) -> (F,G) -> (D,F)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "Starting from B: (B,D) -> (A,D) -> (A,B) -> (B,E) -> (E,G) -> (F,G)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "Starting from A: (A,C) -> (C,D) -> (D,F) -> (F,G) -> (E,G) -> (B,E)",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "minimum-spanning-tree",
+      "prim"
+    ]
+  },
+  {
+    "id": "q-206",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 20,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "How many articulation points are there in the undirected graph below?",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期末/image/fd10b3310ec50d12b5212bd145a19a08dc85eba27014952cd99a90855bc90e4a.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "4",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "articulation-point",
+      "biconnectivity"
+    ]
+  },
+  {
+    "id": "q-207",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 21,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "If a complete binary tree with 2000 nodes is represented by an array (root index is 1), then the index of the lowest (deepest) common ancestor of the node at index 910 and the node at index 480 is _____.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "30",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "56",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "7",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "14",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-tree",
+      "complete-binary-tree",
+      "lowest-common-ancestor"
+    ]
+  },
+  {
+    "id": "q-208",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 22,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a binary search tree as shown below, which one of the following insertion orders is valid?",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期末/image/4ee54c30913793d701b18bd9a047e75861626a2043d8d1ef1fa9f37157ab351a.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "11 15 12 14 13",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "11 12 13 14 15",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "11 15 13 14 12",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "12 15 11 14 13",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-209",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 23,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Push 4 characters oppo onto a stack. In how many different ways can we pop these characters and still obtain oppo?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "3",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "stack",
+      "combinatorics"
+    ]
+  },
+  {
+    "id": "q-210",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 24,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "To obtain an ascending sequence, which of the following sorting methods gives $\\{16, 17, 20, 7, 8, 10, 28, 5, 3\\}$ after 2 runs?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "selection sort",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "quick sort",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "merge sort",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "insertion sort",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "insertion-sort"
+    ]
+  },
+  {
+    "id": "q-211",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 25,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "A \"full tree\" of degree 3 (every non-leaf node has 3 children) has 31 nodes. Then its height $h$ is at most _____. Note: $h = 0$ for a single node tree.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "10",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "cannot be determined",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "9",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "tree-height"
+    ]
+  },
+  {
+    "id": "q-212",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 26,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which of the following is the sufficient and necessary condition that an undirected connected graph has Euler circuit?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "All the vertices have even degrees",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "At most 1 vertex has an odd degree",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "At most 2 vertices have odd degrees",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "Exactly 2 vertices have odd degrees",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "graph",
+      "euler-circuit"
+    ]
+  },
+  {
+    "id": "q-213",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 27,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which one of the following statement is FALSE about a tree?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "Every node in a nonempty tree is the root of some subtree.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "The degree of a tree is equal to the depth of the tree.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "When converting a tree into a binary tree using FirstChild-NextSibling representation, the root of the binary tree must be of degree 1.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "Sibling nodes share the same parent.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "tree"
+    ]
+  },
+  {
+    "id": "q-214",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 28,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "When Dijkstra's algorithm is used to find the shortest paths from $v_1$ to every other vertices in an undirected graph $G$, a distance set $dist[v]$ is maintained for every vertex $v$, as the shortest distance from $v_1$ to $v$, passing through only the vertices whose shortest path to $v_1$ has been determined.\n\nSuppose that the destinations are obtained in the order of $\\{v_2, v_3, \\dots, v_n\\}$. If there is a vertex $w$ in $G$ so that $dist[w]$ is decreased during every iteration (except the last one) of the algorithm, how many statements of the following are correct?\n\n(1) $w$ is adjacent to every other vertices.\n(2) $(v_1, w)$ (if it exists) is the longest edge among all the edges that are adjacent to $w$.\n(3) Such a vertex $w$ does not exist.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "0",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "1",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "dijkstra",
+      "shortest-path"
+    ]
+  },
+  {
+    "id": "q-215",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 29,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The following program implements the topological sort algorithm with a stack. Please fill in the blanks.\n\n```c\nvoid Topsort(int a[NUM][NUM], int TopNum[NUM])\n// a[NUM][NUM] is adjacency matrix of the graph with NUM vertices\n// TopNum[NUM] stores the topological orders\n{\n    int S[NUM], Indegree[NUM]; // S[NUM] is a stack\n    int Counter = 0, top, n, i, j;\n    int V;\n    top = -1;\n    n = NUM;\n    for (j = 0; j < n; j++) {\n        Indegree[j] = 0;\n        for (i = 0; i < n; i++)\n            if (a[i][j] != __blank1__) Indegree[j]++;\n        if (Indegree[j] == 0) S[++top] = j;\n    }\n    while (top >= 0) {\n        V = S[top--];\n        TopNum[V] = ++Counter;\n        for (j = 0; j < n; j++)\n            if (a[V][j] != 0)\n                if (--Indegree[__blank2__] == 0) S[++top] = j;\n    }\n    if (Counter != n) printf(\"Graph has a cycle\");\n}\n```\n\nBlank 1: condition to check for an edge\nBlank 2: index for Indegree decrement",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "Blank 1: 0\nBlank 2: [j]",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "topological-sort",
+      "stack"
+    ]
+  },
+  {
+    "id": "q-216",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 30,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The function is to sort the array A in descending order. The function Swap(&A[0], &A[i]) is to exchange A[0] and A[i]. Please complete the following program.\n\n```c\n#define leftchild(i) (2*(i)+1)\nvoid PercDown(ElementType A[], int i, int N)\n{\n    int child;\n    ElementType tmp;\n    for (tmp = A[i]; leftchild(i) < N; i = child) {\n        child = leftchild(i);\n        if (child != N-1 && A[child] < A[__blank1__])\n            child++;\n        if (tmp > A[child])\n            A[i] = A[child];\n        else break;\n    }\n    A[i] = tmp;\n}\n\nvoid Heapsort(ElementType A[], int N)\n{\n    int i;\n    for (i = N / 2; i >= 0; i--)\n        PercDown(A, i, N);\n    for (i = N - 1; i > 0; i--) {\n        Swap(&A[0], &A[i]);\n        PercDown(A, __blank2__);\n    }\n}\n```\n\nBlank 1: comparison for choosing the smaller child (min-heap for descending sort)\nBlank 2: arguments for PercDown after swap",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "Blank 1: child+1\nBlank 2: 0, i",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "heap-sort",
+      "min-heap"
+    ]
+  },
+  {
+    "id": "q-217",
+    "courseId": "FDS",
+    "category": "2021-autumn-winter-final",
+    "sequenceId": 31,
+    "questionType": "programming",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a binary search tree $T$, you are supposed to output all the elements in the left subtree of x, in ascending order.\n\nFormat of functions:\n```c\nvoid print_left_subtree(Tree T, int X);\n```\n\nwhere Tree is defined as:\n```c\ntypedef struct TreeNode *Tree;\nstruct TreeNode {\n    int element;\n    Tree left;\n    Tree right;\n};\n```\n\nSample Input:\n```\n7\n90 80 91 55 70 85 92\n80\n```\n\nSample Output:\n```\n55 70 end\n```\n\nFor an empty tree, simply output: `empty tree`\nIn case x is not found in T, output: `x not found`",
+      "imageUrls": [
+        "assets/fds/21-22秋冬期末/image/bd96a7f2760795465a482e87d8c0c5edd59e3b362493eb8469e32b72e9fb9e85.jpg"
+      ]
+    },
+    "options": [],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [],
+      "codeSnippet": "void inorder_print(Tree T) {\n    if (T == NULL) return;\n    inorder_print(T->left);\n    printf(\"%d \", T->element);\n    inorder_print(T->right);\n}\n\nvoid print_left_subtree(Tree T, int X) {\n    if (T == NULL) {\n        printf(\"empty tree\\n\");\n        return;\n    }\n    // Find node X in BST\n    Tree node = T;\n    while (node != NULL && node->element != X) {\n        if (X < node->element)\n            node = node->left;\n        else\n            node = node->right;\n    }\n    if (node == NULL) {\n        printf(\"x not found\\n\");\n        return;\n    }\n    if (node->left == NULL) {\n        printf(\"end\\n\");\n        return;\n    }\n    inorder_print(node->left);\n    printf(\"end\\n\");\n}",
+      "codeLanguage": "C"
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-search-tree",
+      "inorder-traversal"
+    ]
+  }
+]

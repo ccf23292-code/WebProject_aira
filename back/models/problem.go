@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/datatypes"
+
 // Option 表示选择题的一个选项。
 type Option struct {
 	Option string `json:"option"` // 选项字母，如 "A"
@@ -8,10 +10,20 @@ type Option struct {
 
 // Problem 对应数据库 problems 表，表示一道题目。
 type Problem struct {
-	ID          uint64   `gorm:"primaryKey;autoIncrement" json:"id"`
-	TestpaperID uint64   `gorm:"index"                    json:"testpaper_id"`
-	Order       int      `json:"order"`
-	Test        string   `gorm:"type:text"                json:"test"`
-	Options     []Option `gorm:"-"                        json:"options"`
-	Answer      string   `gorm:"size:16"                  json:"answer"`
+	ID           uint64         `gorm:"primaryKey;autoIncrement"                 json:"id"`
+	TestpaperID  uint64         `gorm:"index;uniqueIndex:idx_source_paper"       json:"testpaper_id"`
+	SourceID     string         `gorm:"size:64;uniqueIndex:idx_source_paper"     json:"source_id"`
+	Order        int            `json:"order"`
+	SequenceID   int            `json:"sequence_id"`
+	QuestionType string         `gorm:"size:32;index"                            json:"question_type"`
+	Category     string         `gorm:"size:128;index"                           json:"category"`
+	SourceURL    string         `gorm:"size:512"                                 json:"source_url"`
+	Test         string         `gorm:"type:text"                                json:"test"`
+	Answer       string         `gorm:"type:text"                                json:"answer"`
+	Score        float64        `gorm:"type:numeric(6,2)"                        json:"score"`
+	Explanation  string         `gorm:"type:text"                                json:"explanation"`
+	Difficulty   string         `gorm:"size:32"                                  json:"difficulty"`
+	OptionsJSON  datatypes.JSON `gorm:"type:jsonb"                               json:"-"`
+	TagsJSON     datatypes.JSON `gorm:"type:jsonb"                               json:"-"`
+	Options      []Option       `gorm:"-"                                        json:"options"`
 }

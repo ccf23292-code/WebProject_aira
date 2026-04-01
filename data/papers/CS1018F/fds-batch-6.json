@@ -1,0 +1,3110 @@
+[
+  {
+    "id": "q-267",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 1,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "A graph with $|V|$ nodes ($|V| \\geq 2$) has at most $|V| - 2$ articulation points.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "articulation-point"
+    ]
+  },
+  {
+    "id": "q-268",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 2,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "When sorting the array $\\{5, 8, 0, 3, 7, 17, 11, 9, 6, 16, 12, 4, 2, 13, 20\\}$ in ascending order by iterative Merge Sort, the sorting result after the first run is $\\{5, 8, 0, 3, 7, 17, 9, 11, 6, 16, 4, 12, 2, 13, 20\\}$ and that after the second run is $\\{0, 3, 5, 8, 7, 9, 11, 17, 4, 6, 12, 16, 2, 13, 20\\}$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "merge-sort"
+    ]
+  },
+  {
+    "id": "q-269",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 3,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose we have a doubly linked circular list with $N$ regular nodes and a dummy head. Now given $p$ pointing to an arbitrary node (see Node definition below) in the list, we could get back to the original position by executing the statement \"$p = p\\text{->}prev;$\" $N + 1$ times.\n\n```c\nstruct Node {\n    Node * prev;\n    Node * next;\n    int element;\n};\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "linked-list",
+      "circular-list"
+    ]
+  },
+  {
+    "id": "q-270",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 4,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "When sorting the array $\\{1, 13, 19, 10, 2, 5, 7, 4, 8, 20, 0, 15, 3, 11, 17\\}$ in ascending order by Shell Sort using Hibbard's increments $(h_k = 2^k - 1)$, the sorting result after the first run is $\\{1, 8, 19, 0, 2, 3, 7, 4, 13, 20, 10, 15, 5, 11, 17\\}$ and that after the second run is $\\{0, 2, 3, 1, 4, 13, 5, 8, 15, 7, 10, 17, 20, 11, 19\\}$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "sorting",
+      "shell-sort"
+    ]
+  },
+  {
+    "id": "q-271",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 5,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Every node in the tree is the root of some subtree.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "tree"
+    ]
+  },
+  {
+    "id": "q-272",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 6,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a graph with $|V|$ nodes and $|E|$ edges, the total edge weight of its minimum spanning tree is $W$. If the weight of each edge in the graph is increased by 1, then $W$ is increased by $|E| - 1$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "minimum-spanning-tree"
+    ]
+  },
+  {
+    "id": "q-273",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 7,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "For a binary search tree (BST), its in-order traversal gives nodes in non-decreasing order.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-274",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 8,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a min-heap, all the keys along the path from the root to any leaf node must be in non-decreasing order.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "heap"
+    ]
+  },
+  {
+    "id": "q-275",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 9,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "$\\log(N!) = \\Omega(N \\cdot \\log(N))$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "algorithm-analysis",
+      "asymptotic-notation"
+    ]
+  },
+  {
+    "id": "q-276",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 10,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In hashing with quadratic probing to solve collisions, it is possible that a new element can not be inserted if the table size is 8 and 3 cells are occupied.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "hashing",
+      "quadratic-probing"
+    ]
+  },
+  {
+    "id": "q-277",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 11,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The array representation of the disjoint sets is given by $S = \\{-4, 0, 0, 2, -3, 4, 4, -1\\}$, the elements are numbered from 0 to 7. Which operations will turn the array into $S = \\{-5, 0, 0, 0, -3, 4, 4, 0\\}$?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "Union(0,7); Find(6)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "Find(5); Union(0,7)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "Union(Find(3),7)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "Find(3); Union(4,7)",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "disjoint-set",
+      "union-find"
+    ]
+  },
+  {
+    "id": "q-278",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 12,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a binary search tree with its preorder traversal sequence $\\{9, 5, 1, 7, 15, 20\\}$. If 10 is inserted into the tree, which one of the following statements is TRUE?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "10 is the right child of 9",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "10 is the left child of 20",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1 and 10 are at the same level",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "10 and 5 are at the same level",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-279",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 13,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which of the following statements about d-heaps is True?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "In a d-heap, the parent of a given node can be found using integer division.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "In a complete d-heap, the number of leaf nodes is less than the number of internal nodes.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "D-heaps are used for sorting data in ascending order.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "The height of a d-heap with n elements is directly proportional to n.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "heap",
+      "d-heap"
+    ]
+  },
+  {
+    "id": "q-280",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 14,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "When sorting the array $\\{80, 58, 88, 11, 7, 25, 64\\}$ in ascending order by Quick Sort, the pivot is selected by Median-of-Three Partitioning. After the first run, the number of inversions will decrease by _____.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "9",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "5",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "sorting",
+      "quick-sort",
+      "inversions"
+    ]
+  },
+  {
+    "id": "q-281",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 15,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that the level-order traversal sequence of a min-heap is $\\{3, 12, 7, 53, 32, 8, 19\\}$. Use the linear algorithm to adjust this min-heap into a max-heap, and then call DeleteMax. The inorder traversal sequence of the resulting tree is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "32, 12, 7, 3, 19, 8",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "7, 3, 12, 8, 19, 32",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "3, 8, 12, 7, 19, 32",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "7, 12, 3, 32, 8, 19",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "tree-traversal"
+    ]
+  },
+  {
+    "id": "q-282",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 16,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "We represent a directed graph as an adjacency list:\n\n```\nv0: -> null\nv1: -> v0 -> v3 -> null\nv2: -> v1 -> null\nv3: -> null\nv4: -> v1 -> v6 -> null\nv5: -> v2 -> v4 -> null\nv6: -> null\nv7: -> v1 -> v2 -> null\n```\n\nWhich one below is a topological order of the given graph?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "7 5 2 4 6 1 3 0",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "7 5 2 1 0 3 4 6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "6 0 3 1 4 2 7 5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "5 7 4 1 3 0 2 5",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "topological-sort"
+    ]
+  },
+  {
+    "id": "q-283",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 17,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The post-fix expression of $a + (b - c) \\times d / e$ is",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "abc-*de/+",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "abc-d*e/+",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "abc-de/*+",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "abc-de*/+",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "stack",
+      "expression-conversion"
+    ]
+  },
+  {
+    "id": "q-284",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 18,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a binary search tree with its level order traversal sequence $\\{7, 4, 12, 3, 6, 8, 1, 5, 10\\}$. If 4 is deleted from the tree, which one of the following statements is FALSE?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "3 and 12 may be at the same level",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "5 and 12 may be at the same level",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "6 and 12 may be at the same level",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "The in-order traversal is {1, 3, 5, 6, 7, 8, 10, 12}",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-285",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 19,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given an undirected weighted graph as shown below, its minimum spanning tree is to grow by Kruskal's algorithm with greedy strategies. Which of the following statement is correct?",
+      "imageUrls": [
+        "assets/fds/23-24春夏期末/image/698692aef4862c240295138b1f0971e265469790cf9531f977fdcbebd382360e.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "(v5,v7) must be an edge of the minimum spanning tree, but (v2,v4) must not be.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "(v5,v6) must be an edge of the minimum spanning tree, but (v4,v6) must not be.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "(v3,v4) must be an edge of the minimum spanning tree, but (v5,v4) must be not.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "(v1,v3) must be an edge of the minimum spanning tree, but (v4,v6) must not be.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "minimum-spanning-tree",
+      "kruskal"
+    ]
+  },
+  {
+    "id": "q-286",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 20,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose we have a circular queue implemented on an array a[20]. We store the position of the first queue element in front, and the next position of the last queue element in rear. What is the size of the circular queue when front==7 and rear==3?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "16",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "17",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "queue",
+      "circular-queue"
+    ]
+  },
+  {
+    "id": "q-287",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 21,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a hash table of size 13 with the hash function $H(Key) = Key \\% 13$. Quadratic probing $(h_i(k) = (H(k) \\pm i^2) \\% 13)$ is used to resolve collisions. Then after inserting {20, 6, 2, 16, 27, 15} one by one into the hash table, the address of 15 is ___.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "2",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "hashing",
+      "quadratic-probing"
+    ]
+  },
+  {
+    "id": "q-288",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 22,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which of the following algorithms can be used to solve the single source shortest path problem for an unweighted DAG? I. Kruskal; II. Breadth-first search; III. Topological Sort; IV. Dijkstra",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "II and IV only",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "I and IV only",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "All of them",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "II, III and IV only",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "shortest-path"
+    ]
+  },
+  {
+    "id": "q-289",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 23,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "After indirectly sorting the array list[10] = {10, 8, 1, 13, 19, 7, 14, 16, 6, 9} by Table Sort, the resulting index permutation array table[10] is made up of __ disjoint cycles.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "8",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "sorting",
+      "table-sort"
+    ]
+  },
+  {
+    "id": "q-290",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 24,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "When sorting the array {76971, 19927, 31681, 98978, 19537, 40134, 65401, 60983, 92952, 83584} in ascending order by Radix Sort, which of the following sorting results is IMPOSSIBLE?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "{65401, 76971, 31681, 92952, 60983, 40134, 83584, 19927, 19537, 98978}, after the second run of LSD Sort",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "{76971, 31681, 65401, 92952, 60983, 40134, 83584, 19927, 19537, 98978}, after the first run of LSD Sort",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "{19927, 19537, 31681, 40134, 60983, 65401, 76971, 83584, 92952, 98978}, after the second run of MSD Sort",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "{19927, 19537, 31681, 40134, 65401, 60983, 76971, 83584, 98978, 92952}, after the first run of MSD Sort",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "sorting",
+      "radix-sort"
+    ]
+  },
+  {
+    "id": "q-291",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 25,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a set of keys {92, 81, 58, 21, 57, 45, 161, 38, 117}, the hash function is defined as $h(key) = key \\% 13$. To resolve the $i^{th}$ collision, we use the following double hashing probing method: $h(key) = (h(key) + i \\times h_2(key)) \\% 13$, where $h_2(key) = (key \\% 11) + 1$. Assume we have a hash table with the hash address space from 0 to 12 for this sequence of keys, the average search length for successful searches is _____.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "1.33",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "1.56",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1.44",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "1.67",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "hashing",
+      "double-hashing"
+    ]
+  },
+  {
+    "id": "q-292",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 26,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "When solving the maximum flow problem for graph $G$, which statement is wrong?",
+      "imageUrls": [
+        "assets/fds/23-24春夏期末/image/5e36cc8f25e4291432daa03d6bee7fa2f416062de46d09ee277a0d1af5e8242a.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "Edge (S,B) with flow 5 is a possible edge in the maximum flow.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "Edge (S,C) with flow 8 is a possible edge in the maximum flow.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "Edge (S,A) with flow 10 is a possible edge in the maximum flow.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "Edge (G,t) with flow 12 is a possible edge in the maximum flow.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "network-flow"
+    ]
+  },
+  {
+    "id": "q-293",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 27,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that we are using a stack to convert the infix expression $((A + B) - C * (D / E)) + F$ to the postfix expression. What is the maximum number of operators in the stack during conversion?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "5",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "stack",
+      "expression-conversion"
+    ]
+  },
+  {
+    "id": "q-294",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 28,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "To find the articulation points for the following graph by depth-first search tree starting from node D, which of the following statements is correct?",
+      "imageUrls": [
+        "assets/fds/23-24春夏期末/image/529e9ac3586b3ff8600e4a8a3a16b1fc6c441a08ddeb1a286b628a2f58650959.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "D has 3 children in depth-first search tree.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "Low(A) < Num(A)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "Num(A) > Num(B)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "There are 2 back edges.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "depth-first-search",
+      "articulation-point"
+    ]
+  },
+  {
+    "id": "q-295",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 29,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "If a binary search tree of $N$ nodes is complete, which one of the following statements is FALSE?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "the median node must either be the root or in the left subtree",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "the minimum key must be at a leaf node",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "the average search time for all nodes is $O(\\log N)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "the maximum key must be at a leaf node",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-296",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 30,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a binary tree with in-order traversal sequence $\\{4, 1, 3, 8, 7, 12, 11, 9\\}$ and post-order traversal sequence $\\{4, 1, 8, 12, 7, 9, 11, 3\\}$. What is the index of 8 if we number the nodes in level-order? (Obviously, the index of the root is 1.)",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "7",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "tree",
+      "tree-traversal"
+    ]
+  },
+  {
+    "id": "q-297",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 31,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "An Euler tour in an undirected graph is a tour that traverses each edge of the graph exactly once. An Euler circuit is an Euler tour that starts and ends at the same vertex.\n\nFunction Eulerian is to test if there exists an Euler tour or an Euler circuit in a given connected Graph. The array Graph->G stores the adjacency matrix of the undirected graph, and MGraph is defined as the following:\n\n```c\ntypedef struct GNode *PtrToGNode;\nstruct GNode {\n    int Nv; /* number of vertices */\n    int Ne; /* number of edges */\n    int G[MaxVertexNum][MaxVertexNum]; /* adjacency matrix */\n};\ntypedef PtrToGNode MGraph;\n```\n\nPlease fill in the blanks.\n\n```c\nType Eulerian(MGraph Graph) {\n    int countOdd, degree;\n    Vertex i, j;\n    Type ret;\n    countOdd = 0;\n    for (i = 0; i < Graph->Nv; i++) {\n        degree = 0;\n        for (j = 0; j < Graph->Nv; j++) {\n            if ((Graph->G)[i][j] != 0) ______(blank 1)______\n        }\n        if (degree % 2 == 1) {\n            countOdd++;\n        }\n        if (countOdd > 2) break;\n    }\n    if (countOdd == 0) {\n        ret = EulerCircuit;\n    } else if (______(blank 2)______) {\n        ret = EulerTour;\n    } else {\n        ret = NotEulerian;\n    }\n    return ret;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "Blank 1: degree++;\nBlank 2: countOdd == 2",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "euler-path"
+    ]
+  },
+  {
+    "id": "q-298",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 32,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "Let's consider creating a basic hashing program for a list of nonnegative numbers with rehashing. We'll use linear probing ($f(i) = i$) to handle collisions. Moreover, rehashing will occur when the table reaches half capacity (capacity > 0.5).\n\n```c\ntypedef struct {\n    int *table;\n    int size;\n    int count;\n} HashTable;\n\nvoid init(HashTable *ht, int size) {\n    ht->size = size;\n    ht->table = (int*)malloc(sizeof(int) * size);\n    ht->count = 0;\n    for (int i = 0; i < size; i++) {\n        ht->table[i] = -1;\n    }\n}\n\nvoid rehash(HashTable *ht);\n\nvoid insert(HashTable *ht, int key) {\n    if (______(blank 1)______) {\n        rehash(ht);\n    }\n    int index = hash_function(key, ht->size);\n    while (ht->table[index] != -1) {\n        ______(blank 2)______\n    }\n    ht->table[index] = key;\n    ht->count++;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "Blank 1: ht->count > (ht->size) / 2\nBlank 2: index = (index + 1) % ht->size;",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "hashing",
+      "linear-probing",
+      "rehashing"
+    ]
+  },
+  {
+    "id": "q-299",
+    "courseId": "FDS",
+    "category": "2023-spring-summer-final",
+    "sequenceId": 33,
+    "questionType": "programming",
+    "sourceUrl": "",
+    "content": {
+      "text": "You are supposed to write two functions to calculate the height of a binary search tree and find all the longest paths, respectively.\n\nThe binary search tree is defined as follows:\n\n```c\ntypedef struct TreeNode *PtrTreeNode;\ntypedef struct TreeNode {\n    int key;\n    struct TreeNode *left;\n    struct TreeNode *right;\n} TreeNode;\ntypedef PtrTreeNode BinarySearchTree;\n```\n\nFunction signatures:\n```c\nint GetHeight(BinarySearchTree root);\nvoid GetPath(BinarySearchTree root, int path[MAXN][MAXN], int height);\n```\n\nroot is the root of a binary search tree. height is the height of the binary search tree. path is a two-dimensional array that stores all the longest paths, where the first dimension represents the paths and the second dimension represents the node keys in the paths.\n\nNote:\n1. Each path is stored in order from the root node to the leaf node.\n2. The storage order of different paths is not limited.\n3. The key of each node is a positive integer.\n4. The program will take the preorder sequence of the binary search tree as the input.\n5. The height of the binary search tree is the number of edges in the longest path.\n\nSample Input: 5 5 3 7 6 8\nSample Output: 2 5 7 6 5 7 8",
+      "imageUrls": [
+        "assets/fds/23-24春夏期末/image/39cd92188b07c8fdbb451c8655ec649ae40cf76c10e93cf83c17205e74a5ebc0.jpg"
+      ]
+    },
+    "options": [],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [],
+      "codeSnippet": "int GetHeight(BinarySearchTree root) {\n    if (root == NULL) return -1;\n    int lh = GetHeight(root->left);\n    int rh = GetHeight(root->right);\n    return (lh > rh ? lh : rh) + 1;\n}\n\nstatic int pathIdx = 0;\n\nvoid dfs(BinarySearchTree root, int path[MAXN][MAXN], int height, int depth, int col[]) {\n    if (root == NULL) return;\n    col[depth] = root->key;\n    if (depth == height) {\n        for (int i = 0; i <= height; i++)\n            path[pathIdx][i] = col[i];\n        pathIdx++;\n        return;\n    }\n    dfs(root->left, path, height, depth + 1, col);\n    dfs(root->right, path, height, depth + 1, col);\n}\n\nvoid GetPath(BinarySearchTree root, int path[MAXN][MAXN], int height) {\n    int col[MAXN];\n    pathIdx = 0;\n    dfs(root, path, height, 0, col);\n}",
+      "codeLanguage": "C"
+    },
+    "difficulty": "hard",
+    "tag": [
+      "tree",
+      "binary-search-tree",
+      "recursion",
+      "dfs"
+    ]
+  },
+  {
+    "id": "q-300",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 1,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a circular queue which is implemented by an array, the front value must always be no larger than the rear value.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "queue",
+      "circular-queue"
+    ]
+  },
+  {
+    "id": "q-301",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 2,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a tree of degree 3, we have $n_2 + n_3 \\geq n_0$, where $n_i$ is the number of degree $i$ nodes for $0 \\leq i \\leq 3$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree"
+    ]
+  },
+  {
+    "id": "q-302",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 3,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If $N$ numbers are stored in a singly linked list in increasing order, then the average time complexity for binary search is $O(\\log N)$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "linked-list",
+      "binary-search"
+    ]
+  },
+  {
+    "id": "q-303",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 4,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "For a binary search tree (BST), its pre-order traversal gives nodes in non-increasing order.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-304",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 5,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "$\\log(N!) = \\Omega(N \\cdot \\log(N))$",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "algorithm-analysis",
+      "asymptotic-notation"
+    ]
+  },
+  {
+    "id": "q-305",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 6,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "The preorder traversal sequence of any min-heap must be in sorted (non-decreasing) order.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "heap",
+      "tree-traversal"
+    ]
+  },
+  {
+    "id": "q-306",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 7,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Every node in the tree is the root of some subtree.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "tree"
+    ]
+  },
+  {
+    "id": "q-307",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 8,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that we are using a stack to convert the infix expression $((a + b) - c * (d / e)) + f$ to the postfix expression. What is the maximum number of operators in the stack during conversion?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "3",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "stack",
+      "expression-conversion"
+    ]
+  },
+  {
+    "id": "q-308",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 9,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "A \"full tree\" of degree 3 (every non-leaf node has 3 children) has 31 nodes. Then its height $h$ is at most ___. Note: $h = 0$ for a single node tree.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "10",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "cannot be determined",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "9",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree"
+    ]
+  },
+  {
+    "id": "q-309",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 10,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that the level-order traversal sequence of a min-heap is $\\{2, 17, 5, 46, 22, 8, 10\\}$. Use the linear algorithm to adjust this min-heap into a max-heap, and then call DeleteMax. The postorder traversal sequence of the resulting tree is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "5, 2, 17, 8, 10, 22",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2, 8, 10, 5, 17, 22",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "2, 8, 17, 5, 10, 22",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "22, 17, 5, 2, 10, 8",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "tree-traversal"
+    ]
+  },
+  {
+    "id": "q-310",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 11,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose we have a circular queue implemented on an array a[20]. We store the position of the first queue element in front, and the next position of the last queue element in rear. What is the size of the circular queue when front==7 and rear==3?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "17",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "16",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "queue",
+      "circular-queue"
+    ]
+  },
+  {
+    "id": "q-311",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 12,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a complete binary tree with 1238 nodes, there must be ___ leaf nodes.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "215",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "214",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "620",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "619",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "tree",
+      "complete-binary-tree"
+    ]
+  },
+  {
+    "id": "q-312",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 13,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The array representation of the disjoint sets is given by $\\{3, 1, -5, 2, 1, -3, -1, 6, 6\\}$. Keep in mind that the elements are numbered from 1 to 9. After invoking Union(Find(4), Find(8)) with union-by-size and path compression, how many elements will be changed in the resulting array?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "disjoint-set",
+      "union-find",
+      "path-compression"
+    ]
+  },
+  {
+    "id": "q-313",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 14,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a binary search tree with its level order traversal sequence $\\{7, 4, 12, 3, 6, 8, 1, 5, 10\\}$. If 4 is deleted from the tree, which one of the following statements is FALSE?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "The in-order traversal is {1, 3, 5, 6, 7, 8, 10, 12}",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "6 and 12 may be at the same level",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "3 and 12 may be at the same level",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "5 and 12 may be at the same level",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-314",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 15,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The function is to lower the value of the integer key at position P by a positive amount D in a min-heap H.\n\n```c\nvoid DecreaseKey(int P, int D, PriorityQueue H) {\n    int i, key;\n    key = H->Elements[P] - D;\n    for (i = ______(blank 1)______; H->Elements[i/2] > key; i /= 2)\n        ______(blank 2)______\n    H->Elements[i] = key;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "Blank 1: P\nBlank 2: H->Elements[i] = H->Elements[i/2];",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "heap",
+      "priority-queue"
+    ]
+  },
+  {
+    "id": "q-315",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-midterm",
+    "sequenceId": 16,
+    "questionType": "programming",
+    "sourceUrl": "",
+    "content": {
+      "text": "You are supposed to write a function of constructing a binary tree with given postorder and inorder sequences.\n\nFunction signature:\n```c\nTree BuildTree(int inorder[], int postorder[], int N);\n```\n\nwhere Tree is defined as:\n```c\ntypedef struct TreeNode *Tree;\nstruct TreeNode {\n    int Element;\n    Tree Left;\n    Tree Right;\n};\n```\n\nThe inorder and postorder sequences are stored in int inorder[] and int postorder[], respectively. The integer N is the number of nodes in the tree. The function BuildTree is supposed to return the pointer to the root of the constructed tree.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [],
+      "codeSnippet": "Tree BuildTree(int inorder[], int postorder[], int N) {\n    if (N <= 0) return NULL;\n    Tree root = (Tree)malloc(sizeof(struct TreeNode));\n    root->Element = postorder[N - 1];\n    int i;\n    for (i = 0; i < N; i++) {\n        if (inorder[i] == postorder[N - 1]) break;\n    }\n    root->Left = BuildTree(inorder, postorder, i);\n    root->Right = BuildTree(inorder + i + 1, postorder + i, N - i - 1);\n    return root;\n}",
+      "codeLanguage": "C"
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "tree-traversal",
+      "recursion"
+    ]
+  },
+  {
+    "id": "q-316",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 1,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "To find a minimum spanning tree in a sparse graph, Prim's algorithm is more suitable than Kruskal's.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "graph",
+      "minimum-spanning-tree",
+      "prim",
+      "kruskal"
+    ]
+  },
+  {
+    "id": "q-317",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 2,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In an undirected graph, a vertex $v$ is an articulation point iff there exists a pair of vertices $u$ and $w$ (both different from $v$) so that every path between $u$ and $w$ passes through $v$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "articulation-point"
+    ]
+  },
+  {
+    "id": "q-318",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 3,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a min-heap with unique keys, if $i < j$, then the element $p$ in level $i$ must be smaller than $q$ in level $j$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "heap"
+    ]
+  },
+  {
+    "id": "q-319",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 4,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that each single node in a disjoint set initially has height 0, the height of the resulting disjoint-set tree formed by performing union-by-height on $n$ nodes may exceed $\\lfloor \\log_2 n \\rfloor$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "disjoint-set",
+      "union-find"
+    ]
+  },
+  {
+    "id": "q-320",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 5,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If quadratic probing is used in hashing, then a new element can always be inserted if the hash table is at least half empty.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "hashing",
+      "quadratic-probing"
+    ]
+  },
+  {
+    "id": "q-321",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 6,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "After performing one pass of radix sort on {05, 46, 13, 55, 94, 17, 42}, the result could be {05, 13, 17, 42, 46, 55, 94}.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "radix-sort"
+    ]
+  },
+  {
+    "id": "q-322",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 7,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "During the insertion sort process, the order of magnitude of the number of comparisons is independent of the initial state of the sequence.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "sorting",
+      "insertion-sort"
+    ]
+  },
+  {
+    "id": "q-323",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 8,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "$114514^N = O(N!)$",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "algorithm-analysis",
+      "asymptotic-notation"
+    ]
+  },
+  {
+    "id": "q-324",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 9,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If a complete binary tree has exactly n nodes in each of its last two levels, then the total number of nodes in the tree must be 3n-1.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "complete-binary-tree"
+    ]
+  },
+  {
+    "id": "q-325",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 10,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If the five integers {1,2,3,4,5} are inserted into an initially empty binary search tree in any order starting with 3, the resulting trees will all have the same height.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-326",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 11,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a tree of degree 3, if there are 49 nodes of degree 2, and 25 nodes of degree 3, then how many leaf nodes are there?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "101",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "100",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "150",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "50",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree"
+    ]
+  },
+  {
+    "id": "q-327",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 12,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which of the following statements is correct regarding a binary search tree storing unique integers?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "The integers 12 and 13 may be at the same level.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "If 12 and 14 are at the same level, then 13 must be their parent node.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "If 12 and 14 are at the same level, then 13 must not be their parent node.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "None.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-328",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 13,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For a binary tree, if its post-order traversal sequence is {11, 13, 12, 16, 15, 17, 14}, and its in-order traversal sequence is {11, 12, 13, 14, 15, 16, 17}, then which of the following statement is TRUE?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "16 is the parent of 15.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "11 is the parent of 12.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "This is a complete binary tree.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "This is a binary search tree.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "tree-traversal"
+    ]
+  },
+  {
+    "id": "q-329",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 14,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a doubly linked circular list, how many pointers must be updated to insert $q$ after $p$?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "1",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "4",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "linked-list"
+    ]
+  },
+  {
+    "id": "q-330",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 15,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Design an algorithm to determine whether the parentheses () in an expression are properly matched. Which data structure is the most suitable for this task?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "Linked linear list",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "Queue",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "Stack",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "Binary Tree",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "stack"
+    ]
+  },
+  {
+    "id": "q-331",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 16,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that the level-order traversal sequence of a min-heap is {5, 18, 29, 23, 64, 47, 36}. After calling DeleteMin twice, what will be the post-order traversal of the resulting heap after it has been adjusted?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "47, 36, 64, 23, 29",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "47, 64, 36, 23, 29",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "47, 64, 29, 36, 23",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "47, 64, 36, 29, 23",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "tree-traversal"
+    ]
+  },
+  {
+    "id": "q-332",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 17,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "It is known that a 3-heap is a heap whose nodes have 3 children. In a max-3-heap with 2025 elements, which one of the following indices is NOT a possible position for the minimum key?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "675",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "676",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1012",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "1013",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "d-heap"
+    ]
+  },
+  {
+    "id": "q-333",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 18,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For an in-order threaded binary tree, if the post-order and in-order traversal sequences are FDEBGCA and FDBEACG, respectively. Which pair of nodes' right links are both threads?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "C and D.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "B and G.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "C and F.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "E and G.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "tree",
+      "threaded-binary-tree"
+    ]
+  },
+  {
+    "id": "q-334",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 19,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Consider the following operations performed on an initially empty Binary Search Tree (BST):\nInsert: 100, 50, 150, 25, 75, 125, 175\nDelete: 100 (replaced with its in-order successor)\nInsert: 110\nAfter these operations, which node will be the in-order successor of 75 in the final BST?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "125.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "110.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "50.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "The in-order successor does not exist for 75.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-335",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 20,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The array representation of the disjoint sets is given by {4, 5, 4, 5, -6, 9, -2, 7, -3, 9, 2}. Keep in mind that the elements are numbered from 1 to 11, and the depth of the root is 0. After invoking Union(Find(6), Find(8)), Union(Find(10), Find(3)) with union-by-size and path compression, what is the maximum depth of all the nodes?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "1",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "4",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "disjoint-set",
+      "union-find",
+      "path-compression"
+    ]
+  },
+  {
+    "id": "q-336",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 21,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which of the following statements about hashing is incorrect?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "In hashing with quadratic probing to resolve collisions, a new element can definitely be inserted if the table size is 14 and 7 cells are occupied.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "If an insertion into the hash table fails, rehashing is necessary, and the new table size is about twice the original size.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "If in double hashing $\\text{Hash}_2(k) = k^2$, then double hashing effectively becomes quadratic probing.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "The expected number of probes for insertions is equal to unsuccessful searches in linear probing method.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "hashing"
+    ]
+  },
+  {
+    "id": "q-337",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 22,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Insert {16, 29, 10, 24, 27, 11, 31} one by one into an initially empty hash table of size 11 with the hash function $H(Key) = Key \\% 11$, and linear probing is used to resolve collisions. After insertion, what is the expected number of probes for an unsuccessful search?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$\\frac{20}{11}$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$\\frac{24}{11}$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$\\frac{22}{11}$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$\\frac{23}{11}$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "hashing",
+      "linear-probing"
+    ]
+  },
+  {
+    "id": "q-338",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 23,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "To compute the shortest path in a weighted graph, Dijkstra's algorithm using a min-priority queue is a popular choice. For this algorithm, what is the total time spent on running the relaxation step \"decrease the distance of each vertex adjacent from the current visited one\"?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$O(|E|)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$O(|V| \\ast |E|)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$O(|V| \\ast \\log|V|)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$O(|E| \\ast \\log|V|)$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "shortest-path",
+      "dijkstra"
+    ]
+  },
+  {
+    "id": "q-339",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 24,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "We are executing an algorithm to find the maximum flow of a given network. Currently, we have found several augmenting paths to send 11 flow from s to t, and we show the updated residual graph in the following figure. So what is the maximum flow we can send from s to t?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "13",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "15",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "19",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "network-flow"
+    ]
+  },
+  {
+    "id": "q-340",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 25,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a weakly-connected directed graph, what condition ensures that an Eulerian Circuit exists?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "All vertices have equal in-degree and out-degree.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "Exactly one vertex has out-degree = in-degree + 1, one vertex has in-degree = out-degree + 1, and all the rest vertices have equal in-degree and out-degree.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "Exactly two vertices have odd total-degree, and all the rest vertices have even total-degree.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "All vertices have even total-degree.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "euler-path"
+    ]
+  },
+  {
+    "id": "q-341",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 26,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "How many valid topological sorts does the following graph have?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "7",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "8",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "9",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "10",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "topological-sort"
+    ]
+  },
+  {
+    "id": "q-342",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 27,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The following figure illustrates how to contract a subgraph (shown in dashed line) into a vertex. Now given a directed graph with many strongly connected components, if we contract each component into a single vertex, which property does the resulting graph MUST have?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "a complete graph",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "a directed acyclic graph",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "a disconnected graph",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "a binary tree",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "strongly-connected-components"
+    ]
+  },
+  {
+    "id": "q-343",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 28,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Using the direct insertion sort algorithm to sort the following four lists in ascending order, the one with the fewest number of comparisons is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "67, 13, 20, 55, 40, 27, 6, 31",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "6, 13, 27, 20, 40, 31, 55, 67",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "13, 20, 6, 27, 31, 67, 55, 40",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "55, 31, 40, 27, 6, 13, 67, 20",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "insertion-sort"
+    ]
+  },
+  {
+    "id": "q-344",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 29,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given that the key sequence {10, 12, 17, 22, 28, 23, 19, 24} is a min-heap, after inserting the key 5 and adjusting accordingly, the resulting min-heap is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "{5, 17, 10, 12, 28, 23, 19, 24, 22}",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "{5, 10, 17, 22, 23, 19, 24, 12, 28}",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "{5, 12, 17, 10, 23, 19, 24, 28, 22}",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "{5, 10, 17, 12, 28, 23, 19, 24, 22}",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "heap"
+    ]
+  },
+  {
+    "id": "q-345",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 30,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which of the following options is not a possible result after the second pass of quicksort?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "12, 16, 44, 18, 50, 52, 58",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "12, 52, 44, 50, 18, 16, 58",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "16, 12, 44, 18, 52, 50, 58",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "18, 12, 16, 44, 52, 50, 58",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "sorting",
+      "quick-sort"
+    ]
+  },
+  {
+    "id": "q-346",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 31,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given the head of a singly linked list, swap every two adjacent nodes if the value of the first node is greater than the value of the second node and the value of the first node is even. If the number of nodes is odd, the last node remains unchanged. Complete the two blanks in the code below.\n\n```c\n#include <stdio.h>\n#include <stdlib.h>\nstruct ListNode {\n    int val;\n    struct ListNode *next;\n};\nstruct ListNode* swapIfGreaterAndEven(struct ListNode* head) {\n    struct ListNode dummy;\n    dummy.next = head;\n    struct ListNode *prev = &dummy;\n\n    while (prev->next != NULL && prev->next->next != NULL) {\n        struct ListNode *first = prev->next;\n        struct ListNode *second = first->next;\n\n        if ( ______(blank 1)______ ) {\n            first->next = ______(blank 2)______;\n            second->next = first;\n            prev->next = second;\n            prev = first;\n        } else {\n            prev = second;\n        }\n    }\n    return dummy.next;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "Blank 1: first->val > second->val && first->val % 2 == 0\nBlank 2: second->next",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "linked-list"
+    ]
+  },
+  {
+    "id": "q-347",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 32,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a binary tree represented as a complete binary tree, find the first node with a right child encountered during an in-order traversal. If no such node exists, return -1; otherwise, return that node's value.\n\nFor example: a binary tree stored in this format (as illustrated in the figure) has its root node at array index 1, with missing nodes represented by 0 in the array.\n\nPlease complete the function int FirstHaveRight(int a[], int n), where parameter n is the index of the last element in array a. All elements after the last element of array a are initialized to 0. The algorithm in this function is similar to iterative implementation of in-order traversal.\n\n```c\nint FirstHaveRight(int a[], int n) {\n    int stack[MAXSIZE];\n    int top = -1, tree = 1, treeRight;\n\n    for ( ; ; ) {\n        for ( ; tree <= n; tree = 2 * tree) {\n            if ( ______(blank 1)______ ) stack[++top] = tree;\n            else break;\n        }\n        if (top == -1) return -1;\n        else tree = stack[top--];\n        treeRight = ______(blank 2)______;\n        if (a[treeRight] != 0) break;\n        else tree = treeRight;\n    }\n    return a[tree];\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "Blank 1: a[tree] != 0\nBlank 2: 2 * tree + 1",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "tree",
+      "tree-traversal",
+      "stack"
+    ]
+  },
+  {
+    "id": "q-348",
+    "courseId": "FDS",
+    "category": "2024-spring-summer-final",
+    "sequenceId": 33,
+    "questionType": "programming",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a simple undirected graph $G=(V, E)$. An independent set of $G$ is a set $S \\subseteq V$ such that no two members of $S$ are connected by an edge in $E$. Finding the maximum independent set of $G$ is an NP-hard problem. Here you are supposed to implement a greedy heuristic to find a near-maximum independent set.\n\nThe algorithm works in the following way:\n1. Collect any one unvisited vertex $v$ into $S$.\n2. Delete all the vertices (and all the edges incident on them) that are adjacent to $v$ from $G$.\n3. Repeat steps 1 and 2 until there is no unvisited vertex left in $G$.\n\nIn order to obtain the unique solution, when there are many options in step 1, you must always choose the vertex with the smallest index.\n\nFunction signature:\n```c\nint Independent_Set(MGraph G, int S[]);\n```\n\nwhere MGraph is defined as:\n```c\ntypedef struct GNode *PtrToGNode;\nstruct GNode {\n    int Nv;  /* number of vertices */\n    int Ne;  /* number of edges */\n    int G[MaxVertexNum][MaxVertexNum]; /* adjacency matrix */\n};\ntypedef PtrToGNode MGraph;\n```\n\nThe indices of the vertices in the resulting independent set is stored in the array int S[]. Note that the vertices are indexed from 1 to the number of vertices Nv. However, the indices of the adjacency matrix G starts from 0.\n\nThe function Independent_Set is supposed to follow the above algorithm to produce an independent set, save the results in S, and return the number of vertices in S.\n\nSample Input:\n8 7\n1 5\n5 4\n4 2\n2 3\n3 6\n6 1\n6 2\n\nSample Output:\n1 2 7 8",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [],
+      "codeSnippet": "int Independent_Set(MGraph G, int S[]) {\n    int visited[MaxVertexNum] = {0};\n    int count = 0;\n    for (int i = 0; i < G->Nv; i++) {\n        if (!visited[i]) {\n            S[count++] = i + 1;\n            visited[i] = 1;\n            for (int j = 0; j < G->Nv; j++) {\n                if (G->G[i][j] == 1) {\n                    visited[j] = 1;\n                }\n            }\n        }\n    }\n    return count;\n}",
+      "codeLanguage": "C"
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "greedy",
+      "independent-set"
+    ]
+  }
+]

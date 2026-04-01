@@ -6,6 +6,7 @@
 
 'use client';
 
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { Course } from '@aira/shared';
 import { TableSkeleton } from '@/components/layout/Skeleton';
@@ -14,9 +15,12 @@ import { useFetch } from '@/hooks/useFetch';
 import { api } from '@/lib/api';
 
 export default function CoursesPage() {
+  const [query, setQuery] = useState('');
+  const queryParam = useMemo(() => query.trim(), [query]);
+
   const { data: courses, loading, error, refetch } = useFetch(
-    () => api.get<Course[]>('/courses'),
-    [],
+    () => api.get<Course[]>(queryParam ? `/courses?q=${encodeURIComponent(queryParam)}` : '/courses'),
+    [queryParam],
   );
 
   return (
@@ -24,6 +28,16 @@ export default function CoursesPage() {
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-gray-900">选择课程</h1>
         <p className="mt-1 text-sm text-gray-500">选择一门课程，开始刷题</p>
+        <div className="mt-4">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="搜索课程名称或课程代码"
+            className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none
+                       focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+          />
+        </div>
       </div>
 
       {loading ? (
@@ -45,18 +59,17 @@ export default function CoursesPage() {
 
 function CourseCard({ course }: { course: Course }) {
   return (
-    <Link href={`/courses/${course.id}`}
+    <Link href={`/courses/${encodeURIComponent(course.id)}`}
       className="group block rounded-xl border border-gray-200 bg-white p-5 transition-all
                  hover:border-brand-300 hover:shadow-sm">
       <h2 className="text-base font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">
         {course.name}
       </h2>
-      <p className="mt-2 text-sm text-gray-500 leading-relaxed">
-        {course.description}
-      </p>
-      <div className="mt-3 text-xs font-medium text-brand-600">
-        查看试卷 →
+      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+        <span className="rounded-full bg-gray-100 px-2 py-0.5">{course.code || course.id}</span>
+        <span>学分 {course.credits.toFixed(1)}</span>
       </div>
+      <div className="mt-3 text-xs font-medium text-brand-600">查看试卷 →</div>
     </Link>
   );
 }

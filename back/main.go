@@ -7,34 +7,54 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"warehouse-web/middlewares"
+	"warehouse-web/models"
 	"warehouse-web/routers"
 	"warehouse-web/services"
 )
 
 func main() {
-	// ── 初始化服务层 ──────────────────────────────
-	authService := services.NewAuthService()
-	paperService := services.NewPaperService()
-
 	// ── 初始化数据库与回忆卷服务 ──────────────────
 	db, err := services.InitPostgres()
 	if err != nil {
 		log.Fatalf("database init failed: %v", err)
 	}
+	// ── 初始化服务层 ──────────────────────────────
+	authService := services.NewAuthService()
+	paperService := services.NewPaperService(db)
+	courseService := services.NewCourseService(db)
 	recallService := services.NewRecallService(db)
+	favoriteService := services.NewFavoriteService(db, paperService)
+	answerService := services.NewAnswerService(db, paperService)
+	wrongBookService := services.NewWrongBookService(db, paperService)
+	profileService := services.NewProfileService(db)
+	if err := db.AutoMigrate(
+		&models.Course{},
+		&models.TestPaper{},
+		&models.Problem{},
+		&models.Favorite{},
+		&models.AnswerRecord{},
+		&models.WrongQuestion{},
+		&models.UserProfile{},
+	); err != nil {
+		log.Fatalf("database migrate failed: %v", err)
+	}
 	if err := recallService.AutoMigrate(); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
 
 	// ── 初始化控制器 ──────────────────────────────
 	authCtl := routers.NewAuthController(authService)
-	paperCtl := routers.NewPaperController(paperService)
-	favoriteCtl := routers.NewFavoriteController(paperService)
+	paperCtl := routers.NewPaperController(paperService, courseService)
+	favoriteCtl := routers.NewFavoriteController(favoriteService)
 	adminCtl := routers.NewAdminController(paperService)
 	recallCtl := routers.NewRecallController(recallService)
+	answerCtl := routers.NewAnswerController(answerService)
+	wrongCtl := routers.NewWrongBookController(wrongBookService)
+	profileCtl := routers.NewProfileController(profileService)
 
 	// ── 创建 Gin 引擎 ─────────────────────────────
 	r := gin.Default()
+	r.Static("/static", "./storage")
 
 	// 跨域配置（开发环境允许所有来源）
 	r.Use(cors.New(cors.Config{
@@ -69,6 +89,18 @@ func main() {
 		// 5. recall_module —— 回忆卷相关（需登录）
 		recallGroup := api.Group("/recall", middlewares.AuthRequired(authService))
 		recallCtl.RegisterRoutes(recallGroup)
+
+		// 6. answer_module —— 做题记录（需登录）
+		answerGroup := api.Group("/answers", middlewares.AuthRequired(authService))
+		answerCtl.RegisterRoutes(answerGroup)
+
+		// 7. wrongbook_module —— 错题本（需登录）
+		wrongGroup := api.Group("/wrongbook", middlewares.AuthRequired(authService))
+		wrongCtl.RegisterRoutes(wrongGroup)
+
+		// 8. profile_module —— 用户资料（需登录）
+		profileGroup := api.Group("/profile", middlewares.AuthRequired(authService))
+		profileCtl.RegisterRoutes(profileGroup)
 	}
 
 	// ── 启动服务 ──────────────────────────────────

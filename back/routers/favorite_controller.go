@@ -14,21 +14,23 @@ import (
 
 // FavoriteController 处理收藏相关请求（需登录）。
 type FavoriteController struct {
-	service *services.PaperService
+	service *services.FavoriteService
 }
 
 // NewFavoriteController 创建 FavoriteController。
-func NewFavoriteController(service *services.PaperService) *FavoriteController {
+func NewFavoriteController(service *services.FavoriteService) *FavoriteController {
 	return &FavoriteController{service: service}
 }
 
 // RegisterRoutes 将收藏相关的路由绑定到指定的路由组（该组应已挂载 AuthRequired 中间件）。
 //
 //	GET    /api/favorites
+//	GET    /api/favorites/ids
 //	POST   /api/favorites
 //	DELETE /api/favorites/:problem_id
 func (ctl *FavoriteController) RegisterRoutes(group *gin.RouterGroup) {
 	group.GET("", ctl.List)
+	group.GET("/ids", ctl.ListIDs)
 	group.POST("", ctl.Add)
 	group.DELETE("/:problem_id", ctl.Remove)
 }
@@ -52,8 +54,24 @@ func (ctl *FavoriteController) List(c *gin.Context) {
 		size = 10
 	}
 
-	result := ctl.service.ListFavorites(userID, page, size)
+	result, err := ctl.service.ListFavorites(userID, page, size)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
 	utils.JSONSuccess(c, http.StatusOK, result)
+}
+
+// ListIDs 返回收藏题目 ID 列表。
+// GET /api/favorites/ids
+func (ctl *FavoriteController) ListIDs(c *gin.Context) {
+	userID := ctl.currentUserID(c)
+	ids, err := ctl.service.ListFavoriteIDs(userID)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, ids)
 }
 
 // Add 添加一条收藏。

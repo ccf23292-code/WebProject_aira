@@ -1,0 +1,1584 @@
+[
+  {
+    "id": "q-75",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 1,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If keys are pushed onto a stack in the order {1, 2, 3, 4, 5}, then it is impossible to obtain the output sequence {3, 4, 1, 2, 5}.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "stack",
+      "permutation"
+    ]
+  },
+  {
+    "id": "q-76",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 2,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "For a sequentially stored linear list of length $N$, the time complexities for deleting the first element and inserting the last element are $O(1)$ and $O(N)$, respectively.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "linear list",
+      "time complexity"
+    ]
+  },
+  {
+    "id": "q-77",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 3,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "The sum of the degrees of all the vertices in a connected graph must be an even number.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "graph",
+      "degree"
+    ]
+  },
+  {
+    "id": "q-78",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 4,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a binary search tree, the keys on the same level from left to right must be in sorted (non-decreasing) order.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "BST",
+      "binary search tree"
+    ]
+  },
+  {
+    "id": "q-79",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 5,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "$N^2 \\log N$ and $N \\log N^2$ have the same speed of growth.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "asymptotic analysis",
+      "time complexity"
+    ]
+  },
+  {
+    "id": "q-80",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 6,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "How many leaf nodes does a complete binary tree with 2435 nodes have?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "1218",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "1217",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "cannot be determined",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "812",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "complete binary tree",
+      "binary tree"
+    ]
+  },
+  {
+    "id": "q-81",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 7,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The result of performing three DeleteMin operations in the min-heap {1,3,2,6,7,5,4,15,14,12,9,10,11,13,8} is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "4,5,6,12,7,10,8,15,14,13,9,11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4,5,6,7,8,9,10,11,12,13,14,15",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "4,6,5,13,7,10,8,15,14,12,9,11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "4,6,5,12,7,10,8,15,14,9,13,11",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "min-heap",
+      "DeleteMin"
+    ]
+  },
+  {
+    "id": "q-82",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 8,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The array representation of a disjoint set is given by { 4, 6, 5, 2, -3, -4, 3 }. If the elements are numbered from 1 to 7, the resulting array after invoking `Union(Find(7),Find(1))` with union-by-size and path-compression is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "{ 4, 6, 5, 2, -7, 5, 3 }",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "{ 4, 6, 5, 2, 6, -7, 3 }",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "{ 6, 6, 5, 6, -7, 5, 5 }",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "{ 6, 6, 5, 6, 6, -7, 5 }",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "disjoint set",
+      "union-find",
+      "path compression"
+    ]
+  },
+  {
+    "id": "q-83",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 9,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Insert { 6, 9, 12, 3, 4, 8 } one by one into an initially empty binary search tree. The post-order traversal sequence of the resulting tree is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "3, 4, 6, 8, 12, 9",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "3, 4, 9, 8, 12, 6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "4, 3, 8, 12, 9, 6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "4, 3, 6, 8, 12, 9",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "BST",
+      "binary search tree",
+      "post-order traversal"
+    ]
+  },
+  {
+    "id": "q-84",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 10,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "In-order traversal of a binary tree can be done iteratively. Given the stack operation sequence as the following:\n\n```\npush(1), push(2), push(3), pop(), push(4), pop(), pop(), push(5), pop(), pop(), push(6), pop()\n```\n\nWhich one of the following statements is TRUE?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "2 and 6 are siblings",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "6 is the root",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "2 is the parent of 4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "None of the above",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "binary tree",
+      "in-order traversal",
+      "stack"
+    ]
+  },
+  {
+    "id": "q-85",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 11,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The recurrent equations for the time complexities of programs P1 and P2 are:\n\n- P1: $T(1)=1$, $T(N)=T(N/2)+1$;\n- P2: $T(1)=1$, $T(N)=2T(N/2)+1$;\n\nThen the best conclusion about their time complexities is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "they are both $O(\\log N)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$O(\\log N)$ for P1, and $O(N)$ for P2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$O(\\log N)$ for P1, and $O(N\\log N)$ for P2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "they are both $O(N)$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "recurrence relation",
+      "time complexity",
+      "Master theorem"
+    ]
+  },
+  {
+    "id": "q-86",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 12,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "From the given graph shown by the figure, how many different topological orders can we obtain?",
+      "imageUrls": [
+        "assets/remote/images.ptausercontent.com/79.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "2",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "topological sort",
+      "DAG",
+      "graph"
+    ]
+  },
+  {
+    "id": "q-87",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 13,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "If an undirected graph G = (V, E) contains 7 vertices. Then to guarantee that G is connected in any cases, there has to be at least ____ edges.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "15",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "16",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "21",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "connectivity"
+    ]
+  },
+  {
+    "id": "q-88",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 14,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "To delete `p` from a doubly linked list, we must do:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "`p->prior=p->prior->prior; p->prior->next=p;`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "`p->next=p->prior->prior; p->prior=p->next->next;`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "`p->next->prior=p; p->next=p->next->next;`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "`p->prior->next=p->next; p->next->prior=p->prior;`",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "doubly linked list",
+      "linked list"
+    ]
+  },
+  {
+    "id": "q-89",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 15,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which of the following statements is TRUE about topological sorting?\n\nA. In a DAG, if for any pair of distinct vertices $V_i$ and $V_j$, there is a path either from $V_i$ to $V_j$ or from $V_j$ to $V_i$, then the DAG must have a unique topological sequence.\n\nB. If the adjacency matrix is triangular, then the corresponding directed graph must have a unique topological sequence.\n\nC. If $V_i$ precedes $V_j$ in a topological sequence, then there must be a path from $V_i$ to $V_j$.\n\nD. If a graph has a topological sequence, then its adjacency matrix must be triangular.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "In a DAG, if for any pair of distinct vertices $V_i$ and $V_j$, there is a path either from $V_i$ to $V_j$ or from $V_j$ to $V_i$, then the DAG must have a unique topological sequence.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "If the adjacency matrix is triangular, then the corresponding directed graph must have a unique topological sequence.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "If $V_i$ precedes $V_j$ in a topological sequence, then there must be a path from $V_i$ to $V_j$.",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "If a graph has a topological sequence, then its adjacency matrix must be triangular.",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "topological sort",
+      "DAG",
+      "graph"
+    ]
+  },
+  {
+    "id": "q-90",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 16,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a quadtree (four-way tree) with 4 nodes of degree 2, 4 nodes of degree 3, 3 nodes of degree 4. The number of leaf nodes in this tree is __.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "21",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "20",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "12",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "22",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "degree",
+      "leaf nodes"
+    ]
+  },
+  {
+    "id": "q-91",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 17,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that an array of size `m` is used to store a circular queue. If the front position is `front` and the current size is `size`, then the rear element must be at:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "`front+size`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "`(front+size)%m`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "`front+size-1`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "`(front+size-1)%m`",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "circular queue",
+      "queue"
+    ]
+  },
+  {
+    "id": "q-92",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 18,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The function is to find the `K`-th largest element in a list `A` of `N` elements. The function `BuildMinHeap(H, K)` is to arrange elements `H[1]` ... `H[K]` into a min-heap. Please complete the following program.\n\n```c++\nElementType FindKthLargest ( int A[], int N, int K )\n{   /* it is assumed that K<=N */\n    ElementType *H;\n    int i, next, child;\n\n    H = (ElementType *)malloc((K+1)*sizeof(ElementType));\n    for ( i=1; i<=K; i++ ) H[i] = A[i-1];\n    BuildMinHeap(H, K);\n\n    for ( next=K; next<N; next++ ) {\n        H[0] = A[next];\n        if ( H[0] > H[1] ) {\n            for ( i=1; i*2<=K; i=child ) {\n                child = i*2;\n                if ( child!=K && __blank1__ ) child++;\n                if ( __blank2__ )\n                    H[i] = H[child];\n                else break;\n            }\n            H[i] = H[0];\n        }\n    }\n    return H[1];\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "blank1: H[child+1] < H[child]\nblank2: H[0] > H[child]",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "min-heap",
+      "Kth largest"
+    ]
+  },
+  {
+    "id": "q-93",
+    "courseId": "FDS",
+    "category": "2017-autumn-winter-midterm",
+    "sequenceId": 19,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "Please fill in the blanks in the program which performs `Find` as a Union/Find operation with path compression.\n\n```c++\nSetType Find ( ElementType X, DisjSet S )\n{\n   ElementType root, trail, lead;\n\n   for ( root = X; S[root] > 0; __blank1__ ) ;\n   for ( trail = X; trail != root; trail = lead ) {\n      lead = S[trail] ;\n      __blank2__;\n   }\n   return root;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "blank1: root = S[root]\nblank2: S[trail] = root",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "disjoint set",
+      "union-find",
+      "path compression"
+    ]
+  },
+  {
+    "id": "q-94",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 1,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "$2^N$ and $N^N$ have the same speed of growth.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "asymptotic analysis",
+      "time complexity"
+    ]
+  },
+  {
+    "id": "q-95",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 2,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If keys are pushed onto a stack in the order {1, 2, 3, 4, 5}, then it is impossible to obtain the output sequence {3, 4, 1, 2, 5}.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "stack",
+      "permutation"
+    ]
+  },
+  {
+    "id": "q-96",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 3,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If there are less than 20 inversions in an integer array, then Insertion Sort will be the best method among Quick Sort, Heap Sort and Insertion Sort.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "insertion sort",
+      "inversions"
+    ]
+  },
+  {
+    "id": "q-97",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 4,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "For a sequentially stored linear list of length $N$, the time complexities for query and insertion are $O(1)$ and $O(N)$, respectively.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "linear list",
+      "time complexity",
+      "array"
+    ]
+  },
+  {
+    "id": "q-98",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 5,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a binary search tree, the keys on the same level from left to right must be in sorted (non-decreasing) order.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "BST",
+      "binary search tree"
+    ]
+  },
+  {
+    "id": "q-99",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 6,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The recurrent equations for the time complexities of programs P1 and P2 are:\n\n- P1: $T(1)=1$, $T(N)=T(N/2)+1$;\n- P2: $T(1)=1$, $T(N)=2T(N/2)+1$;\n\nThen the best conclusion about their time complexities is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$O(\\log N)$ for P1, and $O(N\\log N)$ for P2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "they are both $O(N)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$O(\\log N)$ for P1, and $O(N)$ for P2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "they are both $O(\\log N)$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "recurrence relation",
+      "time complexity",
+      "Master theorem"
+    ]
+  },
+  {
+    "id": "q-100",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 7,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "To delete `p` from a doubly linked list, we must do:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "`p->prior=p->prior->prior; p->prior->next=p;`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "`p->next->prior=p; p->next=p->next->next;`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "`p->prior->next=p->next; p->next->prior=p->prior;`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "`p->next=p->prior->prior; p->prior=p->next->next;`",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "doubly linked list",
+      "linked list"
+    ]
+  },
+  {
+    "id": "q-101",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 8,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given input {15, 9, 7, 8, 20, -1, 4}. If the result of the 1st run of Shell sort is {15, -1, 4, 8, 20, 9, 7}, then the initial increment must be:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "2",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "Shell sort",
+      "sorting"
+    ]
+  },
+  {
+    "id": "q-102",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 9,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "In-order traversal of a binary tree can be done iteratively. Given the stack operation sequence as the following:\n\n```\npush(1), push(2), push(3), pop(), push(4), pop(), pop(), push(5), pop(), pop(), push(6), pop()\n```\n\nWhich one of the following statements is TRUE?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "6 is the root",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2 is the parent of 4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "None of the above",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "3 and 5 are siblings",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "binary tree",
+      "in-order traversal",
+      "stack"
+    ]
+  },
+  {
+    "id": "q-103",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 10,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "How many leaf nodes does a complete binary tree with 2435 nodes have?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "1217",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "cannot be determined",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "812",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "1218",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "complete binary tree",
+      "binary tree"
+    ]
+  },
+  {
+    "id": "q-104",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 11,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that an array of size `m` is used to store a circular queue. If the head pointer `front` and the current size variable `size` are used to represent the range of the queue instead of `front` and `rear`, then the maximum capacity of this queue can be:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "`m+1`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "cannot be determined",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "`m-1`",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "`m`",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "circular queue",
+      "queue"
+    ]
+  },
+  {
+    "id": "q-105",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 12,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given input { 4321, 56, 57, 46, 28, 7, 331, 33, 234, 63 }. Which one of the following is the result after the 1st run of the Least Significant Digit (LSD) radix sort?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "4321, 331, 33, 63, 234, 56, 46, 57, 7, 28",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "57, 46, 28, 7, 33, 234, 63, 56, 4321, 331",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "56, 28, 4321, 331, 33, 234, 46, 57, 63, 7",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "331, 4321, 33, 63, 234, 56, 46, 57, 7, 28",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "radix sort",
+      "LSD",
+      "sorting"
+    ]
+  },
+  {
+    "id": "q-106",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 13,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a quadtree (four-way tree) with 4 nodes of degree 2, 4 nodes of degree 3, 3 nodes of degree 4. The number of leaf nodes in this tree is __.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "20",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "21",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "12",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "22",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "degree",
+      "leaf nodes"
+    ]
+  },
+  {
+    "id": "q-107",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 14,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For an in-order threaded binary tree, if the pre-order and in-order traversal sequences are `B E A C F D` and `A E C B D F` respectively, which pair of nodes' left links are both threads?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "B and E",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "E and F",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "C and F",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "C and D",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "threaded binary tree",
+      "binary tree",
+      "traversal"
+    ]
+  },
+  {
+    "id": "q-108",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 15,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The result of performing three DeleteMin operations in the min-heap {1,3,2,12,6,4,8,15,14,9,7,5,11,13,10} is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "4,6,5,12,7,10,8,15,14,9,13,11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4,6,5,13,7,10,8,15,14,12,9,11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "4,5,6,12,7,10,8,15,14,13,9,11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "4,5,6,7,8,9,10,11,12,13,14,15",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "min-heap",
+      "DeleteMin"
+    ]
+  },
+  {
+    "id": "q-109",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 16,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For the quicksort implementation with the left pointer stops at an element with the same key as the pivot during the partitioning, but the right pointer does not stop in a similar case, what is the running time when all keys are equal?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$O(\\log N)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$O(N)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$O(N^2)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$O(N\\log N)$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "quicksort",
+      "sorting",
+      "time complexity"
+    ]
+  },
+  {
+    "id": "q-110",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 17,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Among the following sorting methods, which ones will be slowed down if we store the elements in a linked structure instead of a sequential structure?\n\n1. Insertion sort; 2. Selection Sort; 3. Bubble sort; 4. Shell sort; 5. Heap sort",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "3 and 4 only",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4 and 5 only",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "2 and 3 only",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "1 and 2 only",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "linked list",
+      "data structure"
+    ]
+  },
+  {
+    "id": "q-111",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 18,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Insert { 3, 8, 9, 1, 2, 6 } one by one into an initially empty binary search tree. The post-order traversal sequence of the resulting tree is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "1, 2, 3, 6, 9, 8",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2, 1, 3, 6, 9, 8",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1, 2, 8, 6, 9, 3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "2, 1, 6, 9, 8, 3",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "BST",
+      "binary search tree",
+      "post-order traversal"
+    ]
+  },
+  {
+    "id": "q-112",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 19,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The function is to find the `K`-th smallest element in a list `A` of `N` elements. The function `BuildMaxHeap(H, K)` is to arrange elements `H[1]` ... `H[K]` into a max-heap. Please complete the following program.\n\n```c++\nElementType FindKthSmallest ( int A[], int N, int K )\n{   /* it is assumed that K<=N */\n    ElementType *H;\n    int i, next, child;\n\n    H = (ElementType *)malloc((K+1)*sizeof(ElementType));\n    for ( i=1; i<=K; i++ ) H[i] = A[i-1];\n    BuildMaxHeap(H, K);\n\n    for ( next=K; next<N; next++ ) {\n        H[0] = A[next];\n        if ( H[0] < H[1] ) {\n            for ( i=1; i*2<=K; i=child ) {\n                child = i*2;\n                if ( child!=K && __blank1__ ) child++;\n                if ( __blank2__ )\n                    H[i] = H[child];\n                else break;\n            }\n            H[i] = H[0];\n        }\n    }\n    return H[1];\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "blank1: H[child+1] > H[child]\nblank2: H[0] < H[child]",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "max-heap",
+      "Kth smallest"
+    ]
+  },
+  {
+    "id": "q-113",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 20,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The function is to sort the list { `r[1] ... r[n]` } in non-decreasing order. Unlike selection sort which places only the minimum unsorted element in its correct position, this algorithm finds both the minimum and the maximum unsorted elements and places them into their final positions.\n\n```c++\nvoid sort( list r[], int n )\n{\n   int i, j, mini, maxi;\n\n   for (i=1; i<n-i+1; i++) {\n      mini = maxi = i;\n      for( j=i+1; __blank1__; ++j ){\n         if( __blank2__ ) mini = j;\n         else if(r[j]->key > r[maxi]->key) maxi = j;\n      }\n      if( mini != i ) swap(&r[mini], &r[i]);\n      if( maxi != n-i+1 ){\n         if( __blank3__ ) swap(&r[mini], &r[n-i+1]);\n         else swap(&r[maxi], &r[n-i+1]);\n      }\n   }\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "blank1: j <= n-i+1\nblank2: r[j]->key < r[mini]->key\nblank3: maxi == i",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "sorting",
+      "selection sort",
+      "double-ended selection sort"
+    ]
+  },
+  {
+    "id": "q-114",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-midterm",
+    "sequenceId": 21,
+    "questionType": "programming",
+    "sourceUrl": "",
+    "content": {
+      "text": "No Less Than X in BST\n\nYou are supposed to output, in decreasing order, all the elements no less than `X` in a binary search tree `T`.\n\nFormat of function:\n\n```c++\nvoid Print_NLT( Tree T, int X );\n```\n\nwhere `Tree` is defined as the following:\n\n```c++\ntypedef struct TreeNode *Tree;\nstruct TreeNode {\n    int Element;\n    Tree Left;\n    Tree Right;\n};\n```\n\nThe function is supposed to use `Output(X)` to print `X`.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [],
+      "codeSnippet": "void Print_NLT( Tree T, int X ) {\n    if ( T == NULL ) return;\n    Print_NLT( T->Right, X );\n    if ( T->Element >= X )\n        Output( T->Element );\n    else\n        return;\n    Print_NLT( T->Left, X );\n}",
+      "codeLanguage": "C"
+    },
+    "difficulty": "medium",
+    "tag": [
+      "BST",
+      "binary search tree",
+      "recursion",
+      "in-order traversal"
+    ]
+  }
+]

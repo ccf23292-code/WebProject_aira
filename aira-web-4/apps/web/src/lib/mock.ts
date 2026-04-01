@@ -8,12 +8,12 @@ import type { Course, Paper, Problem, FavoriteItem } from '@aira/shared';
 
 /** GET /api/courses */
 export const MOCK_COURSES: Course[] = [
-  { id: 'course-101', name: '高等数学', description: '2026春夏学期高等数学课程资料' },
-  { id: 'course-102', name: '线性代数', description: '2026春夏学期线性代数课程资料' },
-  { id: 'course-201', name: '数据结构', description: '2026春夏学期数据结构课程资料' },
-  { id: 'course-202', name: '操作系统', description: '2025秋冬学期操作系统课程资料' },
-  { id: 'course-301', name: '概率论与数理统计', description: '2026春夏学期概率统计课程资料' },
-  { id: 'course-302', name: '离散数学', description: '2025秋冬学期离散数学课程资料' },
+  { id: 'course-101', code: 'course-101', name: '高等数学', college: '', category: '', credits: 4, description: '2026春夏学期高等数学课程资料' },
+  { id: 'course-102', code: 'course-102', name: '线性代数', college: '', category: '', credits: 4, description: '2026春夏学期线性代数课程资料' },
+  { id: 'course-201', code: 'course-201', name: '数据结构', college: '', category: '', credits: 4, description: '2026春夏学期数据结构课程资料' },
+  { id: 'course-202', code: 'course-202', name: '操作系统', college: '', category: '', credits: 4, description: '2025秋冬学期操作系统课程资料' },
+  { id: 'course-301', code: 'course-301', name: '概率论与数理统计', college: '', category: '', credits: 4, description: '2026春夏学期概率统计课程资料' },
+  { id: 'course-302', code: 'course-302', name: '离散数学', college: '', category: '', credits: 4, description: '2025秋冬学期离散数学课程资料' },
 ];
 
 /** GET /api/courses/{course_id}/papers */
@@ -120,6 +120,8 @@ export const MOCK_FAVORITES: FavoriteItem[] = [
   {
     favorite_id: 55,
     problem_id: 1001,
+    course_id: 'MATH101',
+    course_name: '高等数学',
     added_at: '2026-03-16T12:00:00Z',
     problem_details: {
       testpaper_name: '2026-spring-summer 期末卷',
@@ -130,6 +132,8 @@ export const MOCK_FAVORITES: FavoriteItem[] = [
   {
     favorite_id: 56,
     problem_id: 2001,
+    course_id: 'CS1018F',
+    course_name: '数据结构基础',
     added_at: '2026-03-15T09:30:00Z',
     problem_details: {
       testpaper_name: '2026-spring-summer 期末卷',

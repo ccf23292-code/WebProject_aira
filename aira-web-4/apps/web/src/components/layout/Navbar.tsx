@@ -8,13 +8,14 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isLoggedIn, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const handleLogout = async () => {
     await logout();
@@ -23,8 +24,20 @@ export function Navbar() {
 
   const links = [
     { href: '/courses', label: '课程' },
-    ...(isLoggedIn ? [{ href: '/favorites', label: '收藏' }] : []),
+    ...(isLoggedIn ? [{ href: '/profile', label: '个人中心' }] : []),
   ];
+
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (!menuOpen) return;
+      const target = event.target as Node;
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [menuOpen]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
@@ -55,8 +68,8 @@ export function Navbar() {
 
           {/* 登录/用户 */}
           {isLoggedIn ? (
-            <div className="relative ml-2">
-              <button onClick={() => setMenuOpen(!menuOpen)}
+            <div className="relative ml-2" ref={menuRef}>
+              <button onClick={() => setMenuOpen((prev) => !prev)}
                 className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">
                   {user?.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
@@ -64,7 +77,10 @@ export function Navbar() {
                 <span className="hidden sm:inline">{user?.displayName}</span>
               </button>
               {menuOpen && (
-                <div className="absolute right-0 top-full mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                <div
+                  className="absolute right-0 top-full mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+                  onMouseLeave={() => setMenuOpen(false)}
+                >
                   <div className="border-b border-gray-100 px-3 py-2 text-xs text-gray-500">
                     {user?.displayName}
                   </div>

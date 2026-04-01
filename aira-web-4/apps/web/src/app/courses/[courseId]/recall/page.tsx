@@ -30,7 +30,7 @@ export default function RecallListPage() {
 
   // 回忆卷列表
   const { data: papers, loading, error, refetch } = useFetch(
-    () => api.get<RecallPaper[]>(`/recall/courses/${courseId}/papers`),
+    () => api.get<RecallPaper[]>(`/recall/courses/${encodeURIComponent(courseId)}/papers`),
     [courseId],
   );
 
@@ -44,7 +44,7 @@ export default function RecallListPage() {
     setCreating(true);
     try {
       const paper = await api.post<RecallPaper>(
-        `/recall/courses/${courseId}/papers`,
+        `/recall/courses/${encodeURIComponent(courseId)}/papers`,
         { title: title.trim() },
       );
       setTitle('');
@@ -64,7 +64,7 @@ export default function RecallListPage() {
       <nav className="mb-4 text-sm text-gray-500">
         <Link href="/courses" className="transition-colors hover:text-brand-600">课程</Link>
         <span className="mx-2">›</span>
-        <Link href={`/courses/${courseId}`} className="transition-colors hover:text-brand-600">{courseName}</Link>
+        <Link href={`/courses/${encodeURIComponent(courseId)}`} className="transition-colors hover:text-brand-600">{courseName}</Link>
         <span className="mx-2">›</span>
         <span className="font-medium text-gray-900">回忆卷</span>
       </nav>

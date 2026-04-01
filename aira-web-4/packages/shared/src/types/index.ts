@@ -72,7 +72,11 @@ export interface LogoutData {
 /** GET /api/courses — 课程 */
 export interface Course {
   id: string;
+  code: string;
   name: string;
+  college: string;
+  category: string;
+  credits: number;
   description: string;
 }
 
@@ -94,10 +98,17 @@ export interface ProblemOption {
 export interface Problem {
   id: number;
   testpaper_id: number;
+  source_id?: string;
   order: number;
+  sequence_id?: number;
+  question_type?: string;
+  category?: string;
+  source_url?: string;
   test: string;             // 题干
   options: ProblemOption[];
   answer: string;           // 正确答案，如 "B"
+  explanation?: string;
+  score?: number;
 }
 
 /* ══════════ favorite_module ══════════ */
@@ -113,8 +124,16 @@ export interface FavoriteProblemDetails {
 export interface FavoriteItem {
   favorite_id: number;
   problem_id: number;
+  course_id: string;
+  course_name: string;
   added_at: string;
   problem_details: FavoriteProblemDetails;
+}
+
+export interface FavoriteCourseGroup {
+  course_id: string;
+  course_name: string;
+  items: FavoriteItem[];
 }
 
 /** GET /api/favorites — 分页响应 data */
@@ -123,11 +142,66 @@ export interface FavoriteListData {
   page: number;
   size: number;
   items: FavoriteItem[];
+  groups: FavoriteCourseGroup[];
 }
+
+export type FavoriteIdList = number[];
 
 /** POST /api/favorites — 请求 */
 export interface AddFavoriteDto {
   problem_id: number;
+}
+
+/* ══════════ answers / wrongbook / profile ══════════ */
+
+export interface AnswerRecord {
+  id: number;
+  user_id: number;
+  course_id: string;
+  paper_id: number;
+  problem_id: number;
+  selected_option: string;
+  is_correct: boolean;
+  mode: string;
+  answered_at: string;
+}
+
+export interface AnswerRecordListData {
+  total: number;
+  page: number;
+  size: number;
+  items: AnswerRecord[];
+}
+
+export interface WrongBookItem {
+  problem_id: number;
+  paper_id: number;
+  order: number;
+  test: string;
+  status: string;
+  note: string;
+  wrong_count: number;
+  last_wrong_at: string;
+}
+
+export interface WrongBookCourseGroup {
+  course_id: string;
+  course_name: string;
+  last_practice_at?: string;
+  items: WrongBookItem[];
+}
+
+export interface WrongBookData {
+  courses: WrongBookCourseGroup[];
+}
+
+export interface UserProfile {
+  id: number;
+  user_id: number;
+  nickname: string;
+  avatar_url: string;
+  created_at: string;
+  updated_at: string;
 }
 
 /* ══════════ admin_module ══════════ */

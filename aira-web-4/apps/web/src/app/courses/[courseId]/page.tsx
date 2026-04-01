@@ -17,16 +17,15 @@ import { api } from '@/lib/api';
 export default function CourseDetailPage() {
   const { courseId } = useParams<{ courseId: string }>();
 
-  // 获取课程名称（从课程列表中查找）
-  const { data: courses } = useFetch(
-    () => api.get<Course[]>('/courses'),
-    [],
+  const { data: course } = useFetch(
+    () => api.get<Course>(`/courses/${encodeURIComponent(courseId)}`),
+    [courseId],
   );
-  const courseName = courses?.find((c) => c.id === courseId)?.name ?? courseId;
+  const courseName = course?.name ?? courseId;
 
   // 获取该课程的试卷列表
   const { data, loading, error, refetch } = useFetch(
-    () => api.get<Paper[]>(`/courses/${courseId}/papers`),
+    () => api.get<Paper[]>(`/courses/${encodeURIComponent(courseId)}/papers`),
     [courseId],
   );
 
@@ -45,6 +44,13 @@ export default function CourseDetailPage() {
           <p className="mt-1 text-sm text-gray-500">
             {data ? `共 ${data.length} 份试卷` : '加载中...'}
           </p>
+          {course && (
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+              <span className="rounded-full bg-gray-100 px-2 py-0.5">{course.code || course.id}</span>
+              <span>学分 {course.credits.toFixed(1)}</span>
+              {course.college && <span>{course.college}</span>}
+            </div>
+          )}
         </div>
         <Link href={`/courses/${courseId}/recall`}
           className="rounded-md border border-orange-200 bg-orange-50 px-4 py-2 text-sm

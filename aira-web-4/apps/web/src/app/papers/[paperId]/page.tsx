@@ -10,17 +10,20 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import type { Problem, ProblemOption } from '@aira/shared';
+import type { Problem, ProblemOption, FavoriteIdList } from '@aira/shared';
 import { DetailSkeleton } from '@/components/layout/Skeleton';
 import { ErrorState, EmptyState } from '@/components/layout/StateDisplay';
 import { useFetch } from '@/hooks/useFetch';
 import { api } from '@/lib/api';
+import { useAuth } from '@/lib/auth';
+import { MarkdownBlock, MarkdownInline } from '@/components/Markdown';
 
 export default function PaperDetailPage() {
   const { paperId } = useParams<{ paperId: string }>();
+  const { isLoggedIn } = useAuth();
 
   const { data, loading, error, refetch } = useFetch(
     () => api.get<Problem[]>(`/papers/${paperId}/problems`),
@@ -34,13 +37,31 @@ export default function PaperDetailPage() {
   // 已收藏的题目
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
 
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    api.get<FavoriteIdList>('/favorites/ids')
+      .then((ids) => setFavorites(new Set(ids)))
+      .catch(() => {});
+  }, [isLoggedIn]);
+
   const selectAnswer = useCallback((problemId: number, option: string) => {
     setAnswers((prev) => ({ ...prev, [problemId]: option }));
   }, []);
 
   const revealAnswer = useCallback((problemId: number) => {
     setRevealed((prev) => new Set(prev).add(problemId));
-  }, []);
+    if (!isLoggedIn || !data) return;
+    const selected = answers[problemId];
+    const problem = data.find((p) => p.id === problemId);
+    if (!problem || !selected) return;
+    api.post('/answers', {
+      paper_id: Number(paperId),
+      problem_id: problemId,
+      selected_option: selected,
+      is_correct: selected === problem.answer,
+      mode: 'practice',
+    }).catch(() => {});
+  }, [answers, data, isLoggedIn, paperId]);
 
   /**
    * ★ 收藏/取消收藏 — 对接 POST/DELETE /api/favorites
@@ -144,7 +165,11 @@ function ProblemCard({
   problem, selected, isRevealed, isFavorite,
   onSelect, onReveal, onToggleFavorite,
 }: ProblemCardProps) {
-  const isCorrect = selected === problem.answer;
+  const questionType = problem.question_type ?? 'singleChoice';
+  const normalizedAnswer = normalizeAnswer(problem.answer, questionType);
+  const isCorrect = questionType === 'fillBlanks'
+    ? selected?.trim().toLowerCase() === normalizedAnswer.toLowerCase()
+    : selected === normalizedAnswer;
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
@@ -165,21 +190,47 @@ function ProblemCard({
 
       <div className="px-5 py-4">
         {/* 题干 */}
-        <p className="mb-4 text-sm leading-relaxed text-gray-800">{problem.test}</p>
+        <MarkdownBlock content={problem.test} className="prose prose-sm max-w-none text-gray-800 mb-4" />
 
-        {/* 选项 */}
-        <div className="space-y-2 mb-4">
-          {problem.options.map((opt) => (
-            <OptionButton
-              key={opt.option}
-              opt={opt}
-              isSelected={selected === opt.option}
-              isAnswer={problem.answer === opt.option}
-              isRevealed={isRevealed}
-              onClick={() => { if (!isRevealed) onSelect(opt.option); }}
+        {/* 选项 / 作答区 */}
+        {questionType === 'trueOrFalse' ? (
+          <div className="space-y-2 mb-4">
+            {['T', 'F'].map((val) => (
+              <OptionButton
+                key={val}
+                opt={{ option: val, text: val === 'T' ? 'True' : 'False' }}
+                isSelected={selected === val}
+                isAnswer={normalizedAnswer === val}
+                isRevealed={isRevealed}
+                onClick={() => { if (!isRevealed) onSelect(val); }}
+              />
+            ))}
+          </div>
+        ) : questionType === 'fillBlanks' ? (
+          <div className="mb-4">
+            <textarea
+              value={selected ?? ''}
+              onChange={(e) => onSelect(e.target.value)}
+              placeholder="填写你的答案"
+              disabled={isRevealed}
+              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700"
+              rows={3}
             />
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="space-y-2 mb-4">
+            {problem.options.map((opt) => (
+              <OptionButton
+                key={opt.option}
+                opt={opt}
+                isSelected={selected === opt.option}
+                isAnswer={normalizedAnswer === opt.option}
+                isRevealed={isRevealed}
+                onClick={() => { if (!isRevealed) onSelect(opt.option); }}
+              />
+            ))}
+          </div>
+        )}
 
         {/* 操作栏 */}
         <div className="flex items-center gap-3">
@@ -191,13 +242,25 @@ function ProblemCard({
               查看答案
             </button>
           ) : (
-            <span className={`rounded-md px-3 py-1.5 text-xs font-medium ${
-              isCorrect
-                ? 'bg-green-50 text-green-600'
-                : 'bg-red-50 text-red-600'
-            }`}>
-              {isCorrect ? '✓ 回答正确' : `✗ 正确答案：${problem.answer}`}
-            </span>
+            <div className="flex flex-col gap-2">
+              {questionType === 'fillBlanks' ? (
+                <span className="rounded-md bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-600">
+                  参考答案已显示
+                </span>
+              ) : (
+                <span className={`rounded-md px-3 py-1.5 text-xs font-medium ${
+                  isCorrect
+                    ? 'bg-green-50 text-green-600'
+                    : 'bg-red-50 text-red-600'
+                }`}>
+                  {isCorrect ? '✓ 回答正确' : '✗ 回答错误'}
+                </span>
+              )}
+              <div className="rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+                <span className="font-medium">正确答案：</span>
+                <MarkdownInline content={normalizedAnswer} />
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -231,9 +294,19 @@ function OptionButton({ opt, isSelected, isAnswer, isRevealed, onClick }: Option
   return (
     <button onClick={onClick} className={className} disabled={isRevealed}>
       <span className="mr-2 font-medium">{opt.option}.</span>
-      {opt.text}
+      <MarkdownInline content={opt.text} />
       {isRevealed && isAnswer && <span className="ml-2">✓</span>}
       {isRevealed && isSelected && !isAnswer && <span className="ml-2">✗</span>}
     </button>
   );
+}
+
+function normalizeAnswer(answer: string, questionType: string) {
+  const raw = answer.trim();
+  if (questionType === 'trueOrFalse') {
+    const lowered = raw.toLowerCase();
+    if (lowered === 'true' || lowered === 't') return 'T';
+    if (lowered === 'false' || lowered === 'f') return 'F';
+  }
+  return raw;
 }
