@@ -23,9 +23,11 @@ func NewAnswerController(service *services.AnswerService) *AnswerController {
 
 // RegisterRoutes 注册做题记录接口。
 // POST /api/answers
+// POST /api/answers/batch
 // GET  /api/answers
 func (ctl *AnswerController) RegisterRoutes(group *gin.RouterGroup) {
 	group.POST("", ctl.Record)
+	group.POST("/batch", ctl.RecordBatch)
 	group.GET("", ctl.List)
 }
 
@@ -38,6 +40,21 @@ func (ctl *AnswerController) Record(c *gin.Context) {
 	}
 	userID := ctl.currentUserID(c)
 	if err := ctl.service.RecordAnswer(userID, req); err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccessMsg(c, http.StatusCreated, "recorded", nil)
+}
+
+// RecordBatch 批量写入做题记录。
+func (ctl *AnswerController) RecordBatch(c *gin.Context) {
+	var req services.AnswerBatchRecordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.JSONError(c, http.StatusBadRequest, "invalid_request", "请求体格式不正确", err.Error())
+		return
+	}
+	userID := ctl.currentUserID(c)
+	if err := ctl.service.RecordAnswersBatch(userID, req.Answers); err != nil {
 		ctl.handleError(c, err)
 		return
 	}

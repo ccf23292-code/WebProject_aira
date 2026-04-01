@@ -27,8 +27,32 @@ type AnswerRecordRequest struct {
 	Mode           string `json:"mode"`
 }
 
+type AnswerBatchRecordRequest struct {
+	Answers []AnswerRecordRequest `json:"answers"`
+}
+
 // RecordAnswer 写入做题记录，若答错则更新错题本。
 func (s *AnswerService) RecordAnswer(userID uint64, req AnswerRecordRequest) error {
+	return s.recordAnswer(userID, req)
+}
+
+// RecordAnswersBatch 批量写入做题记录，用于模拟考交卷。
+func (s *AnswerService) RecordAnswersBatch(userID uint64, answers []AnswerRecordRequest) error {
+	if len(answers) == 0 {
+		return newServiceError("invalid_request", http.StatusBadRequest, "answers 不能为空")
+	}
+	return s.db.Transaction(func(tx *gorm.DB) error {
+		scoped := &AnswerService{db: tx, paper: s.paper}
+		for _, answer := range answers {
+			if err := scoped.recordAnswer(userID, answer); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func (s *AnswerService) recordAnswer(userID uint64, req AnswerRecordRequest) error {
 	problem, err := s.paper.GetProblem(req.ProblemID)
 	if err != nil || problem == nil {
 		return newServiceError("not_found", http.StatusNotFound, "problem not found")
