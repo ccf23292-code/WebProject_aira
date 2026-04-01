@@ -18,8 +18,24 @@ func main() {
 	if err != nil {
 		log.Fatalf("database init failed: %v", err)
 	}
+	if err := db.AutoMigrate(
+		&models.User{},
+		&models.UserProfile{},
+		&models.AuthSession{},
+		&models.EmailVerification{},
+		&models.Course{},
+		&models.TestPaper{},
+		&models.Problem{},
+		&models.Favorite{},
+		&models.AnswerRecord{},
+		&models.WrongQuestion{},
+		&models.ProblemExplanation{},
+		&models.ProblemExplanationVote{},
+	); err != nil {
+		log.Fatalf("database migrate failed: %v", err)
+	}
 	// ── 初始化服务层 ──────────────────────────────
-	authService := services.NewAuthService()
+	authService := services.NewAuthService(db)
 	paperService := services.NewPaperService(db)
 	courseService := services.NewCourseService(db)
 	recallService := services.NewRecallService(db)
@@ -28,19 +44,6 @@ func main() {
 	wrongBookService := services.NewWrongBookService(db, paperService)
 	profileService := services.NewProfileService(db)
 	explanationService := services.NewProblemExplanationService(db, paperService)
-	if err := db.AutoMigrate(
-		&models.Course{},
-		&models.TestPaper{},
-		&models.Problem{},
-		&models.Favorite{},
-		&models.AnswerRecord{},
-		&models.WrongQuestion{},
-		&models.UserProfile{},
-		&models.ProblemExplanation{},
-		&models.ProblemExplanationVote{},
-	); err != nil {
-		log.Fatalf("database migrate failed: %v", err)
-	}
 	if err := recallService.AutoMigrate(); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}

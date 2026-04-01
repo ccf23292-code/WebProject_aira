@@ -226,8 +226,11 @@ export interface WrongBookData {
 export interface UserProfile {
   id: number;
   user_id: number;
+  username: string;
+  email: string;
   nickname: string;
   avatar_url: string;
+  level: number;
   created_at: string;
   updated_at: string;
 }

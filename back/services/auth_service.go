@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 
 	"warehouse-web/models"
 )
@@ -26,28 +26,6 @@ const (
 
 var emailRegex = regexp.MustCompile(`^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$`)
 
-// accessMetadata 存储 accessToken 对应的用户信息与过期时间。
-type accessMetadata struct {
-	UserID   uint64
-	Username string
-	Role     models.Role
-	ExpAt    time.Time
-}
-
-// refreshMetadata 存储 refreshToken 的元数据。
-type refreshMetadata struct {
-	Username  string
-	ExpiresAt time.Time
-}
-
-type verificationEntry struct {
-	Code       string
-	ExpiresAt  time.Time
-	LastSentAt time.Time
-}
-
-// ────────────────────────── ServiceError ──────────────────────────
-
 // ServiceError 封装业务层错误码及 HTTP 状态。
 type ServiceError struct {
 	Code    string
@@ -61,33 +39,17 @@ func newServiceError(code string, status int, message string) *ServiceError {
 	return &ServiceError{Code: code, Status: status, Message: message}
 }
 
-// ────────────────────────── AuthService ──────────────────────────
-
-// AuthService 提供认证相关的业务逻辑（内存版本，无数据库依赖）。
+// AuthService 提供认证相关的业务逻辑（数据库版本）。
 type AuthService struct {
-	mu            sync.RWMutex
-	users         map[string]*models.User
-	usersByEmail  map[string]*models.User
-	accessTokens  map[string]*accessMetadata
-	refreshTokens map[string]*refreshMetadata
-	verifications map[string]*verificationEntry
-	idSeq         models.PrimaryKey
+	db *gorm.DB
 }
 
-// NewAuthService 创建并返回一个预置管理员账户的 AuthService。
-func NewAuthService() *AuthService {
-	svc := &AuthService{
-		users:         make(map[string]*models.User),
-		usersByEmail:  make(map[string]*models.User),
-		accessTokens:  make(map[string]*accessMetadata),
-		refreshTokens: make(map[string]*refreshMetadata),
-		verifications: make(map[string]*verificationEntry),
-	}
-	svc.bootstrapAdmin()
+// NewAuthService 创建数据库版认证服务，并确保默认管理员存在。
+func NewAuthService(db *gorm.DB) *AuthService {
+	svc := &AuthService{db: db}
+	_ = svc.bootstrapAdmin()
 	return svc
 }
-
-// ────────────────────────── 请求 / 响应 DTO ──────────────────────────
 
 type LoginRequest struct {
 	Username   string `json:"username"`
@@ -138,9 +100,13 @@ type VerificationCodeResponse struct {
 	ExpiresIn int64  `json:"expiresIn"`
 }
 
-// ────────────────────────── 核心业务方法 ──────────────────────────
+// TokenClaims 是中间件从 accessToken 中提取的用户声明。
+type TokenClaims struct {
+	UserID   uint64
+	Username string
+	Role     models.Role
+}
 
-// Register 处理用户注册逻辑。
 func (s *AuthService) Register(req RegisterRequest) (*RegisterResponse, error) {
 	if err := s.validateRegister(req); err != nil {
 		return nil, err
@@ -151,49 +117,76 @@ func (s *AuthService) Register(req RegisterRequest) (*RegisterResponse, error) {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to hash password")
 	}
 
-	usernameKey := strings.ToLower(strings.TrimSpace(req.Username))
-	emailKey := strings.ToLower(strings.TrimSpace(req.Email))
+	username := strings.TrimSpace(req.Username)
+	email := strings.TrimSpace(req.Email)
+	usernameKey := strings.ToLower(username)
+	emailKey := strings.ToLower(email)
 	now := time.Now().UTC()
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	var response *RegisterResponse
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		if exists, checkErr := userExistsByUsername(tx, usernameKey); checkErr != nil {
+			return checkErr
+		} else if exists {
+			return newServiceError("conflict", http.StatusConflict, "username already registered")
+		}
+		if exists, checkErr := userExistsByEmail(tx, emailKey); checkErr != nil {
+			return checkErr
+		} else if exists {
+			return newServiceError("conflict", http.StatusConflict, "email already registered")
+		}
 
-	if _, exists := s.users[usernameKey]; exists {
-		return nil, newServiceError("conflict", http.StatusConflict, "username already registered")
+		if verifyErr := s.validateVerificationCode(tx, email, req.VerificationCode); verifyErr != nil {
+			return verifyErr
+		}
+
+		user := &models.User{
+			Username:     username,
+			Email:        email,
+			PasswordHash: string(hash),
+			Role:         models.RoleStudent,
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		}
+		if createErr := tx.Create(user).Error; createErr != nil {
+			return newServiceError("internal_error", http.StatusInternalServerError, "failed to create user")
+		}
+
+		if createErr := tx.Create(&models.UserProfile{
+			UserID:    user.ID,
+			Nickname:  username,
+			AvatarURL: "",
+			Level:     1,
+			CreatedAt: now,
+			UpdatedAt: now,
+		}).Error; createErr != nil {
+			return newServiceError("internal_error", http.StatusInternalServerError, "failed to create profile")
+		}
+
+		access, refresh, issueErr := s.issueTokens(tx, user, false)
+		if issueErr != nil {
+			return issueErr
+		}
+
+		response = &RegisterResponse{
+			AuthResponse: AuthResponse{
+				UserID:       formatUserID(user.ID),
+				DisplayName:  username,
+				AccessToken:  access,
+				RefreshToken: refresh,
+				Roles:        []string{string(user.Role)},
+				ExpiresIn:    int64(accessTokenTTL.Seconds()),
+			},
+			OnboardingTasks: []string{"complete_profile", "bind_courses"},
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
-	if _, exists := s.usersByEmail[emailKey]; exists {
-		return nil, newServiceError("conflict", http.StatusConflict, "email already registered")
-	}
-
-	s.idSeq++
-	user := &models.User{
-		ID:           s.idSeq,
-		Username:     req.Username,
-		Email:        req.Email,
-		PasswordHash: string(hash),
-		Role:         models.RoleStudent,
-		CreatedAt:    now,
-		UpdatedAt:    now,
-	}
-	s.users[usernameKey] = user
-	s.usersByEmail[emailKey] = user
-
-	access, refresh, _ := s.issueTokensLocked(user, false)
-
-	return &RegisterResponse{
-		AuthResponse: AuthResponse{
-			UserID:       formatUserID(user.ID),
-			DisplayName:  user.Username,
-			AccessToken:  access,
-			RefreshToken: refresh,
-			Roles:        []string{string(user.Role)},
-			ExpiresIn:    int64(accessTokenTTL.Seconds()),
-		},
-		OnboardingTasks: []string{"complete_profile", "bind_courses"},
-	}, nil
+	return response, nil
 }
 
-// Login 处理用户登录逻辑。
 func (s *AuthService) Login(req LoginRequest) (*AuthResponse, error) {
 	if err := s.validateLogin(req); err != nil {
 		return nil, err
@@ -201,130 +194,144 @@ func (s *AuthService) Login(req LoginRequest) (*AuthResponse, error) {
 
 	usernameKey := strings.ToLower(strings.TrimSpace(req.Username))
 
-	s.mu.RLock()
-	user, exists := s.users[usernameKey]
-	s.mu.RUnlock()
-
-	if !exists {
-		return nil, newServiceError("invalid_credentials", http.StatusUnauthorized, "username or password is incorrect")
+	var user models.User
+	if err := s.db.Where("LOWER(username) = ?", usernameKey).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, newServiceError("invalid_credentials", http.StatusUnauthorized, "username or password is incorrect")
+		}
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load user")
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
 		return nil, newServiceError("invalid_credentials", http.StatusUnauthorized, "username or password is incorrect")
 	}
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	access, refresh, _ := s.issueTokensLocked(user, req.RememberMe)
+	var (
+		displayName  string
+		accessToken  string
+		refreshToken string
+	)
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		access, refresh, issueErr := s.issueTokens(tx, &user, req.RememberMe)
+		if issueErr != nil {
+			return issueErr
+		}
+		displayName = s.loadDisplayName(tx, user.ID, user.Username)
+		accessToken = access
+		refreshToken = refresh
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
 
 	return &AuthResponse{
 		UserID:       formatUserID(user.ID),
-		DisplayName:  user.Username,
-		AccessToken:  access,
-		RefreshToken: refresh,
+		DisplayName:  displayName,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 		Roles:        []string{string(user.Role)},
 		ExpiresIn:    int64(accessTokenTTL.Seconds()),
 	}, nil
 }
 
-// Logout 删除对应的 refreshToken。
 func (s *AuthService) Logout(req LogoutRequest) (*LogoutResponse, error) {
 	if strings.TrimSpace(req.RefreshToken) == "" {
 		return nil, newServiceError("invalid_request", http.StatusBadRequest, "refreshToken is required")
 	}
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	if _, exists := s.refreshTokens[req.RefreshToken]; exists {
-		delete(s.refreshTokens, req.RefreshToken)
-		return &LogoutResponse{Success: true, Message: "logout successful"}, nil
+	res := s.db.Where("refresh_token = ?", strings.TrimSpace(req.RefreshToken)).Delete(&models.AuthSession{})
+	if res.Error != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to remove session")
 	}
-	return &LogoutResponse{Success: true, Message: "token already invalidated"}, nil
+	if res.RowsAffected == 0 {
+		return &LogoutResponse{Success: true, Message: "token already invalidated"}, nil
+	}
+	return &LogoutResponse{Success: true, Message: "logout successful"}, nil
 }
 
-// ────────────────────────── Token 验证（供中间件调用） ──────────────────────────
-
-// TokenClaims 是中间件从 accessToken 中提取的用户声明。
-type TokenClaims struct {
-	UserID   uint64
-	Username string
-	Role     models.Role
-}
-
-// ValidateAccessToken 校验 accessToken 的有效性并返回用户信息。
 func (s *AuthService) ValidateAccessToken(token string) (*TokenClaims, error) {
-	s.mu.RLock()
-	meta, ok := s.accessTokens[token]
-	s.mu.RUnlock()
-
-	if !ok {
+	token = strings.TrimSpace(token)
+	if token == "" {
 		return nil, fmt.Errorf("invalid token")
 	}
-	if time.Now().After(meta.ExpAt) {
-		s.mu.Lock()
-		delete(s.accessTokens, token)
-		s.mu.Unlock()
+
+	var session models.AuthSession
+	if err := s.db.Where("access_token = ?", token).First(&session).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("invalid token")
+		}
+		return nil, fmt.Errorf("failed to load session")
+	}
+	if time.Now().UTC().After(session.AccessExpiresAt) {
+		_ = s.db.Delete(&session).Error
 		return nil, fmt.Errorf("token expired")
 	}
-	return &TokenClaims{
-		UserID:   meta.UserID,
-		Username: meta.Username,
-		Role:     meta.Role,
-	}, nil
-}
 
-// ────────────────────────── 内部辅助方法 ──────────────────────────
-
-func (s *AuthService) issueTokensLocked(user *models.User, rememberMe bool) (string, string, time.Duration) {
-	s.gcLocked()
-	s.revokeUserTokensLocked(strings.ToLower(user.Username))
-
-	access := generateToken()
-	refresh := generateToken()
-	ttl := defaultRefreshToken
-	if rememberMe {
-		ttl = rememberMeRefreshTTL
+	var user models.User
+	if err := s.db.Where("id = ?", session.UserID).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			_ = s.db.Delete(&session).Error
+			return nil, fmt.Errorf("user missing")
+		}
+		return nil, fmt.Errorf("failed to load user")
 	}
 
-	s.accessTokens[access] = &accessMetadata{
+	return &TokenClaims{
 		UserID:   user.ID,
 		Username: user.Username,
 		Role:     user.Role,
-		ExpAt:    time.Now().Add(accessTokenTTL),
-	}
-	s.refreshTokens[refresh] = &refreshMetadata{
-		Username:  strings.ToLower(user.Username),
-		ExpiresAt: time.Now().Add(ttl),
-	}
-	user.RememberToken = models.Varchar(refresh)
-	return access, refresh, ttl
+	}, nil
 }
 
-func (s *AuthService) revokeUserTokensLocked(username string) {
-	for token, meta := range s.refreshTokens {
-		if meta.Username == username {
-			delete(s.refreshTokens, token)
-		}
+// SendVerificationCode 生成并缓存邮箱验证码（开发环境可选择回显）。
+func (s *AuthService) SendVerificationCode(email string, echo bool) (*VerificationCodeResponse, error) {
+	email = strings.TrimSpace(email)
+	if !emailRegex.MatchString(email) {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "email format is invalid")
 	}
-	for token, meta := range s.accessTokens {
-		if strings.ToLower(meta.Username) == username {
-			delete(s.accessTokens, token)
-		}
-	}
-}
 
-func (s *AuthService) gcLocked() {
-	now := time.Now()
-	for token, meta := range s.refreshTokens {
-		if now.After(meta.ExpiresAt) {
-			delete(s.refreshTokens, token)
+	emailKey := strings.ToLower(email)
+	now := time.Now().UTC()
+
+	var entry models.EmailVerification
+	err := s.db.Where("email = ?", emailKey).First(&entry).Error
+	if err == nil && now.Sub(entry.LastSentAt) < verificationCooldown {
+		return nil, newServiceError("too_many_requests", http.StatusTooManyRequests, "verification code sent too frequently")
+	}
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to save verification code")
+	}
+
+	code := generateVerificationCode()
+	if err == nil {
+		entry.Code = code
+		entry.ExpiresAt = now.Add(verificationCodeTTL)
+		entry.LastSentAt = now
+		if saveErr := s.db.Save(&entry).Error; saveErr != nil {
+			return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to save verification code")
+		}
+	} else {
+		entry = models.EmailVerification{
+			Email:      emailKey,
+			Code:       code,
+			ExpiresAt:  now.Add(verificationCodeTTL),
+			LastSentAt: now,
+			CreatedAt:  now,
+			UpdatedAt:  now,
+		}
+		if createErr := s.db.Create(&entry).Error; createErr != nil {
+			return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to save verification code")
 		}
 	}
-	for token, meta := range s.accessTokens {
-		if now.After(meta.ExpAt) {
-			delete(s.accessTokens, token)
-		}
+
+	resp := &VerificationCodeResponse{
+		Sent:      true,
+		ExpiresIn: int64(verificationCodeTTL.Seconds()),
 	}
+	if echo {
+		resp.Code = code
+	}
+	return resp, nil
 }
 
 func (s *AuthService) validateRegister(req RegisterRequest) *ServiceError {
@@ -350,9 +357,6 @@ func (s *AuthService) validateRegister(req RegisterRequest) *ServiceError {
 	}
 	if !req.AgreeToPolicy {
 		return newServiceError("policy_not_accepted", http.StatusBadRequest, "policy must be accepted before registration")
-	}
-	if err := s.validateVerificationCode(email, req.VerificationCode); err != nil {
-		return err
 	}
 	return nil
 }
@@ -406,13 +410,21 @@ func formatUserID(id models.PrimaryKey) string {
 	return fmt.Sprintf("u-%08d", id)
 }
 
-func (s *AuthService) bootstrapAdmin() {
-	password := "Admin@123"
-	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	s.idSeq++
+func (s *AuthService) bootstrapAdmin() error {
+	var count int64
+	if err := s.db.Model(&models.User{}).Where("LOWER(username) = ?", "admin").Count(&count).Error; err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte("Admin@123"), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
 	now := time.Now().UTC()
-	admin := &models.User{
-		ID:           s.idSeq,
+	admin := models.User{
 		Username:     "admin",
 		Email:        "admin@example.com",
 		PasswordHash: string(hash),
@@ -420,65 +432,93 @@ func (s *AuthService) bootstrapAdmin() {
 		CreatedAt:    now,
 		UpdatedAt:    now,
 	}
-	s.users[strings.ToLower(admin.Username)] = admin
-	s.usersByEmail[strings.ToLower(admin.Email)] = admin
+	if err := s.db.Create(&admin).Error; err != nil {
+		return err
+	}
+	return s.db.Create(&models.UserProfile{
+		UserID:    admin.ID,
+		Nickname:  "admin",
+		AvatarURL: "",
+		Level:     1,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}).Error
 }
 
-// SendVerificationCode 生成并缓存邮箱验证码（开发环境可选择回显）。
-func (s *AuthService) SendVerificationCode(email string, echo bool) (*VerificationCodeResponse, error) {
-	email = strings.TrimSpace(email)
-	if !emailRegex.MatchString(email) {
-		return nil, newServiceError("invalid_request", http.StatusBadRequest, "email format is invalid")
+func (s *AuthService) issueTokens(tx *gorm.DB, user *models.User, rememberMe bool) (string, string, error) {
+	ttl := defaultRefreshToken
+	if rememberMe {
+		ttl = rememberMeRefreshTTL
 	}
-
+	access := generateToken()
+	refresh := generateToken()
 	now := time.Now().UTC()
-	emailKey := strings.ToLower(email)
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	if entry, ok := s.verifications[emailKey]; ok {
-		if now.Sub(entry.LastSentAt) < verificationCooldown {
-			return nil, newServiceError("too_many_requests", http.StatusTooManyRequests, "verification code sent too frequently")
-		}
+	if err := tx.Where("user_id = ?", user.ID).Delete(&models.AuthSession{}).Error; err != nil {
+		return "", "", newServiceError("internal_error", http.StatusInternalServerError, "failed to clear old sessions")
 	}
 
-	code := generateVerificationCode()
-	s.verifications[emailKey] = &verificationEntry{
-		Code:       code,
-		ExpiresAt:  now.Add(verificationCodeTTL),
-		LastSentAt: now,
+	session := models.AuthSession{
+		UserID:           user.ID,
+		AccessToken:      access,
+		RefreshToken:     refresh,
+		AccessExpiresAt:  now.Add(accessTokenTTL),
+		RefreshExpiresAt: now.Add(ttl),
+		CreatedAt:        now,
+		UpdatedAt:        now,
+	}
+	if err := tx.Create(&session).Error; err != nil {
+		return "", "", newServiceError("internal_error", http.StatusInternalServerError, "failed to create session")
 	}
 
-	resp := &VerificationCodeResponse{
-		Sent:      true,
-		ExpiresIn: int64(verificationCodeTTL.Seconds()),
+	user.RememberToken = models.Varchar(refresh)
+	if err := tx.Save(user).Error; err != nil {
+		return "", "", newServiceError("internal_error", http.StatusInternalServerError, "failed to update user session state")
 	}
-	if echo {
-		resp.Code = code
-	}
-	return resp, nil
+	return access, refresh, nil
 }
 
-func (s *AuthService) validateVerificationCode(email, code string) *ServiceError {
+func (s *AuthService) validateVerificationCode(tx *gorm.DB, email, code string) *ServiceError {
 	emailKey := strings.ToLower(strings.TrimSpace(email))
 	code = strings.TrimSpace(code)
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	entry, ok := s.verifications[emailKey]
-	if !ok {
+	var entry models.EmailVerification
+	if err := tx.Where("email = ?", emailKey).First(&entry).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return newServiceError("invalid_verification_code", http.StatusUnprocessableEntity, "verification code invalid or expired")
+		}
+		return newServiceError("internal_error", http.StatusInternalServerError, "failed to load verification code")
+	}
+	if time.Now().UTC().After(entry.ExpiresAt) || entry.Code != code {
+		_ = tx.Delete(&entry).Error
 		return newServiceError("invalid_verification_code", http.StatusUnprocessableEntity, "verification code invalid or expired")
 	}
-	if time.Now().UTC().After(entry.ExpiresAt) {
-		delete(s.verifications, emailKey)
-		return newServiceError("invalid_verification_code", http.StatusUnprocessableEntity, "verification code invalid or expired")
+	if err := tx.Delete(&entry).Error; err != nil {
+		return newServiceError("internal_error", http.StatusInternalServerError, "failed to clear verification code")
 	}
-	if entry.Code != code {
-		return newServiceError("invalid_verification_code", http.StatusUnprocessableEntity, "verification code invalid or expired")
-	}
-
-	delete(s.verifications, emailKey)
 	return nil
+}
+
+func (s *AuthService) loadDisplayName(tx *gorm.DB, userID uint64, fallback string) string {
+	var profile models.UserProfile
+	if err := tx.Where("user_id = ?", userID).First(&profile).Error; err == nil && strings.TrimSpace(profile.Nickname) != "" {
+		return profile.Nickname
+	}
+	return fallback
+}
+
+func userExistsByUsername(db *gorm.DB, usernameKey string) (bool, *ServiceError) {
+	var count int64
+	if err := db.Model(&models.User{}).Where("LOWER(username) = ?", usernameKey).Count(&count).Error; err != nil {
+		return false, newServiceError("internal_error", http.StatusInternalServerError, "failed to check username")
+	}
+	return count > 0, nil
+}
+
+func userExistsByEmail(db *gorm.DB, emailKey string) (bool, *ServiceError) {
+	var count int64
+	if err := db.Model(&models.User{}).Where("LOWER(email) = ?", emailKey).Count(&count).Error; err != nil {
+		return false, newServiceError("internal_error", http.StatusInternalServerError, "failed to check email")
+	}
+	return count > 0, nil
 }

@@ -39,6 +39,7 @@ func newExplanationTestDB(t *testing.T) *gorm.DB {
 			user_id INTEGER,
 			nickname TEXT,
 			avatar_url TEXT,
+			level INTEGER,
 			created_at DATETIME,
 			updated_at DATETIME
 		);`,

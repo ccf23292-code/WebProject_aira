@@ -68,6 +68,14 @@ export default function ProfilePage() {
       ) : profile ? (
         <div className="space-y-6">
           <div className="rounded-xl border border-gray-200 bg-white p-5">
+            <div className="grid gap-4 md:grid-cols-3">
+              <InfoItem label="用户名" value={profile.username || '-'} />
+              <InfoItem label="邮箱" value={profile.email || '-'} />
+              <InfoItem label="用户等级" value={`Lv.${profile.level ?? 1}`} />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 bg-white p-5">
             <div className="flex items-center gap-4">
               <div className="h-16 w-16 overflow-hidden rounded-full border border-gray-200 bg-gray-50">
                 {profile.avatar_url ? (
@@ -112,6 +120,15 @@ export default function ProfilePage() {
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-xs font-medium uppercase tracking-wide text-gray-400">{label}</div>
+      <div className="mt-2 text-sm font-medium text-gray-900">{value}</div>
     </div>
   );
 }

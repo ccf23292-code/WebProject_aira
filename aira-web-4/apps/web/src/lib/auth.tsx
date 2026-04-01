@@ -108,7 +108,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /** 登出 */
   const logout = useCallback(async () => {
     try {
-      await api.post('/auth/logout');
+      await api.post('/auth/logout', {
+        refreshToken: localStorage.getItem('refreshToken') ?? '',
+      });
     } catch { /* 即使请求失败也清除本地状态 */ }
     clearTokens();
     setUser(null);

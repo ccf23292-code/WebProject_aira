@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { api } from '@/lib/api';
 import type { VerificationCodeData } from '@aira/shared';
+import { PasswordInput } from '@/components/form/PasswordInput';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -127,6 +128,25 @@ export default function RegisterPage() {
         </div>
 
         <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">密码</label>
+          <PasswordInput
+            value={password}
+            onChange={setPassword}
+            placeholder="请输入密码"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">确认密码</label>
+          <PasswordInput
+            value={confirm}
+            onChange={setConfirm}
+            placeholder="再次输入密码"
+            onKeyDown={(e) => { if (e.key === 'Enter' && canSubmit) handleSubmit(); }}
+          />
+        </div>
+
+        <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">邮箱</label>
           <div className="flex gap-2">
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
@@ -148,23 +168,6 @@ export default function RegisterPage() {
               开发模式验证码：{devCode}
             </div>
           )}
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">密码</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-            placeholder="请输入密码"
-            className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none
-                       focus:border-brand-500 focus:ring-1 focus:ring-brand-500" />
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">确认密码</label>
-          <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)}
-            placeholder="再次输入密码"
-            onKeyDown={(e) => { if (e.key === 'Enter' && canSubmit) handleSubmit(); }}
-            className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none
-                       focus:border-brand-500 focus:ring-1 focus:ring-brand-500" />
         </div>
 
         <div>

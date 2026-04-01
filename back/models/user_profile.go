@@ -8,6 +8,9 @@ type UserProfile struct {
 	UserID    uint64    `gorm:"uniqueIndex"             json:"user_id"`
 	Nickname  string    `gorm:"size:128"                json:"nickname"`
 	AvatarURL string    `gorm:"size:512"                json:"avatar_url"`
+	Level     int       `gorm:"default:1"               json:"level"`
+	Username  string    `gorm:"-"                       json:"username"`
+	Email     string    `gorm:"-"                       json:"email"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
