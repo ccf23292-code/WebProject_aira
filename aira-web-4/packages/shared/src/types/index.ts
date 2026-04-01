@@ -111,6 +111,34 @@ export interface Problem {
   score?: number;
 }
 
+export interface ProblemExplanationItem {
+  id: number;
+  problem_id: number;
+  author_id: number;
+  author_name: string;
+  content_md: string;
+  up_votes: number;
+  down_votes: number;
+  my_vote: number;
+  can_edit: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProblemExplanationListData {
+  official_explanation: string;
+  items: ProblemExplanationItem[];
+  my_item?: ProblemExplanationItem | null;
+}
+
+export interface UpsertProblemExplanationDto {
+  content_md: string;
+}
+
+export interface VoteProblemExplanationDto {
+  value: -1 | 0 | 1;
+}
+
 /* ══════════ favorite_module ══════════ */
 
 /** 收藏项中的题目摘要 */

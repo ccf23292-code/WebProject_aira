@@ -58,3 +58,40 @@ func AuthRequired(authService *services.AuthService) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+// TryAuth 在请求头存在有效 Bearer token 时写入用户上下文；否则直接放行。
+// 该中间件用于“公开接口 + 登录态增强”的场景，例如返回 my_vote / my_item。
+func TryAuth(authService *services.AuthService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.Request.Method == http.MethodOptions {
+			c.Next()
+			return
+		}
+
+		header := c.GetHeader("Authorization")
+		if header == "" {
+			c.Next()
+			return
+		}
+
+		parts := strings.SplitN(header, " ", 2)
+		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
+			c.Next()
+			return
+		}
+
+		token := strings.TrimSpace(parts[1])
+		if token == "" {
+			c.Next()
+			return
+		}
+
+		claims, err := authService.ValidateAccessToken(token)
+		if err == nil {
+			c.Set(CtxKeyUserID, claims.UserID)
+			c.Set(CtxKeyUsername, claims.Username)
+			c.Set(CtxKeyRole, string(claims.Role))
+		}
+		c.Next()
+	}
+}

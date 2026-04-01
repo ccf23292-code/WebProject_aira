@@ -27,6 +27,7 @@ func main() {
 	answerService := services.NewAnswerService(db, paperService)
 	wrongBookService := services.NewWrongBookService(db, paperService)
 	profileService := services.NewProfileService(db)
+	explanationService := services.NewProblemExplanationService(db, paperService)
 	if err := db.AutoMigrate(
 		&models.Course{},
 		&models.TestPaper{},
@@ -35,6 +36,8 @@ func main() {
 		&models.AnswerRecord{},
 		&models.WrongQuestion{},
 		&models.UserProfile{},
+		&models.ProblemExplanation{},
+		&models.ProblemExplanationVote{},
 	); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
@@ -51,6 +54,7 @@ func main() {
 	answerCtl := routers.NewAnswerController(answerService)
 	wrongCtl := routers.NewWrongBookController(wrongBookService)
 	profileCtl := routers.NewProfileController(profileService)
+	explanationCtl := routers.NewProblemExplanationController(explanationService)
 
 	// ── 创建 Gin 引擎 ─────────────────────────────
 	r := gin.Default()
@@ -74,6 +78,8 @@ func main() {
 
 		// 2. browse_module —— 公开访问
 		paperCtl.RegisterRoutes(api)
+		api.Use(middlewares.TryAuth(authService))
+		explanationCtl.RegisterPublicRoutes(api)
 
 		// 3. favorite_module —— 需要登录
 		favGroup := api.Group("/favorites", middlewares.AuthRequired(authService))
@@ -101,6 +107,10 @@ func main() {
 		// 8. profile_module —— 用户资料（需登录）
 		profileGroup := api.Group("/profile", middlewares.AuthRequired(authService))
 		profileCtl.RegisterRoutes(profileGroup)
+
+		// 9. explanation_module —— 题解（公开读，登录后写/投票）
+		explanationGroup := api.Group("", middlewares.AuthRequired(authService))
+		explanationCtl.RegisterProtectedRoutes(explanationGroup)
 	}
 
 	// ── 启动服务 ──────────────────────────────────

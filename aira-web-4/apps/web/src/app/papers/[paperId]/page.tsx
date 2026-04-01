@@ -20,6 +20,7 @@ import { useFetch } from '@/hooks/useFetch';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { MarkdownBlock, MarkdownInline } from '@/components/Markdown';
+import { ExplanationSection } from '@/components/problem/ExplanationSection';
 
 export default function PaperDetailPage() {
   const { paperId } = useParams<{ paperId: string }>();
@@ -263,6 +264,12 @@ function ProblemCard({
             </div>
           )}
         </div>
+
+        <ExplanationSection
+          problemId={problem.id}
+          enabled={isRevealed}
+          officialExplanation={problem.explanation}
+        />
       </div>
     </div>
   );
