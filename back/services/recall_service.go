@@ -1,0 +1,460 @@
+package services
+
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
+	"gorm.io/datatypes"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+
+	"warehouse-web/models"
+)
+
+// RecallService 负责回忆卷相关业务逻辑。
+type RecallService struct {
+	db *gorm.DB
+}
+
+// NewRecallService 创建回忆卷服务。
+func NewRecallService(db *gorm.DB) *RecallService {
+	return &RecallService{db: db}
+}
+
+// AutoMigrate 自动迁移回忆卷相关表结构。
+func (s *RecallService) AutoMigrate() error {
+	return s.db.AutoMigrate(
+		&models.RecallPaper{},
+		&models.RecallQuestion{},
+		&models.RecallQuestionSupport{},
+		&models.RecallQuestionComment{},
+	)
+}
+
+// CreateRecallPaperRequest 创建回忆卷请求。
+type CreateRecallPaperRequest struct {
+	Title string `json:"title"`
+}
+
+// CreateRecallQuestionRequest 创建回忆题目请求。
+type CreateRecallQuestionRequest struct {
+	QuestionType string                        `json:"question_type"`
+	Sequence     int                           `json:"sequence"`
+	Content      string                        `json:"content"`
+	Answer       string                        `json:"answer"`
+	Options      []models.RecallQuestionOption `json:"options"`
+}
+
+// UpdateRecallQuestionRequest 更新题目请求。
+type UpdateRecallQuestionRequest struct {
+	Content *string                        `json:"content"`
+	Answer  *string                        `json:"answer"`
+	Options *[]models.RecallQuestionOption `json:"options"`
+}
+
+// RecallQuestionView 回忆题目的返回结构。
+type RecallQuestionView struct {
+	ID           uint64                        `json:"id"`
+	PaperID      uint64                        `json:"paper_id"`
+	QuestionType string                        `json:"question_type"`
+	Sequence     int                           `json:"sequence"`
+	Content      string                        `json:"content"`
+	Answer       string                        `json:"answer"`
+	Options      []models.RecallQuestionOption `json:"options"`
+	SourceUserID uint64                        `json:"source_user_id"`
+	SupportCount int                           `json:"support_count"`
+	LastEditorID uint64                        `json:"last_editor_id"`
+	CreatedAt    time.Time                     `json:"created_at"`
+	UpdatedAt    time.Time                     `json:"updated_at"`
+}
+
+// QuestionTypeSummary 题型汇总。
+type QuestionTypeSummary struct {
+	QuestionType string `json:"question_type"`
+	MaxSequence  int    `json:"max_sequence"`
+}
+
+// RecallCommentItem 评论条目。
+type RecallCommentItem struct {
+	ID        uint64    `json:"id"`
+	UserID    uint64    `json:"user_id"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// RecallCommentPage 评论分页。
+type RecallCommentPage struct {
+	Total int                 `json:"total"`
+	Page  int                 `json:"page"`
+	Size  int                 `json:"size"`
+	Items []RecallCommentItem `json:"items"`
+}
+
+// CreateRecallPaper 创建一份回忆卷。
+func (s *RecallService) CreateRecallPaper(courseID string, userID uint64, req CreateRecallPaperRequest) (*models.RecallPaper, error) {
+	if strings.TrimSpace(courseID) == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+	if strings.TrimSpace(req.Title) == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "title 不能为空")
+	}
+
+	paper := &models.RecallPaper{
+		CourseID:  courseID,
+		Title:     req.Title,
+		CreatedBy: userID,
+	}
+	if err := s.db.Create(paper).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "创建回忆卷失败")
+	}
+	return paper, nil
+}
+
+// ListRecallPapers 返回课程下的回忆卷列表。
+func (s *RecallService) ListRecallPapers(courseID string) ([]models.RecallPaper, error) {
+	if strings.TrimSpace(courseID) == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+	var papers []models.RecallPaper
+	if err := s.db.Where("course_id = ?", courseID).Order("id desc").Find(&papers).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "查询回忆卷失败")
+	}
+	if papers == nil {
+		papers = []models.RecallPaper{}
+	}
+	return papers, nil
+}
+
+// ListQuestionTypeSummary 返回题型与最大题号。
+func (s *RecallService) ListQuestionTypeSummary(paperID uint64) ([]QuestionTypeSummary, error) {
+	if paperID == 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "paper_id 不能为空")
+	}
+	var rows []QuestionTypeSummary
+	err := s.db.Table("recall_questions").
+		Select("question_type, MAX(sequence) as max_sequence").
+		Where("paper_id = ?", paperID).
+		Group("question_type").
+		Order("question_type asc").
+		Scan(&rows).Error
+	if err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "查询题型失败")
+	}
+	if rows == nil {
+		rows = []QuestionTypeSummary{}
+	}
+	return rows, nil
+}
+
+// CreateRecallQuestion 创建一条回忆题目。
+func (s *RecallService) CreateRecallQuestion(paperID uint64, userID uint64, req CreateRecallQuestionRequest) (*RecallQuestionView, error) {
+	if paperID == 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "paper_id 不能为空")
+	}
+	if strings.TrimSpace(req.QuestionType) == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "question_type 不能为空")
+	}
+	if req.Sequence <= 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "sequence 必须为正整数")
+	}
+	if strings.TrimSpace(req.Content) == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "content 不能为空")
+	}
+
+	optionsJSON, err := encodeRecallOptions(req.Options)
+	if err != nil {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "options 格式不正确")
+	}
+
+	question := &models.RecallQuestion{
+		PaperID:      paperID,
+		QuestionType: req.QuestionType,
+		Sequence:     req.Sequence,
+		Content:      req.Content,
+		Answer:       req.Answer,
+		OptionsJSON:  optionsJSON,
+		SourceUserID: userID,
+		LastEditorID: userID,
+	}
+	if err := s.db.Create(question).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "创建题目失败")
+	}
+
+	return toRecallQuestionView(question)
+}
+
+// ListTopQuestions 返回每个题号支持度最高的题目。
+func (s *RecallService) ListTopQuestions(paperID uint64, questionType string) ([]RecallQuestionView, error) {
+	if paperID == 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "paper_id 不能为空")
+	}
+
+	var rows []models.RecallQuestion
+	query := s.db
+	if questionType != "" {
+		query = query.Where("paper_id = ? AND question_type = ?", paperID, questionType)
+	} else {
+		query = query.Where("paper_id = ?", paperID)
+	}
+
+	err := query.
+		Order("question_type asc, sequence asc, support_count desc, updated_at desc, id desc").
+		Find(&rows).Error
+	if err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "查询题目失败")
+	}
+
+	// 后处理：每个题号只保留支持度最高的一条
+	best := make(map[string]RecallQuestionView)
+	orderedKeys := []string{}
+	for i := range rows {
+		key := rows[i].QuestionType + "#" + strconv.Itoa(rows[i].Sequence)
+		if _, exists := best[key]; exists {
+			continue
+		}
+		view, err := toRecallQuestionView(&rows[i])
+		if err != nil {
+			return nil, err
+		}
+		best[key] = *view
+		orderedKeys = append(orderedKeys, key)
+	}
+
+	result := make([]RecallQuestionView, 0, len(orderedKeys))
+	for _, key := range orderedKeys {
+		result = append(result, best[key])
+	}
+	return result, nil
+}
+
+// ListQuestionsBySequence 返回指定题号下的所有题目版本。
+func (s *RecallService) ListQuestionsBySequence(paperID uint64, questionType string, sequence int) ([]RecallQuestionView, error) {
+	if paperID == 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "paper_id 不能为空")
+	}
+	if strings.TrimSpace(questionType) == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "question_type 不能为空")
+	}
+	if sequence <= 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "sequence 必须为正整数")
+	}
+
+	var rows []models.RecallQuestion
+	if err := s.db.Where("paper_id = ? AND question_type = ? AND sequence = ?", paperID, questionType, sequence).
+		Order("support_count desc, updated_at desc, id desc").
+		Find(&rows).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "查询题目失败")
+	}
+
+	views := make([]RecallQuestionView, 0, len(rows))
+	for i := range rows {
+		view, err := toRecallQuestionView(&rows[i])
+		if err != nil {
+			return nil, err
+		}
+		views = append(views, *view)
+	}
+	return views, nil
+}
+
+// UpdateRecallQuestion 更新题目内容。
+func (s *RecallService) UpdateRecallQuestion(questionID uint64, editorID uint64, req UpdateRecallQuestionRequest) (*RecallQuestionView, error) {
+	if questionID == 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "question_id 不能为空")
+	}
+
+	var question models.RecallQuestion
+	if err := s.db.First(&question, questionID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, newServiceError("not_found", http.StatusNotFound, "题目不存在")
+		}
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "查询题目失败")
+	}
+
+	if req.Content != nil {
+		if strings.TrimSpace(*req.Content) == "" {
+			return nil, newServiceError("invalid_request", http.StatusBadRequest, "content 不能为空")
+		}
+		question.Content = *req.Content
+	}
+	if req.Answer != nil {
+		question.Answer = *req.Answer
+	}
+	if req.Options != nil {
+		optionsJSON, err := encodeRecallOptions(*req.Options)
+		if err != nil {
+			return nil, newServiceError("invalid_request", http.StatusBadRequest, "options 格式不正确")
+		}
+		question.OptionsJSON = optionsJSON
+	}
+	question.LastEditorID = editorID
+
+	if err := s.db.Save(&question).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "更新题目失败")
+	}
+	return toRecallQuestionView(&question)
+}
+
+// SupportQuestion 支持某道题目，每人每题仅一次。
+func (s *RecallService) SupportQuestion(questionID uint64, userID uint64) (*RecallQuestionView, error) {
+	if questionID == 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "question_id 不能为空")
+	}
+
+	returnView := &RecallQuestionView{}
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		var question models.RecallQuestion
+		if err := tx.First(&question, questionID).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				return newServiceError("not_found", http.StatusNotFound, "题目不存在")
+			}
+			return newServiceError("internal_error", http.StatusInternalServerError, "查询题目失败")
+		}
+
+		support := &models.RecallQuestionSupport{
+			QuestionID: questionID,
+			UserID:     userID,
+		}
+		res := tx.Clauses(clause.OnConflict{DoNothing: true}).Create(support)
+		if res.Error != nil {
+			return newServiceError("internal_error", http.StatusInternalServerError, "支持失败")
+		}
+		if res.RowsAffected > 0 {
+			if err := tx.Model(&question).UpdateColumn("support_count", gorm.Expr("support_count + 1")).Error; err != nil {
+				return newServiceError("internal_error", http.StatusInternalServerError, "更新支持数失败")
+			}
+			if err := tx.First(&question, questionID).Error; err != nil {
+				return newServiceError("internal_error", http.StatusInternalServerError, "刷新题目失败")
+			}
+		}
+
+		view, err := toRecallQuestionView(&question)
+		if err != nil {
+			return err
+		}
+		*returnView = *view
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return returnView, nil
+}
+
+// AddComment 添加评论。
+func (s *RecallService) AddComment(questionID uint64, userID uint64, content string) (*RecallCommentItem, error) {
+	if questionID == 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "question_id 不能为空")
+	}
+	if strings.TrimSpace(content) == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "content 不能为空")
+	}
+
+	comment := &models.RecallQuestionComment{
+		QuestionID: questionID,
+		UserID:     userID,
+		Content:    content,
+	}
+	if err := s.db.Create(comment).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "评论失败")
+	}
+	return &RecallCommentItem{
+		ID:        comment.ID,
+		UserID:    comment.UserID,
+		Content:   comment.Content,
+		CreatedAt: comment.CreatedAt,
+		UpdatedAt: comment.UpdatedAt,
+	}, nil
+}
+
+// ListComments 返回评论分页。
+func (s *RecallService) ListComments(questionID uint64, page, size int) (*RecallCommentPage, error) {
+	if questionID == 0 {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "question_id 不能为空")
+	}
+	if page < 1 {
+		page = 1
+	}
+	if size < 1 || size > 100 {
+		size = 10
+	}
+
+	var total int64
+	if err := s.db.Model(&models.RecallQuestionComment{}).Where("question_id = ?", questionID).Count(&total).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "统计评论失败")
+	}
+
+	var rows []models.RecallQuestionComment
+	if err := s.db.Where("question_id = ?", questionID).
+		Order("id desc").
+		Limit(size).
+		Offset((page - 1) * size).
+		Find(&rows).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "查询评论失败")
+	}
+
+	items := make([]RecallCommentItem, 0, len(rows))
+	for i := range rows {
+		items = append(items, RecallCommentItem{
+			ID:        rows[i].ID,
+			UserID:    rows[i].UserID,
+			Content:   rows[i].Content,
+			CreatedAt: rows[i].CreatedAt,
+			UpdatedAt: rows[i].UpdatedAt,
+		})
+	}
+
+	return &RecallCommentPage{
+		Total: int(total),
+		Page:  page,
+		Size:  size,
+		Items: items,
+	}, nil
+}
+
+func encodeRecallOptions(options []models.RecallQuestionOption) (datatypes.JSON, error) {
+	if options == nil {
+		return datatypes.JSON([]byte("[]")), nil
+	}
+	data, err := json.Marshal(options)
+	return datatypes.JSON(data), err
+}
+
+func decodeRecallOptions(data datatypes.JSON) ([]models.RecallQuestionOption, error) {
+	if len(data) == 0 {
+		return []models.RecallQuestionOption{}, nil
+	}
+	var options []models.RecallQuestionOption
+	if err := json.Unmarshal(data, &options); err != nil {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "options 解析失败")
+	}
+	if options == nil {
+		options = []models.RecallQuestionOption{}
+	}
+	return options, nil
+}
+
+func toRecallQuestionView(question *models.RecallQuestion) (*RecallQuestionView, error) {
+	options, err := decodeRecallOptions(question.OptionsJSON)
+	if err != nil {
+		return nil, err
+	}
+	return &RecallQuestionView{
+		ID:           question.ID,
+		PaperID:      question.PaperID,
+		QuestionType: question.QuestionType,
+		Sequence:     question.Sequence,
+		Content:      question.Content,
+		Answer:       question.Answer,
+		Options:      options,
+		SourceUserID: question.SourceUserID,
+		SupportCount: question.SupportCount,
+		LastEditorID: question.LastEditorID,
+		CreatedAt:    question.CreatedAt,
+		UpdatedAt:    question.UpdatedAt,
+	}, nil
+}

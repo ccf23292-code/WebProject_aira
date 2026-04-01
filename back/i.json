@@ -1,0 +1,150 @@
+{
+  "auth_module": {
+    "POST /api/auth/login": {
+      "code": 200,
+      "message": "success",
+      "data": {
+        "userId": "u-00000001",
+        "displayName": "student1",
+        "accessToken": "uuid-string-xxxx",
+        "refreshToken": "uuid-string-yyyy",
+        "roles": [
+          "student"
+        ],
+        "expiresIn": 1800
+      }
+    },
+    "POST /api/auth/register": {
+      "code": 201,
+      "message": "success",
+      "data": {
+        "userId": "u-00000002",
+        "displayName": "new_user",
+        "accessToken": "uuid-string-xxxx",
+        "refreshToken": "uuid-string-yyyy",
+        "roles": [
+          "student"
+        ],
+        "expiresIn": 1800,
+        "onboardingTasks": [
+          "complete_profile",
+          "bind_courses"
+        ]
+      }
+    },
+    "POST /api/auth/logout": {
+      "code": 200,
+      "message": "success",
+      "data": {
+        "success": true,
+        "message": "logout successful"
+      }
+    }
+  },
+  "browse_module": {
+    "GET /api/courses": {
+      "code": 200,
+      "message": "success",
+      "data": [
+        {
+          "id": "course-101",
+          "name": "高等数学",
+          "description": "2026春夏学期高等数学课程资料"
+        }
+      ]
+    },
+    "GET /api/courses/{course_id}/papers": {
+      "code": 200,
+      "message": "success",
+      "data": [
+        {
+          "id": 1,
+          "course_id": "course-101",
+          "name": "2026-spring-summer 期末卷",
+          "created_at": "2026-06-20T10:00:00Z"
+        }
+      ]
+    },
+    "GET /api/papers/{paper_id}/problems": {
+      "code": 200,
+      "message": "success",
+      "data": [
+        {
+          "id": 1001,
+          "testpaper_id": 1,
+          "order": 1,
+          "test": "函数 f(x) = x^2 的导数是？",
+          "options": [
+            {
+              "option": "A",
+              "text": "x"
+            },
+            {
+              "option": "B",
+              "text": "2x"
+            }
+          ],
+          "answer": "B"
+        }
+      ]
+    }
+  },
+  "favorite_module": {
+    "GET /api/favorites": {
+      "code": 200,
+      "message": "success",
+      "data": {
+        "total": 15,
+        "page": 1,
+        "size": 10,
+        "items": [
+          {
+            "favorite_id": 55,
+            "problem_id": 1001,
+            "added_at": "2026-03-16T12:00:00Z",
+            "problem_details": {
+              "testpaper_name": "2026-spring-summer 期末卷",
+              "order": 1,
+              "test": "函数 f(x) = x^2 的导数是？"
+            }
+          }
+        ]
+      }
+    },
+    "POST /api/favorites": {
+      "code": 200,
+      "message": "收藏成功",
+      "data": null
+    },
+    "DELETE /api/favorites/{problem_id}": {
+      "code": 200,
+      "message": "取消收藏成功",
+      "data": null
+    }
+  },
+  "admin_module": {
+    "POST /api/admin/papers": {
+      "code": 200,
+      "message": "上传成功",
+      "data": {
+        "paper_id": 2,
+        "inserted_problems_count": 20
+      }
+    },
+    "PUT /api/admin/papers/{paper_id}": {
+      "code": 200,
+      "message": "试卷信息修改成功",
+      "data": null
+    },
+    "PUT /api/admin/problems/{problem_id}": {
+      "code": 200,
+      "message": "题目修改成功",
+      "data": null
+    },
+    "DELETE /api/admin/papers/{paper_id}": {
+      "code": 200,
+      "message": "试卷删除成功",
+      "data": null
+    }
+  }
+}

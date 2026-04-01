@@ -1,0 +1,19 @@
+# ============================================
+# 使用方式：
+#   启动：docker compose up --build
+#   停止：docker compose down
+#   前端地址：http://localhost:3000
+#
+# 如果后端不在 localhost:3001，改下面的 NEXT_PUBLIC_API_URL 然后重新 build：
+#   docker compose up --build
+# ============================================
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:3001/api
+    ports:
+      - "3000:3000"

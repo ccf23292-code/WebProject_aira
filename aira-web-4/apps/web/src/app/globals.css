@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
+
+.code-editor {
+  @apply font-mono text-sm leading-relaxed;
+  tab-size: 4;
+}
+
+.status-accepted { @apply text-green-600 bg-green-50; }
+.status-wrong    { @apply text-red-600 bg-red-50; }
+.status-pending  { @apply text-yellow-600 bg-yellow-50; }
+.status-error    { @apply text-orange-600 bg-orange-50; }

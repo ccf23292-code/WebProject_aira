@@ -1,8 +1,0 @@
-{
-  "name": "@packages/config",
-  "version": "1.0.0",
-  "description": "共享配置",
-  "scripts": {
-    "build": "echo 'No build needed for config'"
-  }
-}
