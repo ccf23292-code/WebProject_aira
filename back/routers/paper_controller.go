@@ -12,8 +12,8 @@ import (
 
 // PaperController 处理课程 / 试卷 / 题目的浏览请求。
 type PaperController struct {
-	service     *services.PaperService
-	courseSvc   *services.CourseService
+	service   *services.PaperService
+	courseSvc *services.CourseService
 }
 
 // NewPaperController 创建 PaperController。
@@ -56,6 +56,44 @@ func (ctl *PaperController) GetCourse(c *gin.Context) {
 		return
 	}
 	utils.JSONSuccess(c, http.StatusOK, course)
+}
+
+// GetCourseCommnts 返回课程评价列表。
+// GET /api/courses/:course_id/comments
+func (ctl *PaperController) GetCourseComments(c *gin.Context) {
+	courseID := c.Param("course_id")
+	comments, err := ctl.courseSvc.GetCourseComments(courseID)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, comments)
+}
+
+// GetTeacherComments 返回教师评价列表。
+// GET /api/courses/:course_id/teachers/:teacher_id/comments
+func (ctl *PaperController) GetTeacherComments(c *gin.Context) {
+	courseID := c.Param("course_id")
+	teacherID := c.Param("teacher_id")
+	comments, err := ctl.courseSvc.GetTeacherComments(courseID, teacherID)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, comments)
+}
+
+// GetGradingStandards 返回评分标准详情。
+// GET /api/courses/:course_id/teachers/:teacher_id/grading
+func (ctl *PaperController) GetGradingStandards(c *gin.Context) {
+	courseID := c.Param("course_id")
+	teacherID := c.Param("teacher_id")
+	standard, err := ctl.courseSvc.GetGradingStandards(courseID, teacherID)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, standard)
 }
 
 // ListPapers 返回指定课程下的试卷列表。

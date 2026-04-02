@@ -19,6 +19,59 @@ func NewCourseService(db *gorm.DB) *CourseService {
 	return &CourseService{db: db}
 }
 
+// GetCourseComments 获取某门课程的所有课程评价。
+func (s *CourseService) GetCourseComments(courseID string) ([]models.CourseComment, error) {
+	courseID = strings.TrimSpace(courseID)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+
+	db := s.db.Model(&models.CourseComment{}).Where("course_id = ?", courseID)
+	var comments []models.CourseComment
+	if err := db.Order("id DESC").Find(&comments).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load course comments")
+	}
+	return comments, nil
+}
+
+// GetTeacherComments 获取某门课程某教师的所有教师评价。
+func (s *CourseService) GetTeacherComments(courseID, teacherID string) ([]models.TeacherComment, error) {
+	courseID = strings.TrimSpace(courseID)
+	teacherID = strings.TrimSpace(teacherID)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+	if teacherID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "teacher_id 不能为空")
+	}
+
+	db := s.db.Model(&models.TeacherComment{}).Where("course_id = ? AND teacher_id = ?", courseID, teacherID)
+	var comments []models.TeacherComment
+	if err := db.Order("id DESC").Find(&comments).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load teacher comments")
+	}
+	return comments, nil
+}
+
+// GetGradingStandards 获取某门课程某教师的评分标准。
+func (s *CourseService) GetGradingStandards(courseID, teacherID string) ([]models.GradingStandard, error) {
+	courseID = strings.TrimSpace(courseID)
+	teacherID = strings.TrimSpace(teacherID)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+	if teacherID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "teacher_id 不能为空")
+	}
+
+	db := s.db.Model(&models.GradingStandard{}).Where("course_id = ? AND teacher_id = ?", courseID, teacherID)
+	var standards []models.GradingStandard
+	if err := db.Order("id DESC").Find(&standards).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load grading standards")
+	}
+	return standards, nil
+}
+
 // ListCourses 支持按课程名称或课程代码搜索。
 func (s *CourseService) ListCourses(query string) ([]models.Course, error) {
 	db := s.db.Model(&models.Course{})
