@@ -10,6 +10,7 @@ node_modules/
 next-env.d.ts
 **/next-env.d.ts
 
-back/storage/
+back/storage/*
+!back/storage/.gitkeep
 
 *.tsbuildinfo

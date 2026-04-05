@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -13,11 +14,11 @@ import (
 )
 
 func main() {
-	// ── 初始化数据库与回忆卷服务 ──────────────────
 	db, err := services.InitPostgres()
 	if err != nil {
 		log.Fatalf("database init failed: %v", err)
 	}
+
 	if err := db.AutoMigrate(
 		&models.User{},
 		&models.UserProfile{},
@@ -38,7 +39,7 @@ func main() {
 	); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
-	// ── 初始化服务层 ──────────────────────────────
+
 	authService := services.NewAuthService(db)
 	paperService := services.NewPaperService(db)
 	courseService := services.NewCourseService(db)
@@ -52,7 +53,6 @@ func main() {
 		log.Fatalf("database migrate failed: %v", err)
 	}
 
-	// ── 初始化控制器 ──────────────────────────────
 	authCtl := routers.NewAuthController(authService)
 	paperCtl := routers.NewPaperController(paperService, courseService)
 	courseCtl := routers.NewCourseController(courseService)
@@ -63,12 +63,16 @@ func main() {
 	wrongCtl := routers.NewWrongBookController(wrongBookService)
 	profileCtl := routers.NewProfileController(profileService)
 	explanationCtl := routers.NewProblemExplanationController(explanationService)
+	fileCtl := routers.NewFileController()
 
-	// ── 创建 Gin 引擎 ─────────────────────────────
+	if err := os.MkdirAll("storage", 0o755); err != nil {
+		log.Fatalf("create storage dir failed: %v", err)
+	}
+
 	r := gin.Default()
+	r.MaxMultipartMemory = 20 << 20
 	r.Static("/static", "./storage")
 
-	// 跨域配置（开发环境允许所有来源）
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -77,55 +81,47 @@ func main() {
 		AllowCredentials: false,
 	}))
 
-	// ── 路由注册 ──────────────────────────────────
 	api := r.Group("/api")
 	{
-		// 1. auth_module —— 无需鉴权
 		authGroup := api.Group("/auth")
 		authCtl.RegisterRoutes(authGroup)
 
-		// 2. browse_module —— 公开访问
 		paperCtl.RegisterRoutes(api)
 		api.Use(middlewares.TryAuth(authService))
 		explanationCtl.RegisterPublicRoutes(api)
 
-		// 3. favorite_module —— 需要登录
 		favGroup := api.Group("/favorites", middlewares.AuthRequired(authService))
 		favoriteCtl.RegisterRoutes(favGroup)
 
-		// 4. admin_module —— 需要登录 + 管理员权限
-		adminGroup := api.Group("/admin",
+		adminGroup := api.Group(
+			"/admin",
 			middlewares.AuthRequired(authService),
 			middlewares.AdminRequired(),
 		)
 		adminCtl.RegisterRoutes(adminGroup)
 
-		// 5. recall_module —— 回忆卷相关（需登录）
 		recallGroup := api.Group("/recall", middlewares.AuthRequired(authService))
 		recallCtl.RegisterRoutes(recallGroup)
 
-		// 6. answer_module —— 做题记录（需登录）
 		answerGroup := api.Group("/answers", middlewares.AuthRequired(authService))
 		answerCtl.RegisterRoutes(answerGroup)
 
-		// 7. wrongbook_module —— 错题本（需登录）
 		wrongGroup := api.Group("/wrongbook", middlewares.AuthRequired(authService))
 		wrongCtl.RegisterRoutes(wrongGroup)
 
-		// 8. profile_module —— 用户资料（需登录）
 		profileGroup := api.Group("/profile", middlewares.AuthRequired(authService))
 		profileCtl.RegisterRoutes(profileGroup)
 
-		// course_module -- course comments (auth required)
+		fileGroup := api.Group("/files", middlewares.AuthRequired(authService))
+		fileCtl.RegisterRoutes(fileGroup)
+
 		courseGroup := api.Group("", middlewares.AuthRequired(authService))
 		courseCtl.RegisterRoutes(courseGroup)
 
-		// 9. explanation_module —— 题解（公开读，登录后写/投票）
 		explanationGroup := api.Group("", middlewares.AuthRequired(authService))
 		explanationCtl.RegisterProtectedRoutes(explanationGroup)
 	}
 
-	// ── 启动服务 ──────────────────────────────────
 	log.Println("AIRAWeb server starting on :3001 ...")
 	if err := r.Run(":3001"); err != nil {
 		log.Fatalf("server failed to start: %v", err)
