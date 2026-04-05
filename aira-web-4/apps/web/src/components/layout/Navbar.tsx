@@ -54,7 +54,9 @@ export function Navbar() {
         {/* 导航链接 */}
         <div className="flex items-center gap-1">
           {links.map((link) => {
-            const active = pathname.startsWith(link.href);
+            const active = link.href === '/'
+              ? pathname === '/'
+              : pathname === link.href || pathname.startsWith(`${link.href}/`);
             return (
               <Link key={link.href} href={link.href}
                 className={`rounded-md px-3 py-1.5 text-sm transition-colors ${

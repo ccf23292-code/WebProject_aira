@@ -8,5 +8,12 @@
     "lint": "npm run lint --workspace=apps/web",
     "typecheck": "npm run typecheck --workspaces"
   },
-  "workspaces": ["packages/*", "apps/*"]
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0"
+  }
 }

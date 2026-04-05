@@ -2,6 +2,7 @@ package services
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"gorm.io/gorm"
@@ -12,6 +13,23 @@ import (
 // CourseService 提供课程查询能力。
 type CourseService struct {
 	db *gorm.DB
+}
+
+// AddCourseCommentRequest is the payload for adding a course comment.
+type AddCourseCommentRequest struct {
+	Comment string `json:"comment" binding:"required"`
+}
+
+// AddTeacherCommentRequest is the payload for adding a teacher comment.
+type AddTeacherCommentRequest struct {
+	Comment string `json:"comment" binding:"required"`
+}
+
+// AddGradingStandardRequest is the payload for adding a grading standard.
+type AddGradingStandardRequest struct {
+	Description string `json:"description"`
+	Standard    string `json:"standard"`
+	StandardImg string `json:"standard_img"`
 }
 
 // NewCourseService 创建 CourseService。
@@ -103,4 +121,83 @@ func (s *CourseService) GetCourse(courseID string) (*models.Course, error) {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load course")
 	}
 	return &course, nil
+}
+
+// AddCourseComment creates a course comment.
+func (s *CourseService) AddCourseComment(courseID string, userID models.PrimaryKey, comment string) (*models.CourseComment, error) {
+	courseID = strings.TrimSpace(courseID)
+	comment = strings.TrimSpace(comment)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+	if comment == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "comment 不能为空")
+	}
+
+	item := models.CourseComment{
+		CourseID: courseID,
+		UserID:   strconv.FormatUint(uint64(userID), 10),
+		Comment:  comment,
+	}
+	if err := s.db.Create(&item).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create course comment")
+	}
+	return &item, nil
+}
+
+// AddTeacherComment creates a teacher comment.
+func (s *CourseService) AddTeacherComment(courseID, teacherID string, userID models.PrimaryKey, comment string) (*models.TeacherComment, error) {
+	courseID = strings.TrimSpace(courseID)
+	teacherID = strings.TrimSpace(teacherID)
+	comment = strings.TrimSpace(comment)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+	if teacherID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "teacher_id 不能为空")
+	}
+	if comment == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "comment 不能为空")
+	}
+
+	item := models.TeacherComment{
+		CourseID:  courseID,
+		TeacherID: teacherID,
+		UserID:    strconv.FormatUint(uint64(userID), 10),
+		Comment:   comment,
+	}
+	if err := s.db.Create(&item).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create teacher comment")
+	}
+	return &item, nil
+}
+
+// AddGradingStandard creates a grading standard.
+func (s *CourseService) AddGradingStandard(courseID, teacherID string, req AddGradingStandardRequest) (*models.GradingStandard, error) {
+	courseID = strings.TrimSpace(courseID)
+	teacherID = strings.TrimSpace(teacherID)
+	description := strings.TrimSpace(req.Description)
+	standard := strings.TrimSpace(req.Standard)
+	standardImg := strings.TrimSpace(req.StandardImg)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+	if teacherID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "teacher_id 不能为空")
+	}
+	if description == "" && standard == "" && standardImg == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "评分标准不能为空")
+	}
+
+	item := models.GradingStandard{
+		CourseID:    courseID,
+		TeacherID:   teacherID,
+		Description: description,
+		Standard:    standard,
+		StandardImg: standardImg,
+	}
+	if err := s.db.Create(&item).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create grading standard")
+	}
+	return &item, nil
 }

@@ -80,6 +80,33 @@ export interface Course {
   description: string;
 }
 
+export interface CourseComment {
+  id: string | number;
+  course_id?: string;
+  user_id?: string | number;
+  user_name?: string;
+  comment: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface TeacherComment extends CourseComment {
+  teacher_id: string;
+  teacher_name?: string;
+}
+
+export interface GradingStandard {
+  id: string | number;
+  course_id?: string;
+  teacher_id: string;
+  teacher_name?: string;
+  description?: string;
+  standard?: string;
+  standard_img?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 /** GET /api/courses/{course_id}/papers — 试卷 */
 export interface Paper {
   id: number;

@@ -26,7 +26,7 @@ export default function HomePage() {
 
   const handleSearch = () => {
     const trimmed = query.trim();
-    router.push(trimmed ? `/courses?q=${encodeURIComponent(trimmed)}` : '/courses');
+    router.push(trimmed ? `/courses?query=${encodeURIComponent(trimmed)}` : '/courses');
   };
 
   return (

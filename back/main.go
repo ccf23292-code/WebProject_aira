@@ -24,6 +24,10 @@ func main() {
 		&models.AuthSession{},
 		&models.EmailVerification{},
 		&models.Course{},
+		&models.Teacher{},
+		&models.GradingStandard{},
+		&models.TeacherComment{},
+		&models.CourseComment{},
 		&models.TestPaper{},
 		&models.Problem{},
 		&models.Favorite{},
@@ -51,6 +55,7 @@ func main() {
 	// ── 初始化控制器 ──────────────────────────────
 	authCtl := routers.NewAuthController(authService)
 	paperCtl := routers.NewPaperController(paperService, courseService)
+	courseCtl := routers.NewCourseController(courseService)
 	favoriteCtl := routers.NewFavoriteController(favoriteService)
 	adminCtl := routers.NewAdminController(paperService)
 	recallCtl := routers.NewRecallController(recallService)
@@ -110,6 +115,10 @@ func main() {
 		// 8. profile_module —— 用户资料（需登录）
 		profileGroup := api.Group("/profile", middlewares.AuthRequired(authService))
 		profileCtl.RegisterRoutes(profileGroup)
+
+		// course_module -- course comments (auth required)
+		courseGroup := api.Group("", middlewares.AuthRequired(authService))
+		courseCtl.RegisterRoutes(courseGroup)
 
 		// 9. explanation_module —— 题解（公开读，登录后写/投票）
 		explanationGroup := api.Group("", middlewares.AuthRequired(authService))

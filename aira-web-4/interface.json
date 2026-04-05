@@ -1,0 +1,148 @@
+{
+  "api_documentation": [
+    {
+      "name": "ListCourses",
+      "method": "GET",
+      "endpoint": "/courses",
+      "description": "按课程名称、代码或ID搜索课程列表。",
+      "parameters": {
+        "query": {
+          "type": "string",
+          "in": "query",
+          "description": "搜索关键字，匹配 name, code 或 id。"
+        }
+      },
+      "response": "返回 []models.Course，按名称升序排列。"
+    },
+    {
+      "name": "GetCourse",
+      "method": "GET",
+      "endpoint": "/courses/{course_id}",
+      "description": "通过 ID 或课程代码获取课程详情。",
+      "parameters": {
+        "course_id": {
+          "type": "string",
+          "in": "path",
+          "required": true,
+          "description": "课程唯一标识或代码。"
+        }
+      },
+      "response": "返回 *models.Course。"
+    },
+    {
+      "name": "GetCourseComments",
+      "method": "GET",
+      "endpoint": "/courses/{course_id}/comments",
+      "description": "获取指定课程的所有评价。",
+      "parameters": {
+        "course_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        }
+      },
+      "response": "返回 []models.CourseComment，按 ID 倒序排列。"
+    },
+    {
+      "name": "GetTeacherComments",
+      "method": "GET",
+      "endpoint": "/courses/{course_id}/teachers/{teacher_id}/comments",
+      "description": "获取某门课下指定教师的评价。",
+      "parameters": {
+        "course_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        },
+        "teacher_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        }
+      },
+      "response": "返回 []models.TeacherComment，按 ID 倒序排列。"
+    },
+    {
+      "name": "GetGradingStandards",
+      "method": "GET",
+      "endpoint": "/courses/{course_id}/teachers/{teacher_id}/grading-standards",
+      "description": "获取某门课下指定教师的评分标准。",
+      "parameters": {
+        "course_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        },
+        "teacher_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        }
+      },
+      "response": "返回 []models.GradingStandard，按 ID 倒序排列。"
+    },
+    {
+      "name": "AddCourseComment",
+      "method": "POST",
+      "endpoint": "/courses/{course_id}/comments",
+      "description": "创建课程评价。",
+      "parameters": {
+        "course_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        },
+        "body": {
+          "comment": "string (required)"
+        }
+      },
+      "response": "返回创建成功的 *models.CourseComment。"
+    },
+    {
+      "name": "AddTeacherComment",
+      "method": "POST",
+      "endpoint": "/courses/{course_id}/teachers/{teacher_id}/comments",
+      "description": "创建教师评价。",
+      "parameters": {
+        "course_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        },
+        "teacher_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        },
+        "body": {
+          "comment": "string (required)"
+        }
+      },
+      "response": "返回创建成功的 *models.TeacherComment。"
+    },
+    {
+      "name": "AddGradingStandard",
+      "method": "POST",
+      "endpoint": "/courses/{course_id}/teachers/{teacher_id}/grading-standards",
+      "description": "创建评分标准。注意：description, standard, standard_img 不能同时为空。",
+      "parameters": {
+        "course_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        },
+        "teacher_id": {
+          "type": "string",
+          "in": "path",
+          "required": true
+        },
+        "body": {
+          "description": "string",
+          "standard": "string",
+          "standard_img": "string"
+        }
+      },
+      "response": "返回创建成功的 *models.GradingStandard。"
+    }
+  ]
+}
