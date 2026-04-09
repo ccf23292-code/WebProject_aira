@@ -37,6 +37,8 @@ export function CourseCommunityPanel({
   const [newTeacherName, setNewTeacherName] = useState('');
   const [newTeacherTitle, setNewTeacherTitle] = useState('');
   const [teacherFormError, setTeacherFormError] = useState('');
+  const [teacherFormSuccess, setTeacherFormSuccess] = useState('');
+  const [gradingSuccess, setGradingSuccess] = useState('');
   const teachersQuery = useFetch(
     () => getTeacherDirectory(courseId),
     [courseId, teacherDirectoryVersion],
@@ -93,17 +95,17 @@ export function CourseCommunityPanel({
     }
 
     try {
-      const createdTeacher = await addTeacherDirectoryEntry(courseId, {
+      await addTeacherDirectoryEntry(courseId, {
         name: teacherName,
         title: newTeacherTitle.trim() || undefined,
       });
-      setSelectedTeacherId(createdTeacher.id);
       setTeacherFormError('');
+      setTeacherFormSuccess('教师信息已提交管理员审核，审核通过后会出现在教师目录。');
       setNewTeacherName('');
       setNewTeacherTitle('');
-      setTeacherDirectoryVersion((value) => value + 1);
     } catch (error) {
       setTeacherFormError(error instanceof Error ? error.message : '保存教师失败，请稍后重试。');
+      setTeacherFormSuccess('');
     }
   };
 
@@ -160,7 +162,7 @@ export function CourseCommunityPanel({
         <div className="space-y-6">
           <SectionCard
             title="教师讨论区"
-            subtitle="教师目录已接入后端，新增教师后会直接成为当前课程的公共目录。"
+            subtitle="教师目录只展示已通过审核的信息。普通用户新增教师后，会先进入管理员审核。"
           >
             <div className="space-y-4">
               {teachersQuery.error ? (
@@ -217,9 +219,8 @@ export function CourseCommunityPanel({
                 </div>
               </form>
 
-              {teacherFormError ? (
-                <p className="text-sm text-red-600">{teacherFormError}</p>
-              ) : null}
+              {teacherFormError ? <p className="text-sm text-red-600">{teacherFormError}</p> : null}
+              {teacherFormSuccess ? <p className="text-sm text-emerald-700">{teacherFormSuccess}</p> : null}
 
               {selectedTeacher ? (
                 <div className="rounded-2xl border border-gray-200 bg-white p-4">
@@ -278,7 +279,7 @@ export function CourseCommunityPanel({
 
           <SectionCard
             title="评分标准"
-            subtitle={selectedTeacher ? `当前查看 ${selectedTeacher.name} 的给分信息。` : '选择教师后会在这里显示评分标准。'}
+            subtitle={selectedTeacher ? `当前查看 ${selectedTeacher.name} 的给分信息。新提交内容需要管理员审核后才会公开。` : '选择教师后会在这里显示评分标准。'}
           >
             {selectedTeacher ? (
               <>
@@ -286,9 +287,12 @@ export function CourseCommunityPanel({
                   teacherName={selectedTeacher.name}
                   onSubmit={async (payload) => {
                     await addGradingStandard(courseId, selectedTeacher.id, payload);
-                    setGradingStandardVersion((value) => value + 1);
+                    setGradingSuccess('评分标准已提交管理员审核，审核通过后会公开展示。');
                   }}
                 />
+                {gradingSuccess ? (
+                  <p className="text-sm text-emerald-700">{gradingSuccess}</p>
+                ) : null}
 
                 {gradingStandardsQuery.error ? (
                   <ErrorState

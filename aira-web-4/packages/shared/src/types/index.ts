@@ -101,6 +101,36 @@ export interface ReviewCourseDescriptionDto {
   review_note?: string;
 }
 
+export interface TeacherSubmission {
+  id: number;
+  course_id: string;
+  user_id: string;
+  name: string;
+  title?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewed_by?: string;
+  review_note?: string;
+  published_teacher_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GradingStandardSubmission {
+  id: number;
+  course_id: string;
+  teacher_id: string;
+  user_id: string;
+  description?: string;
+  standard?: string;
+  standard_img?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewed_by?: string;
+  review_note?: string;
+  published_standard_id?: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface TeacherDirectoryEntry {
   id: string;
   course_id: string;

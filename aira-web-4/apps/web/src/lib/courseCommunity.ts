@@ -2,8 +2,10 @@ import type {
   AddTeacherDto,
   CourseComment,
   GradingStandard,
+  GradingStandardSubmission,
   TeacherComment,
   TeacherDirectoryEntry,
+  TeacherSubmission,
 } from '@aira/shared';
 import { api } from './api';
 
@@ -115,12 +117,11 @@ export async function getTeacherDirectory(courseId: string) {
 }
 
 export async function addTeacherDirectoryEntry(courseId: string, teacher: AddTeacherDto) {
-  const response = await api.post<unknown>(`/courses/${encodeURIComponent(courseId)}/teachers`, {
+  return api.post<TeacherSubmission>(`/courses/${encodeURIComponent(courseId)}/teachers`, {
     id: teacher.id?.trim() || undefined,
     name: teacher.name.trim(),
     title: teacher.title?.trim() || undefined,
   });
-  return normalizeTeacher(response, courseId);
 }
 
 export async function getCourseComments(courseId: string) {
@@ -176,7 +177,7 @@ export async function addGradingStandard(
   teacherId: string,
   input: AddGradingStandardInput,
 ) {
-  const response = await api.post<unknown>(
+  return api.post<GradingStandardSubmission>(
     `/courses/${encodeURIComponent(courseId)}/teachers/${encodeURIComponent(teacherId)}/grading-standards`,
     {
       description: input.description?.trim(),
@@ -184,5 +185,4 @@ export async function addGradingStandard(
       standard_img: input.standard_img?.trim(),
     },
   );
-  return normalizeGradingStandard(response, courseId, teacherId);
 }
