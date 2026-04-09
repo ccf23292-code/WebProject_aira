@@ -28,6 +28,7 @@ func main() {
 		&models.GradingStandard{},
 		&models.TeacherComment{},
 		&models.CourseComment{},
+		&models.CourseDescriptionSubmission{},
 		&models.TestPaper{},
 		&models.Problem{},
 		&models.Favorite{},
@@ -57,7 +58,7 @@ func main() {
 	paperCtl := routers.NewPaperController(paperService, courseService)
 	courseCtl := routers.NewCourseController(courseService)
 	favoriteCtl := routers.NewFavoriteController(favoriteService)
-	adminCtl := routers.NewAdminController(paperService)
+	adminCtl := routers.NewAdminController(paperService, courseService)
 	recallCtl := routers.NewRecallController(recallService)
 	answerCtl := routers.NewAnswerController(answerService)
 	wrongCtl := routers.NewWrongBookController(wrongBookService)

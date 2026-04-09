@@ -28,6 +28,7 @@ func newCourseTestDB(t *testing.T) *gorm.DB {
 		&models.CourseComment{},
 		&models.TeacherComment{},
 		&models.GradingStandard{},
+		&models.CourseDescriptionSubmission{},
 	); err != nil {
 		t.Fatalf("auto migrate: %v", err)
 	}
@@ -98,5 +99,73 @@ func TestCommentsAndGradingReturnDisplayFields(t *testing.T) {
 	}
 	if standards[0].CreatedAt.IsZero() {
 		t.Fatalf("expected grading standard created_at to be set, got %#v", standards[0])
+	}
+}
+
+func TestSubmitCourseDescriptionCreatesPendingSubmission(t *testing.T) {
+	db := newCourseTestDB(t)
+	service := NewCourseService(db)
+
+	if err := db.Create(&models.Course{ID: "CS1018F", Code: "CS1018F", Name: "数据结构基础"}).Error; err != nil {
+		t.Fatalf("create course: %v", err)
+	}
+
+	item, err := service.SubmitCourseDescription("CS1018F", 8, "这门课重点在树和图。")
+	if err != nil {
+		t.Fatalf("submit course description: %v", err)
+	}
+
+	if item.Status != models.CourseDescriptionSubmissionPending {
+		t.Fatalf("expected pending status, got %#v", item)
+	}
+	if item.Content != "这门课重点在树和图。" {
+		t.Fatalf("unexpected submission content: %#v", item)
+	}
+
+	items, err := service.ListMyCourseDescriptionSubmissions("CS1018F", 8)
+	if err != nil {
+		t.Fatalf("list my submissions: %v", err)
+	}
+	if len(items) != 1 {
+		t.Fatalf("expected one submission, got %#v", items)
+	}
+}
+
+func TestApproveCourseDescriptionSubmissionPublishesDescription(t *testing.T) {
+	db := newCourseTestDB(t)
+	service := NewCourseService(db)
+
+	if err := db.Create(&models.Course{
+		ID:          "CS1018F",
+		Code:        "CS1018F",
+		Name:        "数据结构基础",
+		Description: "旧简介",
+	}).Error; err != nil {
+		t.Fatalf("create course: %v", err)
+	}
+
+	item, err := service.SubmitCourseDescription("CS1018F", 8, "新的课程简介")
+	if err != nil {
+		t.Fatalf("submit course description: %v", err)
+	}
+
+	reviewed, err := service.ReviewCourseDescriptionSubmission(uint64(item.ID), 1, ReviewCourseDescriptionRequest{
+		Action:     "approve",
+		ReviewNote: "内容准确",
+	})
+	if err != nil {
+		t.Fatalf("review submission: %v", err)
+	}
+
+	if reviewed.Status != models.CourseDescriptionSubmissionApproved {
+		t.Fatalf("expected approved status, got %#v", reviewed)
+	}
+
+	course, err := service.GetCourse("CS1018F")
+	if err != nil {
+		t.Fatalf("get course: %v", err)
+	}
+	if course.Description != "新的课程简介" {
+		t.Fatalf("expected course description to be published, got %#v", course)
 	}
 }

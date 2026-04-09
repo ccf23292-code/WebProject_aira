@@ -13,6 +13,25 @@ type Course struct {
 	Description string  `gorm:"type:text"          json:"description"`
 }
 
+const (
+	CourseDescriptionSubmissionPending  = "pending"
+	CourseDescriptionSubmissionApproved = "approved"
+	CourseDescriptionSubmissionRejected = "rejected"
+)
+
+// CourseDescriptionSubmission stores user-submitted description proposals.
+type CourseDescriptionSubmission struct {
+	ID         uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	CourseID   string    `gorm:"size:128;index" json:"course_id"`
+	UserID     string    `gorm:"size:128;index" json:"user_id"`
+	Content    string    `gorm:"type:text" json:"content"`
+	Status     string    `gorm:"size:32;index" json:"status"`
+	ReviewedBy string    `gorm:"size:128" json:"reviewed_by,omitempty"`
+	ReviewNote string    `gorm:"type:text" json:"review_note,omitempty"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
 // Teacher 对应数据库 teachers 表，表示一位教师。
 type Teacher struct {
 	ID        string    `gorm:"primaryKey;size:128" json:"id"`        // jsdm

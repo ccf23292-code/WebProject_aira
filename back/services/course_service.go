@@ -39,9 +39,120 @@ type AddGradingStandardRequest struct {
 	StandardImg string `json:"standard_img"`
 }
 
+// SubmitCourseDescriptionRequest is the payload for a user suggestion.
+type SubmitCourseDescriptionRequest struct {
+	Content string `json:"content" binding:"required"`
+}
+
+// ReviewCourseDescriptionRequest is the payload for admin review.
+type ReviewCourseDescriptionRequest struct {
+	Action     string `json:"action" binding:"required"`
+	ReviewNote string `json:"review_note"`
+}
+
 // NewCourseService 创建 CourseService。
 func NewCourseService(db *gorm.DB) *CourseService {
 	return &CourseService{db: db}
+}
+
+// SubmitCourseDescription stores a pending description proposal.
+func (s *CourseService) SubmitCourseDescription(courseID string, userID models.PrimaryKey, content string) (*models.CourseDescriptionSubmission, error) {
+	courseID = strings.TrimSpace(courseID)
+	content = strings.TrimSpace(content)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+	if content == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "content 不能为空")
+	}
+	if _, err := s.GetCourse(courseID); err != nil {
+		return nil, err
+	}
+
+	item := models.CourseDescriptionSubmission{
+		CourseID: courseID,
+		UserID:   strconv.FormatUint(uint64(userID), 10),
+		Content:  content,
+		Status:   models.CourseDescriptionSubmissionPending,
+	}
+	if err := s.db.Create(&item).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create description submission")
+	}
+	return &item, nil
+}
+
+// ListMyCourseDescriptionSubmissions returns the current user's submissions for one course.
+func (s *CourseService) ListMyCourseDescriptionSubmissions(courseID string, userID models.PrimaryKey) ([]models.CourseDescriptionSubmission, error) {
+	courseID = strings.TrimSpace(courseID)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+
+	var items []models.CourseDescriptionSubmission
+	if err := s.db.
+		Where("course_id = ? AND user_id = ?", courseID, strconv.FormatUint(uint64(userID), 10)).
+		Order("id DESC").
+		Find(&items).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load description submissions")
+	}
+	return items, nil
+}
+
+// ListCourseDescriptionSubmissions returns submissions filtered by status for admins.
+func (s *CourseService) ListCourseDescriptionSubmissions(status string) ([]models.CourseDescriptionSubmission, error) {
+	query := s.db.Model(&models.CourseDescriptionSubmission{})
+	status = strings.TrimSpace(status)
+	if status != "" {
+		query = query.Where("status = ?", status)
+	}
+
+	var items []models.CourseDescriptionSubmission
+	if err := query.Order("id DESC").Find(&items).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load description submissions")
+	}
+	return items, nil
+}
+
+// ReviewCourseDescriptionSubmission approves or rejects a pending proposal.
+func (s *CourseService) ReviewCourseDescriptionSubmission(submissionID uint64, reviewerID models.PrimaryKey, req ReviewCourseDescriptionRequest) (*models.CourseDescriptionSubmission, error) {
+	action := strings.ToLower(strings.TrimSpace(req.Action))
+	if action != "approve" && action != "reject" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "action 必须为 approve 或 reject")
+	}
+
+	var item models.CourseDescriptionSubmission
+	if err := s.db.Where("id = ?", submissionID).First(&item).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, newServiceError("not_found", http.StatusNotFound, "description submission not found")
+		}
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load description submission")
+	}
+
+	status := models.CourseDescriptionSubmissionRejected
+	if action == "approve" {
+		status = models.CourseDescriptionSubmissionApproved
+	}
+
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		item.Status = status
+		item.ReviewedBy = strconv.FormatUint(uint64(reviewerID), 10)
+		item.ReviewNote = strings.TrimSpace(req.ReviewNote)
+		if err := tx.Save(&item).Error; err != nil {
+			return err
+		}
+		if action == "approve" {
+			if err := tx.Model(&models.Course{}).
+				Where("id = ?", item.CourseID).
+				Update("description", item.Content).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to review description submission")
+	}
+	return &item, nil
 }
 
 // ListTeachers returns all teachers for one course.

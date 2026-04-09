@@ -24,14 +24,47 @@ func NewCourseController(service *services.CourseService) *CourseController {
 // RegisterRoutes registers course comment endpoints (auth required).
 //
 //	POST /api/courses/:course_id/comments
+//	POST /api/courses/:course_id/description-submissions
+//	GET /api/courses/:course_id/description-submissions/mine
 //	POST /api/courses/:course_id/teachers
 //	POST /api/courses/:course_id/teachers/:teacher_id/comments
 //	POST /api/courses/:course_id/teachers/:teacher_id/grading-standards
 func (ctl *CourseController) RegisterRoutes(group *gin.RouterGroup) {
+	group.POST("/courses/:course_id/description-submissions", ctl.SubmitDescriptionSubmission)
+	group.GET("/courses/:course_id/description-submissions/mine", ctl.ListMyDescriptionSubmissions)
 	group.POST("/courses/:course_id/comments", ctl.AddCourseComment)
 	group.POST("/courses/:course_id/teachers", ctl.AddTeacher)
 	group.POST("/courses/:course_id/teachers/:teacher_id/comments", ctl.AddTeacherComment)
 	group.POST("/courses/:course_id/teachers/:teacher_id/grading-standards", ctl.AddGradingStandard)
+}
+
+// SubmitDescriptionSubmission creates a pending course description proposal.
+func (ctl *CourseController) SubmitDescriptionSubmission(c *gin.Context) {
+	courseID := c.Param("course_id")
+
+	var req services.SubmitCourseDescriptionRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.JSONError(c, http.StatusBadRequest, "invalid_request", "请求体格式不正确", err.Error())
+		return
+	}
+
+	item, err := ctl.service.SubmitCourseDescription(courseID, ctl.currentUserID(c), req.Content)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusCreated, item)
+}
+
+// ListMyDescriptionSubmissions returns the current user's submissions for a course.
+func (ctl *CourseController) ListMyDescriptionSubmissions(c *gin.Context) {
+	courseID := c.Param("course_id")
+	items, err := ctl.service.ListMyCourseDescriptionSubmissions(courseID, ctl.currentUserID(c))
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, items)
 }
 
 // AddCourseComment creates a course comment.
