@@ -24,12 +24,14 @@ func NewCourseController(service *services.CourseService) *CourseController {
 // RegisterRoutes registers course comment endpoints (auth required).
 //
 //	POST /api/courses/:course_id/comments
+//	POST /api/courses/:course_id/teachers
 //	POST /api/courses/:course_id/teachers/:teacher_id/comments
-//	POST /api/courses/:course_id/teachers/:teacher_id/grading
+//	POST /api/courses/:course_id/teachers/:teacher_id/grading-standards
 func (ctl *CourseController) RegisterRoutes(group *gin.RouterGroup) {
 	group.POST("/courses/:course_id/comments", ctl.AddCourseComment)
+	group.POST("/courses/:course_id/teachers", ctl.AddTeacher)
 	group.POST("/courses/:course_id/teachers/:teacher_id/comments", ctl.AddTeacherComment)
-	group.POST("/courses/:course_id/teachers/:teacher_id/grading", ctl.AddGradingStandard)
+	group.POST("/courses/:course_id/teachers/:teacher_id/grading-standards", ctl.AddGradingStandard)
 }
 
 // AddCourseComment creates a course comment.
@@ -48,6 +50,24 @@ func (ctl *CourseController) AddCourseComment(c *gin.Context) {
 		return
 	}
 	utils.JSONSuccess(c, http.StatusCreated, comment)
+}
+
+// AddTeacher creates a teacher entry.
+func (ctl *CourseController) AddTeacher(c *gin.Context) {
+	courseID := c.Param("course_id")
+
+	var req services.AddTeacherRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.JSONError(c, http.StatusBadRequest, "invalid_request", "请求体格式不正确", err.Error())
+		return
+	}
+
+	teacher, err := ctl.service.AddTeacher(courseID, req)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusCreated, teacher)
 }
 
 // AddTeacherComment creates a teacher comment.

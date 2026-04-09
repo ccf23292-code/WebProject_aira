@@ -25,6 +25,13 @@ type AddTeacherCommentRequest struct {
 	Comment string `json:"comment" binding:"required"`
 }
 
+// AddTeacherRequest is the payload for adding a teacher entry.
+type AddTeacherRequest struct {
+	ID    string `json:"id"`
+	Name  string `json:"name" binding:"required"`
+	Title string `json:"title"`
+}
+
 // AddGradingStandardRequest is the payload for adding a grading standard.
 type AddGradingStandardRequest struct {
 	Description string `json:"description"`
@@ -35,6 +42,20 @@ type AddGradingStandardRequest struct {
 // NewCourseService 创建 CourseService。
 func NewCourseService(db *gorm.DB) *CourseService {
 	return &CourseService{db: db}
+}
+
+// ListTeachers returns all teachers for one course.
+func (s *CourseService) ListTeachers(courseID string) ([]models.Teacher, error) {
+	courseID = strings.TrimSpace(courseID)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+
+	var teachers []models.Teacher
+	if err := s.db.Where("course_id = ?", courseID).Order("name ASC").Find(&teachers).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load teachers")
+	}
+	return teachers, nil
 }
 
 // GetCourseComments 获取某门课程的所有课程评价。
@@ -49,6 +70,7 @@ func (s *CourseService) GetCourseComments(courseID string) ([]models.CourseComme
 	if err := db.Order("id DESC").Find(&comments).Error; err != nil {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load course comments")
 	}
+	s.hydrateCourseCommentUsers(comments)
 	return comments, nil
 }
 
@@ -68,6 +90,7 @@ func (s *CourseService) GetTeacherComments(courseID, teacherID string) ([]models
 	if err := db.Order("id DESC").Find(&comments).Error; err != nil {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load teacher comments")
 	}
+	s.hydrateTeacherCommentDisplayFields(comments)
 	return comments, nil
 }
 
@@ -87,6 +110,7 @@ func (s *CourseService) GetGradingStandards(courseID, teacherID string) ([]model
 	if err := db.Order("id DESC").Find(&standards).Error; err != nil {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load grading standards")
 	}
+	s.hydrateGradingTeacherNames(standards)
 	return standards, nil
 }
 
@@ -95,8 +119,13 @@ func (s *CourseService) ListCourses(query string) ([]models.Course, error) {
 	db := s.db.Model(&models.Course{})
 	q := strings.TrimSpace(query)
 	if q != "" {
-		like := "%" + q + "%"
-		db = db.Where("name ILIKE ? OR code ILIKE ? OR id ILIKE ?", like, like, like)
+		like := "%" + strings.ToLower(q) + "%"
+		db = db.Where(
+			"LOWER(name) LIKE ? OR LOWER(code) LIKE ? OR LOWER(id) LIKE ?",
+			like,
+			like,
+			like,
+		)
 	}
 
 	var courses []models.Course
@@ -142,6 +171,38 @@ func (s *CourseService) AddCourseComment(courseID string, userID models.PrimaryK
 	if err := s.db.Create(&item).Error; err != nil {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create course comment")
 	}
+	if name, ok := s.lookupUserDisplayNames([]uint64{uint64(userID)})[strconv.FormatUint(uint64(userID), 10)]; ok {
+		item.UserName = name
+	}
+	return &item, nil
+}
+
+// AddTeacher creates a teacher entry for a course.
+func (s *CourseService) AddTeacher(courseID string, req AddTeacherRequest) (*models.Teacher, error) {
+	courseID = strings.TrimSpace(courseID)
+	name := strings.TrimSpace(req.Name)
+	title := strings.TrimSpace(req.Title)
+	if courseID == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "course_id 不能为空")
+	}
+	if name == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "teacher name 不能为空")
+	}
+
+	teacherID := strings.TrimSpace(req.ID)
+	if teacherID == "" {
+		teacherID = strings.ToLower(strings.ReplaceAll(name, " ", "-"))
+	}
+
+	item := models.Teacher{
+		ID:       teacherID,
+		CourseID: courseID,
+		Name:     name,
+		Title:    title,
+	}
+	if err := s.db.Where("id = ? AND course_id = ?", teacherID, courseID).FirstOrCreate(&item).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create teacher")
+	}
 	return &item, nil
 }
 
@@ -169,6 +230,8 @@ func (s *CourseService) AddTeacherComment(courseID, teacherID string, userID mod
 	if err := s.db.Create(&item).Error; err != nil {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create teacher comment")
 	}
+	item.UserName = s.lookupUserDisplayNames([]uint64{uint64(userID)})[strconv.FormatUint(uint64(userID), 10)]
+	item.TeacherName = s.lookupTeacherNamesByKey([]string{courseID + "::" + teacherID})[courseID+"::"+teacherID]
 	return &item, nil
 }
 
@@ -199,5 +262,134 @@ func (s *CourseService) AddGradingStandard(courseID, teacherID string, req AddGr
 	if err := s.db.Create(&item).Error; err != nil {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create grading standard")
 	}
+	item.TeacherName = s.lookupTeacherNamesByKey([]string{courseID + "::" + teacherID})[courseID+"::"+teacherID]
 	return &item, nil
+}
+
+func (s *CourseService) hydrateCourseCommentUsers(comments []models.CourseComment) {
+	if len(comments) == 0 {
+		return
+	}
+
+	userIDs := make([]uint64, 0, len(comments))
+	seen := make(map[string]struct{}, len(comments))
+	for _, item := range comments {
+		if _, ok := seen[item.UserID]; ok {
+			continue
+		}
+		seen[item.UserID] = struct{}{}
+		if id, err := strconv.ParseUint(item.UserID, 10, 64); err == nil {
+			userIDs = append(userIDs, id)
+		}
+	}
+
+	displayNames := s.lookupUserDisplayNames(userIDs)
+	for idx := range comments {
+		if display, ok := displayNames[comments[idx].UserID]; ok {
+			comments[idx].UserName = display
+		}
+	}
+}
+
+func (s *CourseService) hydrateTeacherCommentDisplayFields(comments []models.TeacherComment) {
+	if len(comments) == 0 {
+		return
+	}
+
+	courseComments := make([]models.CourseComment, 0, len(comments))
+	teacherKeys := make([]string, 0, len(comments))
+	seenTeachers := make(map[string]struct{}, len(comments))
+	for _, item := range comments {
+		courseComments = append(courseComments, models.CourseComment{UserID: item.UserID})
+		key := item.CourseID + "::" + item.TeacherID
+		if _, ok := seenTeachers[key]; !ok {
+			seenTeachers[key] = struct{}{}
+			teacherKeys = append(teacherKeys, key)
+		}
+	}
+
+	s.hydrateCourseCommentUsers(courseComments)
+	teacherNames := s.lookupTeacherNamesByKey(teacherKeys)
+	for idx := range comments {
+		comments[idx].UserName = courseComments[idx].UserName
+		comments[idx].TeacherName = teacherNames[comments[idx].CourseID+"::"+comments[idx].TeacherID]
+	}
+}
+
+func (s *CourseService) hydrateGradingTeacherNames(standards []models.GradingStandard) {
+	if len(standards) == 0 {
+		return
+	}
+
+	keys := make([]string, 0, len(standards))
+	seen := make(map[string]struct{}, len(standards))
+	for _, item := range standards {
+		key := item.CourseID + "::" + item.TeacherID
+		if _, ok := seen[key]; ok {
+			continue
+		}
+		seen[key] = struct{}{}
+		keys = append(keys, key)
+	}
+
+	teacherNames := s.lookupTeacherNamesByKey(keys)
+	for idx := range standards {
+		standards[idx].TeacherName = teacherNames[standards[idx].CourseID+"::"+standards[idx].TeacherID]
+	}
+}
+
+func (s *CourseService) lookupUserDisplayNames(userIDs []uint64) map[string]string {
+	if len(userIDs) == 0 {
+		return map[string]string{}
+	}
+
+	var users []models.User
+	if err := s.db.Where("id IN ?", userIDs).Find(&users).Error; err != nil {
+		return map[string]string{}
+	}
+
+	var profiles []models.UserProfile
+	_ = s.db.Where("user_id IN ?", userIDs).Find(&profiles).Error
+
+	profileNames := make(map[uint64]string, len(profiles))
+	for _, profile := range profiles {
+		if nickname := strings.TrimSpace(profile.Nickname); nickname != "" {
+			profileNames[profile.UserID] = nickname
+		}
+	}
+
+	displayNames := make(map[string]string, len(users))
+	for _, user := range users {
+		name := strings.TrimSpace(profileNames[user.ID])
+		if name == "" {
+			name = user.Username
+		}
+		displayNames[strconv.FormatUint(user.ID, 10)] = name
+	}
+	return displayNames
+}
+
+func (s *CourseService) lookupTeacherNamesByKey(keys []string) map[string]string {
+	if len(keys) == 0 {
+		return map[string]string{}
+	}
+
+	var teachers []models.Teacher
+	if err := s.db.Find(&teachers).Error; err != nil {
+		return map[string]string{}
+	}
+
+	keySet := make(map[string]struct{}, len(keys))
+	for _, key := range keys {
+		keySet[key] = struct{}{}
+	}
+
+	names := make(map[string]string, len(keys))
+	for _, teacher := range teachers {
+		key := teacher.CourseID + "::" + teacher.ID
+		if _, ok := keySet[key]; ok {
+			names[key] = teacher.Name
+		}
+	}
+	return names
 }

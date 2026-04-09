@@ -30,6 +30,10 @@ func NewPaperController(service *services.PaperService, courseSvc *services.Cour
 func (ctl *PaperController) RegisterRoutes(group *gin.RouterGroup) {
 	group.GET("/courses", ctl.ListCourses)
 	group.GET("/courses/:course_id", ctl.GetCourse)
+	group.GET("/courses/:course_id/comments", ctl.GetCourseComments)
+	group.GET("/courses/:course_id/teachers", ctl.ListTeachers)
+	group.GET("/courses/:course_id/teachers/:teacher_id/comments", ctl.GetTeacherComments)
+	group.GET("/courses/:course_id/teachers/:teacher_id/grading-standards", ctl.GetGradingStandards)
 	group.GET("/courses/:course_id/papers", ctl.ListPapers)
 	group.GET("/papers/:paper_id/problems", ctl.ListProblems)
 }
@@ -37,7 +41,10 @@ func (ctl *PaperController) RegisterRoutes(group *gin.RouterGroup) {
 // ListCourses 返回所有课程列表。
 // GET /api/courses
 func (ctl *PaperController) ListCourses(c *gin.Context) {
-	query := c.Query("q")
+	query := c.Query("query")
+	if query == "" {
+		query = c.Query("q")
+	}
 	courses, err := ctl.courseSvc.ListCourses(query)
 	if err != nil {
 		ctl.handleError(c, err)
@@ -56,6 +63,18 @@ func (ctl *PaperController) GetCourse(c *gin.Context) {
 		return
 	}
 	utils.JSONSuccess(c, http.StatusOK, course)
+}
+
+// ListTeachers 返回指定课程下的教师列表。
+// GET /api/courses/:course_id/teachers
+func (ctl *PaperController) ListTeachers(c *gin.Context) {
+	courseID := c.Param("course_id")
+	teachers, err := ctl.courseSvc.ListTeachers(courseID)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, teachers)
 }
 
 // GetCourseCommnts 返回课程评价列表。
@@ -84,7 +103,7 @@ func (ctl *PaperController) GetTeacherComments(c *gin.Context) {
 }
 
 // GetGradingStandards 返回评分标准详情。
-// GET /api/courses/:course_id/teachers/:teacher_id/grading
+// GET /api/courses/:course_id/teachers/:teacher_id/grading-standards
 func (ctl *PaperController) GetGradingStandards(c *gin.Context) {
 	courseID := c.Param("course_id")
 	teacherID := c.Param("teacher_id")
