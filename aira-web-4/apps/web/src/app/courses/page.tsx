@@ -74,7 +74,7 @@ export default function CoursesPage() {
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="搜索课程名称、课程代码或课程 ID"
+              placeholder="搜索课程名称或课程代码"
               className="min-w-0 flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
             <button

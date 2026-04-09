@@ -5,11 +5,12 @@ import type {
   CourseComment,
   TeacherComment,
   GradingStandard,
+  TeacherDirectoryEntry,
 } from '@aira/shared';
 import { EmptyState, ErrorState } from '@/components/layout/StateDisplay';
 import { useFetch } from '@/hooks/useFetch';
-import { useAuth } from '@/lib/auth';
 import {
+  addTeacherDirectoryEntry,
   addCourseComment,
   addGradingStandard,
   addTeacherComment,
@@ -17,8 +18,6 @@ import {
   getGradingStandards,
   getTeacherComments,
   getTeacherDirectory,
-  saveTeacherDirectoryEntry,
-  type TeacherDirectoryEntry,
 } from '@/lib/courseCommunity';
 
 interface CourseCommunityPanelProps {
@@ -30,21 +29,19 @@ export function CourseCommunityPanel({
   courseId,
   courseName,
 }: CourseCommunityPanelProps) {
-  const { user } = useAuth();
   const [teacherDirectoryVersion, setTeacherDirectoryVersion] = useState(0);
   const [courseCommentVersion, setCourseCommentVersion] = useState(0);
   const [teacherCommentVersion, setTeacherCommentVersion] = useState(0);
   const [gradingStandardVersion, setGradingStandardVersion] = useState(0);
-  const [teacherDirectory, setTeacherDirectory] = useState<TeacherDirectoryEntry[]>([]);
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
   const [newTeacherName, setNewTeacherName] = useState('');
   const [newTeacherTitle, setNewTeacherTitle] = useState('');
   const [teacherFormError, setTeacherFormError] = useState('');
-
-  useEffect(() => {
-    const nextDirectory = getTeacherDirectory(courseId);
-    setTeacherDirectory(nextDirectory);
-  }, [courseId, teacherDirectoryVersion]);
+  const teachersQuery = useFetch(
+    () => getTeacherDirectory(courseId),
+    [courseId, teacherDirectoryVersion],
+  );
+  const teacherDirectory = teachersQuery.data ?? [];
 
   useEffect(() => {
     if (!teacherDirectory.length) {
@@ -86,7 +83,7 @@ export function CourseCommunityPanel({
     [courseId, selectedTeacherId, gradingStandardVersion],
   );
 
-  const handleTeacherDirectorySubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleTeacherDirectorySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const teacherName = newTeacherName.trim();
 
@@ -95,21 +92,20 @@ export function CourseCommunityPanel({
       return;
     }
 
-    const directory = saveTeacherDirectoryEntry(courseId, {
-      name: teacherName,
-      title: newTeacherTitle.trim() || undefined,
-    });
-    const createdTeacherId = directory[directory.length - 1]?.id ?? '';
-
-    setTeacherDirectory(directory);
-    setSelectedTeacherId(createdTeacherId);
-    setTeacherFormError('');
-    setNewTeacherName('');
-    setNewTeacherTitle('');
-    setTeacherDirectoryVersion((value) => value + 1);
+    try {
+      const createdTeacher = await addTeacherDirectoryEntry(courseId, {
+        name: teacherName,
+        title: newTeacherTitle.trim() || undefined,
+      });
+      setSelectedTeacherId(createdTeacher.id);
+      setTeacherFormError('');
+      setNewTeacherName('');
+      setNewTeacherTitle('');
+      setTeacherDirectoryVersion((value) => value + 1);
+    } catch (error) {
+      setTeacherFormError(error instanceof Error ? error.message : '保存教师失败，请稍后重试。');
+    }
   };
-
-  const selectedTeacherName = selectedTeacher?.name || newTeacherName.trim() || selectedTeacherId;
 
   return (
     <section className="space-y-6">
@@ -133,18 +129,15 @@ export function CourseCommunityPanel({
 
       <div className="grid gap-6 xl:grid-cols-[0.95fr,1.05fr]">
         <SectionCard
-          title="课程讨论"
-          subtitle="补充了课程评论的读取与发布，方便沉淀备考经验。"
-        >
+            title="课程讨论"
+            subtitle="补充了课程评论的读取与发布，方便沉淀备考经验。"
+          >
           <CommentComposer
             title="发布课程评论"
             placeholder="写下这门课的复习建议、试卷特点或踩坑提醒。"
             actionLabel="发布课程评论"
             onSubmit={async (comment) => {
-              await addCourseComment(courseId, {
-                comment,
-                userName: user?.displayName,
-              });
+              await addCourseComment(courseId, { comment });
               setCourseCommentVersion((value) => value + 1);
             }}
           />
@@ -167,9 +160,16 @@ export function CourseCommunityPanel({
         <div className="space-y-6">
           <SectionCard
             title="教师讨论区"
-            subtitle="由于接口里没有教师列表接口，这里补了一个本地教师目录，便于切换教师查看评论。"
+            subtitle="教师目录已接入后端，新增教师后会直接成为当前课程的公共目录。"
           >
             <div className="space-y-4">
+              {teachersQuery.error ? (
+                <ErrorState
+                  message={teachersQuery.error}
+                  onRetry={teachersQuery.refetch}
+                />
+              ) : null}
+
               <div className="flex flex-wrap gap-2">
                 {teacherDirectory.length > 0 ? (
                   teacherDirectory.map((teacher) => {
@@ -249,11 +249,7 @@ export function CourseCommunityPanel({
                   placeholder="补充这位老师的授课节奏、考试风格或复习建议。"
                   actionLabel="发布教师评论"
                   onSubmit={async (comment) => {
-                    await addTeacherComment(courseId, selectedTeacher.id, {
-                      comment,
-                      userName: user?.displayName,
-                      teacherName: selectedTeacherName,
-                    });
+                    await addTeacherComment(courseId, selectedTeacher.id, { comment });
                     setTeacherCommentVersion((value) => value + 1);
                   }}
                 />
@@ -287,12 +283,9 @@ export function CourseCommunityPanel({
             {selectedTeacher ? (
               <>
                 <GradingStandardComposer
-                  teacherName={selectedTeacherName}
+                  teacherName={selectedTeacher.name}
                   onSubmit={async (payload) => {
-                    await addGradingStandard(courseId, selectedTeacher.id, {
-                      ...payload,
-                      teacherName: selectedTeacherName,
-                    });
+                    await addGradingStandard(courseId, selectedTeacher.id, payload);
                     setGradingStandardVersion((value) => value + 1);
                   }}
                 />

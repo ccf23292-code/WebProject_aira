@@ -80,6 +80,15 @@ export interface Course {
   description: string;
 }
 
+export interface TeacherDirectoryEntry {
+  id: string;
+  course_id: string;
+  name: string;
+  title?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface CourseComment {
   id: string | number;
   course_id?: string;
@@ -105,6 +114,12 @@ export interface GradingStandard {
   standard_img?: string;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface AddTeacherDto {
+  id?: string;
+  name: string;
+  title?: string;
 }
 
 /** GET /api/courses/{course_id}/papers — 试卷 */
