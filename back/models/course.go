@@ -32,6 +32,38 @@ type CourseDescriptionSubmission struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
+// TeacherSubmission stores user-submitted teacher metadata proposals.
+type TeacherSubmission struct {
+	ID                 uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	CourseID           string    `gorm:"size:128;index" json:"course_id"`
+	UserID             string    `gorm:"size:128;index" json:"user_id"`
+	Name               string    `gorm:"size:256" json:"name"`
+	Title              string    `gorm:"size:256" json:"title,omitempty"`
+	Status             string    `gorm:"size:32;index" json:"status"`
+	ReviewedBy         string    `gorm:"size:128" json:"reviewed_by,omitempty"`
+	ReviewNote         string    `gorm:"type:text" json:"review_note,omitempty"`
+	PublishedTeacherID string    `gorm:"size:128" json:"published_teacher_id,omitempty"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
+}
+
+// GradingStandardSubmission stores user-submitted grading standard proposals.
+type GradingStandardSubmission struct {
+	ID                  uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	CourseID            string    `gorm:"size:128;index" json:"course_id"`
+	TeacherID           string    `gorm:"size:128;index" json:"teacher_id"`
+	UserID              string    `gorm:"size:128;index" json:"user_id"`
+	Description         string    `gorm:"type:text" json:"description,omitempty"`
+	Standard            string    `gorm:"type:text" json:"standard,omitempty"`
+	StandardImg         string    `gorm:"type:text" json:"standard_img,omitempty"`
+	Status              string    `gorm:"size:32;index" json:"status"`
+	ReviewedBy          string    `gorm:"size:128" json:"reviewed_by,omitempty"`
+	ReviewNote          string    `gorm:"type:text" json:"review_note,omitempty"`
+	PublishedStandardID uint      `json:"published_standard_id,omitempty"`
+	CreatedAt           time.Time `json:"created_at"`
+	UpdatedAt           time.Time `json:"updated_at"`
+}
+
 // Teacher 对应数据库 teachers 表，表示一位教师。
 type Teacher struct {
 	ID        string    `gorm:"primaryKey;size:128" json:"id"`        // jsdm

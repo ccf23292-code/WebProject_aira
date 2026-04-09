@@ -95,7 +95,7 @@ func (ctl *CourseController) AddTeacher(c *gin.Context) {
 		return
 	}
 
-	teacher, err := ctl.service.AddTeacher(courseID, req)
+	teacher, err := ctl.service.AddTeacher(courseID, ctl.currentUserID(c), req)
 	if err != nil {
 		ctl.handleError(c, err)
 		return
@@ -133,7 +133,7 @@ func (ctl *CourseController) AddGradingStandard(c *gin.Context) {
 		return
 	}
 
-	standard, err := ctl.service.AddGradingStandard(courseID, teacherID, req)
+	standard, err := ctl.service.AddGradingStandard(courseID, teacherID, ctl.currentUserID(c), req)
 	if err != nil {
 		ctl.handleError(c, err)
 		return

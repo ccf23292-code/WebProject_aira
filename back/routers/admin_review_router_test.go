@@ -1,0 +1,42 @@
+package routers
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+
+	"warehouse-web/middlewares"
+	"warehouse-web/models"
+	"warehouse-web/services"
+)
+
+func TestAdminReviewRoutesAreRegistered(t *testing.T) {
+	db := newDescriptionRouterTestDB(t)
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+
+	adminCtl := NewAdminController(services.NewPaperService(db), services.NewCourseService(db))
+	admin := r.Group("/api/admin")
+	admin.Use(func(c *gin.Context) {
+		c.Set(middlewares.CtxKeyUserID, models.PrimaryKey(1))
+		c.Set(middlewares.CtxKeyRole, string(models.RoleAdmin))
+		c.Next()
+	})
+	adminCtl.RegisterRoutes(admin)
+
+	endpoints := []string{
+		"/api/admin/course-description-submissions",
+		"/api/admin/teacher-submissions",
+		"/api/admin/grading-standard-submissions",
+	}
+	for _, endpoint := range endpoints {
+		req := httptest.NewRequest(http.MethodGet, endpoint, nil)
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+		if rec.Code == http.StatusNotFound {
+			t.Fatalf("expected admin review route %s to be registered", endpoint)
+		}
+	}
+}

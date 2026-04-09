@@ -25,9 +25,11 @@ func newCourseTestDB(t *testing.T) *gorm.DB {
 		&models.UserProfile{},
 		&models.Course{},
 		&models.Teacher{},
+		&models.TeacherSubmission{},
 		&models.CourseComment{},
 		&models.TeacherComment{},
 		&models.GradingStandard{},
+		&models.GradingStandardSubmission{},
 		&models.CourseDescriptionSubmission{},
 	); err != nil {
 		t.Fatalf("auto migrate: %v", err)
@@ -58,8 +60,12 @@ func TestCommentsAndGradingReturnDisplayFields(t *testing.T) {
 	if _, err := service.AddTeacherComment("CS1018F", "t-li", 7, "教师评论"); err != nil {
 		t.Fatalf("add teacher comment: %v", err)
 	}
-	if _, err := service.AddGradingStandard("CS1018F", "t-li", AddGradingStandardRequest{Standard: "平时 40%，期末 60%"}); err != nil {
-		t.Fatalf("add grading standard: %v", err)
+	if err := db.Create(&models.GradingStandard{
+		CourseID:  "CS1018F",
+		TeacherID: "t-li",
+		Standard:  "平时 40%，期末 60%",
+	}).Error; err != nil {
+		t.Fatalf("seed grading standard: %v", err)
 	}
 
 	courseComments, err := service.GetCourseComments("CS1018F")
@@ -99,6 +105,123 @@ func TestCommentsAndGradingReturnDisplayFields(t *testing.T) {
 	}
 	if standards[0].CreatedAt.IsZero() {
 		t.Fatalf("expected grading standard created_at to be set, got %#v", standards[0])
+	}
+}
+
+func TestAddTeacherCreatesPendingSubmission(t *testing.T) {
+	db := newCourseTestDB(t)
+	service := NewCourseService(db)
+
+	if err := db.Create(&models.Course{ID: "CS1018F", Code: "CS1018F", Name: "数据结构基础"}).Error; err != nil {
+		t.Fatalf("create course: %v", err)
+	}
+
+	item, err := service.AddTeacher("CS1018F", 8, AddTeacherRequest{Name: "张老师", Title: "2025 春"})
+	if err != nil {
+		t.Fatalf("add teacher submission: %v", err)
+	}
+
+	if item.Status != models.CourseDescriptionSubmissionPending {
+		t.Fatalf("expected pending teacher submission, got %#v", item)
+	}
+
+	teachers, err := service.ListTeachers("CS1018F")
+	if err != nil {
+		t.Fatalf("list teachers: %v", err)
+	}
+	if len(teachers) != 0 {
+		t.Fatalf("expected no published teachers before review, got %#v", teachers)
+	}
+}
+
+func TestApproveTeacherSubmissionPublishesTeacher(t *testing.T) {
+	db := newCourseTestDB(t)
+	service := NewCourseService(db)
+
+	if err := db.Create(&models.Course{ID: "CS1018F", Code: "CS1018F", Name: "数据结构基础"}).Error; err != nil {
+		t.Fatalf("create course: %v", err)
+	}
+
+	item, err := service.AddTeacher("CS1018F", 8, AddTeacherRequest{Name: "张老师", Title: "2025 春"})
+	if err != nil {
+		t.Fatalf("add teacher submission: %v", err)
+	}
+
+	reviewed, err := service.ReviewTeacherSubmission(uint64(item.ID), 1, ReviewCourseDescriptionRequest{Action: "approve"})
+	if err != nil {
+		t.Fatalf("review teacher submission: %v", err)
+	}
+	if reviewed.Status != models.CourseDescriptionSubmissionApproved {
+		t.Fatalf("expected approved teacher submission, got %#v", reviewed)
+	}
+
+	teachers, err := service.ListTeachers("CS1018F")
+	if err != nil {
+		t.Fatalf("list teachers: %v", err)
+	}
+	if len(teachers) != 1 || teachers[0].Name != "张老师" {
+		t.Fatalf("expected published teacher, got %#v", teachers)
+	}
+}
+
+func TestAddGradingStandardCreatesPendingSubmission(t *testing.T) {
+	db := newCourseTestDB(t)
+	service := NewCourseService(db)
+
+	if err := db.Create(&models.Course{ID: "CS1018F", Code: "CS1018F", Name: "数据结构基础"}).Error; err != nil {
+		t.Fatalf("create course: %v", err)
+	}
+	if err := db.Create(&models.Teacher{ID: "t-li", CourseID: "CS1018F", Name: "李老师"}).Error; err != nil {
+		t.Fatalf("create teacher: %v", err)
+	}
+
+	item, err := service.AddGradingStandard("CS1018F", "t-li", 8, AddGradingStandardRequest{Standard: "平时 40%，期末 60%"})
+	if err != nil {
+		t.Fatalf("add grading submission: %v", err)
+	}
+	if item.Status != models.CourseDescriptionSubmissionPending {
+		t.Fatalf("expected pending grading submission, got %#v", item)
+	}
+
+	standards, err := service.GetGradingStandards("CS1018F", "t-li")
+	if err != nil {
+		t.Fatalf("get grading standards: %v", err)
+	}
+	if len(standards) != 0 {
+		t.Fatalf("expected no published grading standards before review, got %#v", standards)
+	}
+}
+
+func TestApproveGradingSubmissionPublishesStandard(t *testing.T) {
+	db := newCourseTestDB(t)
+	service := NewCourseService(db)
+
+	if err := db.Create(&models.Course{ID: "CS1018F", Code: "CS1018F", Name: "数据结构基础"}).Error; err != nil {
+		t.Fatalf("create course: %v", err)
+	}
+	if err := db.Create(&models.Teacher{ID: "t-li", CourseID: "CS1018F", Name: "李老师"}).Error; err != nil {
+		t.Fatalf("create teacher: %v", err)
+	}
+
+	item, err := service.AddGradingStandard("CS1018F", "t-li", 8, AddGradingStandardRequest{Standard: "平时 40%，期末 60%"})
+	if err != nil {
+		t.Fatalf("add grading submission: %v", err)
+	}
+
+	reviewed, err := service.ReviewGradingStandardSubmission(uint64(item.ID), 1, ReviewCourseDescriptionRequest{Action: "approve"})
+	if err != nil {
+		t.Fatalf("review grading submission: %v", err)
+	}
+	if reviewed.Status != models.CourseDescriptionSubmissionApproved {
+		t.Fatalf("expected approved grading submission, got %#v", reviewed)
+	}
+
+	standards, err := service.GetGradingStandards("CS1018F", "t-li")
+	if err != nil {
+		t.Fatalf("get grading standards: %v", err)
+	}
+	if len(standards) != 1 || standards[0].Standard != "平时 40%，期末 60%" {
+		t.Fatalf("expected published grading standard, got %#v", standards)
 	}
 }
 

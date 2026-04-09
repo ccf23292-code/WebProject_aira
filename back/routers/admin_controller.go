@@ -31,6 +31,10 @@ func NewAdminController(service *services.PaperService, courseSvc *services.Cour
 //	PUT    /api/admin/problems/:problem_id
 //	GET    /api/admin/course-description-submissions
 //	POST   /api/admin/course-description-submissions/:id/review
+//	GET    /api/admin/teacher-submissions
+//	POST   /api/admin/teacher-submissions/:id/review
+//	GET    /api/admin/grading-standard-submissions
+//	POST   /api/admin/grading-standard-submissions/:id/review
 func (ctl *AdminController) RegisterRoutes(group *gin.RouterGroup) {
 	group.POST("/papers", ctl.CreatePaper)
 	group.PUT("/papers/:paper_id", ctl.UpdatePaper)
@@ -38,6 +42,10 @@ func (ctl *AdminController) RegisterRoutes(group *gin.RouterGroup) {
 	group.PUT("/problems/:problem_id", ctl.UpdateProblem)
 	group.GET("/course-description-submissions", ctl.ListCourseDescriptionSubmissions)
 	group.POST("/course-description-submissions/:id/review", ctl.ReviewCourseDescriptionSubmission)
+	group.GET("/teacher-submissions", ctl.ListTeacherSubmissions)
+	group.POST("/teacher-submissions/:id/review", ctl.ReviewTeacherSubmission)
+	group.GET("/grading-standard-submissions", ctl.ListGradingStandardSubmissions)
+	group.POST("/grading-standard-submissions/:id/review", ctl.ReviewGradingStandardSubmission)
 }
 
 // CreatePaper 创建新试卷。
@@ -145,6 +153,68 @@ func (ctl *AdminController) ReviewCourseDescriptionSubmission(c *gin.Context) {
 
 	userID := c.GetUint64(middlewares.CtxKeyUserID)
 	item, svcErr := ctl.courseSvc.ReviewCourseDescriptionSubmission(id, models.PrimaryKey(userID), req)
+	if svcErr != nil {
+		ctl.handleError(c, svcErr)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, item)
+}
+
+// ListTeacherSubmissions returns teacher proposals for admins.
+func (ctl *AdminController) ListTeacherSubmissions(c *gin.Context) {
+	items, err := ctl.courseSvc.ListTeacherSubmissions(c.Query("status"))
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, items)
+}
+
+// ReviewTeacherSubmission approves or rejects a teacher proposal.
+func (ctl *AdminController) ReviewTeacherSubmission(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		utils.JSONError(c, http.StatusBadRequest, "invalid_request", "id 必须为正整数")
+		return
+	}
+	var req services.ReviewCourseDescriptionRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.JSONError(c, http.StatusBadRequest, "invalid_request", "请求体格式不正确", err.Error())
+		return
+	}
+	userID := c.GetUint64(middlewares.CtxKeyUserID)
+	item, svcErr := ctl.courseSvc.ReviewTeacherSubmission(id, models.PrimaryKey(userID), req)
+	if svcErr != nil {
+		ctl.handleError(c, svcErr)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, item)
+}
+
+// ListGradingStandardSubmissions returns grading proposals for admins.
+func (ctl *AdminController) ListGradingStandardSubmissions(c *gin.Context) {
+	items, err := ctl.courseSvc.ListGradingStandardSubmissions(c.Query("status"))
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, items)
+}
+
+// ReviewGradingStandardSubmission approves or rejects a grading proposal.
+func (ctl *AdminController) ReviewGradingStandardSubmission(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		utils.JSONError(c, http.StatusBadRequest, "invalid_request", "id 必须为正整数")
+		return
+	}
+	var req services.ReviewCourseDescriptionRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.JSONError(c, http.StatusBadRequest, "invalid_request", "请求体格式不正确", err.Error())
+		return
+	}
+	userID := c.GetUint64(middlewares.CtxKeyUserID)
+	item, svcErr := ctl.courseSvc.ReviewGradingStandardSubmission(id, models.PrimaryKey(userID), req)
 	if svcErr != nil {
 		ctl.handleError(c, svcErr)
 		return

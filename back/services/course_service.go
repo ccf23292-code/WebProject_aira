@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -53,6 +54,34 @@ type ReviewCourseDescriptionRequest struct {
 // NewCourseService 创建 CourseService。
 func NewCourseService(db *gorm.DB) *CourseService {
 	return &CourseService{db: db}
+}
+
+// ListTeacherSubmissions returns teacher proposals for admins.
+func (s *CourseService) ListTeacherSubmissions(status string) ([]models.TeacherSubmission, error) {
+	query := s.db.Model(&models.TeacherSubmission{})
+	status = strings.TrimSpace(status)
+	if status != "" {
+		query = query.Where("status = ?", status)
+	}
+	var items []models.TeacherSubmission
+	if err := query.Order("id DESC").Find(&items).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load teacher submissions")
+	}
+	return items, nil
+}
+
+// ListGradingStandardSubmissions returns grading standard proposals for admins.
+func (s *CourseService) ListGradingStandardSubmissions(status string) ([]models.GradingStandardSubmission, error) {
+	query := s.db.Model(&models.GradingStandardSubmission{})
+	status = strings.TrimSpace(status)
+	if status != "" {
+		query = query.Where("status = ?", status)
+	}
+	var items []models.GradingStandardSubmission
+	if err := query.Order("id DESC").Find(&items).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load grading submissions")
+	}
+	return items, nil
 }
 
 // SubmitCourseDescription stores a pending description proposal.
@@ -289,7 +318,7 @@ func (s *CourseService) AddCourseComment(courseID string, userID models.PrimaryK
 }
 
 // AddTeacher creates a teacher entry for a course.
-func (s *CourseService) AddTeacher(courseID string, req AddTeacherRequest) (*models.Teacher, error) {
+func (s *CourseService) AddTeacher(courseID string, userID models.PrimaryKey, req AddTeacherRequest) (*models.TeacherSubmission, error) {
 	courseID = strings.TrimSpace(courseID)
 	name := strings.TrimSpace(req.Name)
 	title := strings.TrimSpace(req.Title)
@@ -299,20 +328,19 @@ func (s *CourseService) AddTeacher(courseID string, req AddTeacherRequest) (*mod
 	if name == "" {
 		return nil, newServiceError("invalid_request", http.StatusBadRequest, "teacher name 不能为空")
 	}
-
-	teacherID := strings.TrimSpace(req.ID)
-	if teacherID == "" {
-		teacherID = strings.ToLower(strings.ReplaceAll(name, " ", "-"))
+	if _, err := s.GetCourse(courseID); err != nil {
+		return nil, err
 	}
 
-	item := models.Teacher{
-		ID:       teacherID,
+	item := models.TeacherSubmission{
 		CourseID: courseID,
+		UserID:   strconv.FormatUint(uint64(userID), 10),
 		Name:     name,
 		Title:    title,
+		Status:   models.CourseDescriptionSubmissionPending,
 	}
-	if err := s.db.Where("id = ? AND course_id = ?", teacherID, courseID).FirstOrCreate(&item).Error; err != nil {
-		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create teacher")
+	if err := s.db.Create(&item).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create teacher submission")
 	}
 	return &item, nil
 }
@@ -347,7 +375,7 @@ func (s *CourseService) AddTeacherComment(courseID, teacherID string, userID mod
 }
 
 // AddGradingStandard creates a grading standard.
-func (s *CourseService) AddGradingStandard(courseID, teacherID string, req AddGradingStandardRequest) (*models.GradingStandard, error) {
+func (s *CourseService) AddGradingStandard(courseID, teacherID string, userID models.PrimaryKey, req AddGradingStandardRequest) (*models.GradingStandardSubmission, error) {
 	courseID = strings.TrimSpace(courseID)
 	teacherID = strings.TrimSpace(teacherID)
 	description := strings.TrimSpace(req.Description)
@@ -362,18 +390,112 @@ func (s *CourseService) AddGradingStandard(courseID, teacherID string, req AddGr
 	if description == "" && standard == "" && standardImg == "" {
 		return nil, newServiceError("invalid_request", http.StatusBadRequest, "评分标准不能为空")
 	}
+	if _, err := s.GetCourse(courseID); err != nil {
+		return nil, err
+	}
+	var teacher models.Teacher
+	if err := s.db.Where("id = ? AND course_id = ?", teacherID, courseID).First(&teacher).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, newServiceError("not_found", http.StatusNotFound, "teacher not found")
+		}
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load teacher")
+	}
 
-	item := models.GradingStandard{
+	item := models.GradingStandardSubmission{
 		CourseID:    courseID,
 		TeacherID:   teacherID,
+		UserID:      strconv.FormatUint(uint64(userID), 10),
 		Description: description,
 		Standard:    standard,
 		StandardImg: standardImg,
+		Status:      models.CourseDescriptionSubmissionPending,
 	}
 	if err := s.db.Create(&item).Error; err != nil {
-		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create grading standard")
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create grading submission")
 	}
-	item.TeacherName = s.lookupTeacherNamesByKey([]string{courseID + "::" + teacherID})[courseID+"::"+teacherID]
+	return &item, nil
+}
+
+// ReviewTeacherSubmission approves or rejects a teacher proposal.
+func (s *CourseService) ReviewTeacherSubmission(submissionID uint64, reviewerID models.PrimaryKey, req ReviewCourseDescriptionRequest) (*models.TeacherSubmission, error) {
+	action := strings.ToLower(strings.TrimSpace(req.Action))
+	if action != "approve" && action != "reject" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "action 必须为 approve 或 reject")
+	}
+	var item models.TeacherSubmission
+	if err := s.db.Where("id = ?", submissionID).First(&item).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, newServiceError("not_found", http.StatusNotFound, "teacher submission not found")
+		}
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load teacher submission")
+	}
+	status := models.CourseDescriptionSubmissionRejected
+	if action == "approve" {
+		status = models.CourseDescriptionSubmissionApproved
+	}
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		item.Status = status
+		item.ReviewedBy = strconv.FormatUint(uint64(reviewerID), 10)
+		item.ReviewNote = strings.TrimSpace(req.ReviewNote)
+		if action == "approve" {
+			teacher := models.Teacher{
+				ID:       fmt.Sprintf("teacher-%d", item.ID),
+				CourseID: item.CourseID,
+				Name:     item.Name,
+				Title:    item.Title,
+			}
+			if err := tx.Create(&teacher).Error; err != nil {
+				return err
+			}
+			item.PublishedTeacherID = teacher.ID
+		}
+		return tx.Save(&item).Error
+	})
+	if err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to review teacher submission")
+	}
+	return &item, nil
+}
+
+// ReviewGradingStandardSubmission approves or rejects a grading proposal.
+func (s *CourseService) ReviewGradingStandardSubmission(submissionID uint64, reviewerID models.PrimaryKey, req ReviewCourseDescriptionRequest) (*models.GradingStandardSubmission, error) {
+	action := strings.ToLower(strings.TrimSpace(req.Action))
+	if action != "approve" && action != "reject" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "action 必须为 approve 或 reject")
+	}
+	var item models.GradingStandardSubmission
+	if err := s.db.Where("id = ?", submissionID).First(&item).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, newServiceError("not_found", http.StatusNotFound, "grading submission not found")
+		}
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load grading submission")
+	}
+	status := models.CourseDescriptionSubmissionRejected
+	if action == "approve" {
+		status = models.CourseDescriptionSubmissionApproved
+	}
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		item.Status = status
+		item.ReviewedBy = strconv.FormatUint(uint64(reviewerID), 10)
+		item.ReviewNote = strings.TrimSpace(req.ReviewNote)
+		if action == "approve" {
+			standard := models.GradingStandard{
+				CourseID:    item.CourseID,
+				TeacherID:   item.TeacherID,
+				Description: item.Description,
+				Standard:    item.Standard,
+				StandardImg: item.StandardImg,
+			}
+			if err := tx.Create(&standard).Error; err != nil {
+				return err
+			}
+			item.PublishedStandardID = standard.ID
+		}
+		return tx.Save(&item).Error
+	})
+	if err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to review grading submission")
+	}
 	return &item, nil
 }
 
