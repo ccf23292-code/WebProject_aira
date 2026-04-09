@@ -46,9 +46,7 @@ type AuthService struct {
 
 // NewAuthService 创建数据库版认证服务，并确保默认管理员存在。
 func NewAuthService(db *gorm.DB) *AuthService {
-	svc := &AuthService{db: db}
-	_ = svc.bootstrapAdmin()
-	return svc
+	return &AuthService{db: db}
 }
 
 type LoginRequest struct {
@@ -408,41 +406,6 @@ func generateVerificationCode() string {
 
 func formatUserID(id models.PrimaryKey) string {
 	return fmt.Sprintf("u-%08d", id)
-}
-
-func (s *AuthService) bootstrapAdmin() error {
-	var count int64
-	if err := s.db.Model(&models.User{}).Where("LOWER(username) = ?", "admin").Count(&count).Error; err != nil {
-		return err
-	}
-	if count > 0 {
-		return nil
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte("Admin@123"), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	now := time.Now().UTC()
-	admin := models.User{
-		Username:     "admin",
-		Email:        "admin@example.com",
-		PasswordHash: string(hash),
-		Role:         models.RoleAdmin,
-		CreatedAt:    now,
-		UpdatedAt:    now,
-	}
-	if err := s.db.Create(&admin).Error; err != nil {
-		return err
-	}
-	return s.db.Create(&models.UserProfile{
-		UserID:    admin.ID,
-		Nickname:  "admin",
-		AvatarURL: "",
-		Level:     1,
-		CreatedAt: now,
-		UpdatedAt: now,
-	}).Error
 }
 
 func (s *AuthService) issueTokens(tx *gorm.DB, user *models.User, rememberMe bool) (string, string, error) {

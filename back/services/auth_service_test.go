@@ -70,7 +70,7 @@ func TestRegisterPersistsUserAndProfile(t *testing.T) {
 	}
 
 	profileService := NewProfileService(db)
-	profile, err := profileService.GetProfile(2)
+	profile, err := profileService.GetProfile(1)
 	if err != nil {
 		t.Fatalf("load profile: %v", err)
 	}
