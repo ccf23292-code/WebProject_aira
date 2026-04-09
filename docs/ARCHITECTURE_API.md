@@ -103,7 +103,7 @@ AIRAWeb/
   - 用户注册、登录、验证码、token 校验
   - 现在是数据库版，不再是内存版
 - `course_service.go`
-  - 课程搜索与详情读取
+  - 课程搜索、教师目录、课程评论、教师评论、评分标准
 - `paper_service.go`
   - 试卷列表、题目列表、题目更新
 - `favorite_service.go`
@@ -141,6 +141,7 @@ AIRAWeb/
 
 ### 课程与题目
 - `courses`
+- `teachers`
 - `test_papers`
 - `problems`
 
@@ -225,11 +226,67 @@ AIRAWeb/
 
 ### 6.2 Browse
 
-#### `GET /api/courses?q=关键词`
+#### `GET /api/courses?query=关键词`
 - 支持课程名 / 课程代码搜索
+- 兼容旧参数 `q`
 
 #### `GET /api/courses/:course_id`
 - 返回课程详情
+
+#### `GET /api/courses/:course_id/teachers`
+- 返回当前课程的教师目录
+
+#### `POST /api/courses/:course_id/teachers`
+- 需要登录
+
+```json
+{
+  "name": "李老师",
+  "title": "2025 春夏"
+}
+```
+
+#### `GET /api/courses/:course_id/comments`
+- 返回课程评论列表
+
+#### `POST /api/courses/:course_id/comments`
+- 需要登录
+
+```json
+{
+  "comment": "这门课建议先刷树和图。"
+}
+```
+
+#### `GET /api/courses/:course_id/teachers/:teacher_id/comments`
+- 返回某位教师的评论列表
+
+#### `POST /api/courses/:course_id/teachers/:teacher_id/comments`
+- 需要登录
+
+```json
+{
+  "comment": "作业量中等，期末题风格很稳定。"
+}
+```
+
+#### `GET /api/courses/:course_id/teachers/:teacher_id/grading-standards`
+- 返回某位教师的评分标准列表
+
+#### `POST /api/courses/:course_id/teachers/:teacher_id/grading-standards`
+- 需要登录
+
+```json
+{
+  "description": "平时分看作业和签到",
+  "standard": "平时 40%，期末 60%",
+  "standard_img": ""
+}
+```
+
+说明：
+- 评论和评分标准的读取结果会补齐 `user_name` / `teacher_name`
+- 教师目录已经从前端本地状态切到后端持久化
 
 #### `GET /api/courses/:course_id/papers`
 - 返回该课程下的试卷
