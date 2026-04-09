@@ -58,6 +58,7 @@ AIRAWeb/
 - `/profile/favorites`：按课程分组的收藏
 - `/profile/wrongbook`：按课程分组的错题本
 - `/profile/records`：做题记录
+- `/admin/reviews`：管理员审核中心
 
 ### 关键组件
 - `src/components/layout/Navbar.tsx`
@@ -68,6 +69,8 @@ AIRAWeb/
   - 题解展示、提交、投票
 - `src/components/course/CourseDescriptionPanel.tsx`
   - 课程简介展示与简介修改提案提交
+- `src/app/admin/reviews/page.tsx`
+  - 管理员审核中心，审核课程简介、教师信息、评分标准
 - `src/components/form/PasswordInput.tsx`
   - 密码显隐输入框
 
@@ -99,14 +102,14 @@ AIRAWeb/
 - `problem_explanation_controller.go`：题解列表、投稿、编辑、投票
 - `recall_controller.go`：回忆卷协作
 - `admin_controller.go`：管理员修改试卷 / 题目
-  - 现在也负责课程简介提案审核
+  - 现在也负责课程简介、教师信息、评分标准的审核
 
 ### 服务层
 - `auth_service.go`
   - 用户注册、登录、验证码、token 校验
   - 现在是数据库版，不再是内存版
 - `course_service.go`
-  - 课程搜索、课程简介提案、教师目录、课程评论、教师评论、评分标准
+  - 课程搜索、课程简介提案、教师/评分标准提案、教师目录、课程评论、教师评论、评分标准
 - `paper_service.go`
   - 试卷列表、题目列表、题目更新
 - `favorite_service.go`
@@ -145,6 +148,8 @@ AIRAWeb/
 ### 课程与题目
 - `courses`
 - `course_description_submissions`
+- `teacher_submissions`
+- `grading_standard_submissions`
 - `teachers`
 - `test_papers`
 - `problems`
@@ -255,6 +260,7 @@ AIRAWeb/
 
 #### `POST /api/courses/:course_id/teachers`
 - 需要登录
+- 提交后进入审核，不会立即出现在教师目录
 
 ```json
 {
@@ -292,6 +298,7 @@ AIRAWeb/
 
 #### `POST /api/courses/:course_id/teachers/:teacher_id/grading-standards`
 - 需要登录
+- 提交后进入审核，不会立即公开展示
 
 ```json
 {
@@ -340,7 +347,7 @@ AIRAWeb/
 
 #### `DELETE /api/favorites/:problem_id`
 
-### 6.4 Admin
+### 6.4 Admin Review
 
 #### `GET /api/admin/course-description-submissions?status=pending`
 - 返回课程简介提案列表
@@ -357,6 +364,18 @@ AIRAWeb/
 说明：
 - `action` 仅支持 `approve` / `reject`
 - `approve` 时会同步更新 `courses.description`
+
+#### `GET /api/admin/teacher-submissions?status=pending`
+- 返回教师信息提案列表
+
+#### `POST /api/admin/teacher-submissions/:id/review`
+- `approve` 时会创建正式教师并出现在教师目录
+
+#### `GET /api/admin/grading-standard-submissions?status=pending`
+- 返回评分标准提案列表
+
+#### `POST /api/admin/grading-standard-submissions/:id/review`
+- `approve` 时会创建正式评分标准并公开展示
 
 ### 6.5 Answers
 
