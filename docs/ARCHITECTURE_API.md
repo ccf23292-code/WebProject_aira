@@ -66,6 +66,8 @@ AIRAWeb/
   - Markdown + LaTeX 渲染
 - `src/components/problem/ExplanationSection.tsx`
   - 题解展示、提交、投票
+- `src/components/course/CourseDescriptionPanel.tsx`
+  - 课程简介展示与简介修改提案提交
 - `src/components/form/PasswordInput.tsx`
   - 密码显隐输入框
 
@@ -97,13 +99,14 @@ AIRAWeb/
 - `problem_explanation_controller.go`：题解列表、投稿、编辑、投票
 - `recall_controller.go`：回忆卷协作
 - `admin_controller.go`：管理员修改试卷 / 题目
+  - 现在也负责课程简介提案审核
 
 ### 服务层
 - `auth_service.go`
   - 用户注册、登录、验证码、token 校验
   - 现在是数据库版，不再是内存版
 - `course_service.go`
-  - 课程搜索、教师目录、课程评论、教师评论、评分标准
+  - 课程搜索、课程简介提案、教师目录、课程评论、教师评论、评分标准
 - `paper_service.go`
   - 试卷列表、题目列表、题目更新
 - `favorite_service.go`
@@ -141,6 +144,7 @@ AIRAWeb/
 
 ### 课程与题目
 - `courses`
+- `course_description_submissions`
 - `teachers`
 - `test_papers`
 - `problems`
@@ -233,6 +237,19 @@ AIRAWeb/
 #### `GET /api/courses/:course_id`
 - 返回课程详情
 
+#### `POST /api/courses/:course_id/description-submissions`
+- 需要登录
+
+```json
+{
+  "content": "这门课重点在树、图和排序，建议先做近三年卷。"
+}
+```
+
+#### `GET /api/courses/:course_id/description-submissions/mine`
+- 需要登录
+- 返回当前用户针对该课程提交过的简介修改记录
+
 #### `GET /api/courses/:course_id/teachers`
 - 返回当前课程的教师目录
 
@@ -287,6 +304,8 @@ AIRAWeb/
 说明：
 - 评论和评分标准的读取结果会补齐 `user_name` / `teacher_name`
 - 教师目录已经从前端本地状态切到后端持久化
+- 课程广场卡片正文直接读取 `courses.description`
+- 用户不能直接改公开简介，只能提交提案
 
 #### `GET /api/courses/:course_id/papers`
 - 返回该课程下的试卷
@@ -321,7 +340,25 @@ AIRAWeb/
 
 #### `DELETE /api/favorites/:problem_id`
 
-### 6.4 Answers
+### 6.4 Admin
+
+#### `GET /api/admin/course-description-submissions?status=pending`
+- 返回课程简介提案列表
+
+#### `POST /api/admin/course-description-submissions/:id/review`
+
+```json
+{
+  "action": "approve",
+  "review_note": "表述准确，允许发布"
+}
+```
+
+说明：
+- `action` 仅支持 `approve` / `reject`
+- `approve` 时会同步更新 `courses.description`
+
+### 6.5 Answers
 
 #### `POST /api/answers`
 - 单题记录，主要用于刷题模式
@@ -356,7 +393,7 @@ AIRAWeb/
 #### `GET /api/answers?page=1&size=10`
 - 返回做题记录列表
 
-### 6.5 Wrongbook
+### 6.6 Wrongbook
 
 #### `GET /api/wrongbook?status=unmastered|mastered|trash`
 - 返回按课程聚合后的错题本
@@ -381,7 +418,7 @@ AIRAWeb/
 #### `DELETE /api/wrongbook/trash`
 - 清空垃圾篓
 
-### 6.6 Profile
+### 6.7 Profile
 
 #### `GET /api/profile`
 - 返回：
@@ -404,7 +441,7 @@ AIRAWeb/
 - 字段名：`avatar`
 - 限制：不超过 5MB
 
-### 6.7 Problem Explanations
+### 6.8 Problem Explanations
 
 #### `GET /api/problems/:problem_id/explanations`
 - 公开读
@@ -442,7 +479,7 @@ AIRAWeb/
 - `-1` = 踩
 - `0` = 撤回
 
-### 6.8 Recall
+### 6.9 Recall
 
 #### `GET /api/recall/courses/:course_id/papers`
 #### `POST /api/recall/courses/:course_id/papers`
@@ -455,7 +492,7 @@ AIRAWeb/
 #### `GET /api/recall/questions/:question_id/comments?page=1&size=10`
 #### `POST /api/recall/questions/:question_id/comments`
 
-### 6.9 Admin
+### 6.10 Paper Admin
 
 #### `POST /api/admin/papers`
 #### `PUT /api/admin/papers/:paper_id`
