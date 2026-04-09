@@ -115,8 +115,6 @@ function CourseCard({ course }: { course: Course }) {
     course.college || null,
   ].filter(Boolean) as string[];
 
-  const capabilities = ['试卷练习', '课程评论', '教师评分标准'];
-
   return (
     <Link
       href={`/courses/${encodeURIComponent(course.id)}`}
@@ -144,19 +142,8 @@ function CourseCard({ course }: { course: Course }) {
       </div>
 
       <p className="mt-4 text-sm leading-7 text-gray-600">
-        {course.description || '进入课程页后可以查看试卷、课程评论、教师评论和评分标准。'}
+        {course.description || '当前还没有课程简介。'}
       </p>
-
-      <div className="mt-5 flex flex-wrap gap-2">
-        {capabilities.map((item) => (
-          <span
-            key={item}
-            className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-500"
-          >
-            {item}
-          </span>
-        ))}
-      </div>
     </Link>
   );
 }

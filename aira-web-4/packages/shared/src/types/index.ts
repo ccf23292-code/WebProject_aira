@@ -80,6 +80,27 @@ export interface Course {
   description: string;
 }
 
+export interface CourseDescriptionSubmission {
+  id: number;
+  course_id: string;
+  user_id: string;
+  content: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewed_by?: string;
+  review_note?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SubmitCourseDescriptionDto {
+  content: string;
+}
+
+export interface ReviewCourseDescriptionDto {
+  action: 'approve' | 'reject';
+  review_note?: string;
+}
+
 export interface TeacherDirectoryEntry {
   id: string;
   course_id: string;
