@@ -39,4 +39,6 @@ go run ./cmd/import_courses --path "$ROOT_DIR/data/course" --only-name "数据�
 
 go run ./cmd/import_papers --path "$ROOT_DIR/data/papers/CS1018F" --course-id "CS1018F"
 
-go run ./cmd/seed_admin --username "admin" --password "admin@123" --email "admin@example.com" --nickname "admin"
+go run ./cmd/seed_user --username "admin" --password "admin@123" --email "admin@example.com" --nickname "admin" --role "admin"
+
+go run ./cmd/seed_user --username "student" --password "student@123" --email "student@example.com" --nickname "student" --role "student"

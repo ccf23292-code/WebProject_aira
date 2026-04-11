@@ -31,6 +31,7 @@ func main() {
 		&models.TeacherComment{},
 		&models.CourseComment{},
 		&models.CourseDescriptionSubmission{},
+		&models.HomepageMessage{},
 		&models.TestPaper{},
 		&models.Problem{},
 		&models.Favorite{},
@@ -45,6 +46,7 @@ func main() {
 	authService := services.NewAuthService(db)
 	paperService := services.NewPaperService(db)
 	courseService := services.NewCourseService(db)
+	homepageService := services.NewHomepageService(db)
 	recallService := services.NewRecallService(db)
 	favoriteService := services.NewFavoriteService(db, paperService)
 	answerService := services.NewAnswerService(db, paperService)
@@ -59,6 +61,7 @@ func main() {
 	authCtl := routers.NewAuthController(authService)
 	paperCtl := routers.NewPaperController(paperService, courseService)
 	courseCtl := routers.NewCourseController(courseService)
+	homepageCtl := routers.NewHomepageController(homepageService)
 	favoriteCtl := routers.NewFavoriteController(favoriteService)
 	adminCtl := routers.NewAdminController(paperService, courseService)
 	recallCtl := routers.NewRecallController(recallService)
@@ -89,6 +92,7 @@ func main() {
 
 		// 2. browse_module —— 公开访问
 		paperCtl.RegisterRoutes(api)
+		homepageCtl.RegisterPublicRoutes(api)
 		api.Use(middlewares.TryAuth(authService))
 		explanationCtl.RegisterPublicRoutes(api)
 
@@ -122,6 +126,9 @@ func main() {
 		// course_module -- course comments (auth required)
 		courseGroup := api.Group("", middlewares.AuthRequired(authService))
 		courseCtl.RegisterRoutes(courseGroup)
+
+		homepageGroup := api.Group("", middlewares.AuthRequired(authService))
+		homepageCtl.RegisterProtectedRoutes(homepageGroup)
 
 		// 9. explanation_module —— 题解（公开读，登录后写/投票）
 		explanationGroup := api.Group("", middlewares.AuthRequired(authService))
