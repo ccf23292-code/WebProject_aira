@@ -80,6 +80,20 @@ export interface Course {
   description: string;
 }
 
+export interface HomepageMessage {
+  id: number;
+  user_id: number;
+  user_name: string;
+  avatar_url?: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AddHomepageMessageDto {
+  content: string;
+}
+
 export interface CourseDescriptionSubmission {
   id: number;
   course_id: string;
