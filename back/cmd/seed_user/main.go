@@ -8,6 +8,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	"warehouse-web/models"
 	"warehouse-web/services"
@@ -40,6 +41,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("database init failed: %v", err)
 	}
+	db = db.Session(&gorm.Session{Logger: logger.Default.LogMode(logger.Silent)})
 	if err := db.AutoMigrate(&models.User{}, &models.UserProfile{}); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}

@@ -20,6 +20,7 @@ Browser
 - 收藏与错题本
 - 题解协作
 - 用户认证与个人中心
+- 首页反馈留言
 
 ## 2. 仓库结构
 
@@ -71,6 +72,8 @@ AIRAWeb/
   - 课程简介展示与简介修改提案提交
 - `src/app/admin/reviews/page.tsx`
   - 管理员审核中心，审核课程简介、教师信息、评分标准
+- `src/lib/homepage.ts`
+  - 首页留言广场的读写 API 封装
 - `src/components/form/PasswordInput.tsx`
   - 密码显隐输入框
 
@@ -103,6 +106,7 @@ AIRAWeb/
 - `recall_controller.go`：回忆卷协作
 - `admin_controller.go`：管理员修改试卷 / 题目
   - 现在也负责课程简介、教师信息、评分标准的审核
+- `homepage_controller.go`：首页留言列表、发布
 
 ### 服务层
 - `auth_service.go`
@@ -122,6 +126,8 @@ AIRAWeb/
   - 用户资料读取 / 更新，合并 `users + user_profiles`
 - `problem_explanation_service.go`
   - 同学解析、Top 3、投票、撤回
+- `homepage_service.go`
+  - 首页留言列表、留言发布、用户昵称/头像回填
 - `recall_service.go`
   - 回忆卷题目、支持票、评论
 
@@ -160,6 +166,7 @@ AIRAWeb/
 - `wrong_questions`
 - `problem_explanations`
 - `problem_explanation_votes`
+- `homepage_messages`
 
 ### 协作补题
 - `recall_papers`
@@ -241,6 +248,30 @@ AIRAWeb/
 
 #### `GET /api/courses/:course_id`
 - 返回课程详情
+
+#### `GET /api/homepage/messages`
+- 返回首页留言列表
+- 公开接口
+
+返回字段：
+- `id`
+- `user_id`
+- `user_name`
+- `avatar_url`
+- `content`
+- `created_at`
+- `updated_at`
+
+#### `POST /api/homepage/messages`
+- 需要登录
+
+请求体：
+
+```json
+{
+  "content": "希望题解区支持章节标签和老师维度筛选。"
+}
+```
 
 #### `POST /api/courses/:course_id/description-submissions`
 - 需要登录
