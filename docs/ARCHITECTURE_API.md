@@ -20,6 +20,7 @@ Browser
 - 收藏与错题本
 - 题解协作
 - 用户认证与个人中心
+- 首页反馈留言
 
 ## 2. 仓库结构
 
@@ -58,6 +59,7 @@ AIRAWeb/
 - `/profile/favorites`：按课程分组的收藏
 - `/profile/wrongbook`：按课程分组的错题本
 - `/profile/records`：做题记录
+- `/admin/reviews`：管理员审核中心
 
 ### 关键组件
 - `src/components/layout/Navbar.tsx`
@@ -66,6 +68,12 @@ AIRAWeb/
   - Markdown + LaTeX 渲染
 - `src/components/problem/ExplanationSection.tsx`
   - 题解展示、提交、投票
+- `src/components/course/CourseDescriptionPanel.tsx`
+  - 课程简介展示与简介修改提案提交
+- `src/app/admin/reviews/page.tsx`
+  - 管理员审核中心，审核课程简介、教师信息、评分标准
+- `src/lib/homepage.ts`
+  - 首页留言广场的读写 API 封装
 - `src/components/form/PasswordInput.tsx`
   - 密码显隐输入框
 
@@ -97,13 +105,15 @@ AIRAWeb/
 - `problem_explanation_controller.go`：题解列表、投稿、编辑、投票
 - `recall_controller.go`：回忆卷协作
 - `admin_controller.go`：管理员修改试卷 / 题目
+  - 现在也负责课程简介、教师信息、评分标准的审核
+- `homepage_controller.go`：首页留言列表、发布
 
 ### 服务层
 - `auth_service.go`
   - 用户注册、登录、验证码、token 校验
   - 现在是数据库版，不再是内存版
 - `course_service.go`
-  - 课程搜索与详情读取
+  - 课程搜索、课程简介提案、教师/评分标准提案、教师目录、课程评论、教师评论、评分标准
 - `paper_service.go`
   - 试卷列表、题目列表、题目更新
 - `favorite_service.go`
@@ -116,6 +126,8 @@ AIRAWeb/
   - 用户资料读取 / 更新，合并 `users + user_profiles`
 - `problem_explanation_service.go`
   - 同学解析、Top 3、投票、撤回
+- `homepage_service.go`
+  - 首页留言列表、留言发布、用户昵称/头像回填
 - `recall_service.go`
   - 回忆卷题目、支持票、评论
 
@@ -141,6 +153,10 @@ AIRAWeb/
 
 ### 课程与题目
 - `courses`
+- `course_description_submissions`
+- `teacher_submissions`
+- `grading_standard_submissions`
+- `teachers`
 - `test_papers`
 - `problems`
 
@@ -150,6 +166,7 @@ AIRAWeb/
 - `wrong_questions`
 - `problem_explanations`
 - `problem_explanation_votes`
+- `homepage_messages`
 
 ### 协作补题
 - `recall_papers`
@@ -225,11 +242,108 @@ AIRAWeb/
 
 ### 6.2 Browse
 
-#### `GET /api/courses?q=关键词`
+#### `GET /api/courses?query=关键词`
 - 支持课程名 / 课程代码搜索
+- 兼容旧参数 `q`
 
 #### `GET /api/courses/:course_id`
 - 返回课程详情
+
+#### `GET /api/homepage/messages`
+- 返回首页留言列表
+- 公开接口
+
+返回字段：
+- `id`
+- `user_id`
+- `user_name`
+- `avatar_url`
+- `content`
+- `created_at`
+- `updated_at`
+
+#### `POST /api/homepage/messages`
+- 需要登录
+
+请求体：
+
+```json
+{
+  "content": "希望题解区支持章节标签和老师维度筛选。"
+}
+```
+
+#### `POST /api/courses/:course_id/description-submissions`
+- 需要登录
+
+```json
+{
+  "content": "这门课重点在树、图和排序，建议先做近三年卷。"
+}
+```
+
+#### `GET /api/courses/:course_id/description-submissions/mine`
+- 需要登录
+- 返回当前用户针对该课程提交过的简介修改记录
+
+#### `GET /api/courses/:course_id/teachers`
+- 返回当前课程的教师目录
+
+#### `POST /api/courses/:course_id/teachers`
+- 需要登录
+- 提交后进入审核，不会立即出现在教师目录
+
+```json
+{
+  "name": "李老师",
+  "title": "2025 春夏"
+}
+```
+
+#### `GET /api/courses/:course_id/comments`
+- 返回课程评论列表
+
+#### `POST /api/courses/:course_id/comments`
+- 需要登录
+
+```json
+{
+  "comment": "这门课建议先刷树和图。"
+}
+```
+
+#### `GET /api/courses/:course_id/teachers/:teacher_id/comments`
+- 返回某位教师的评论列表
+
+#### `POST /api/courses/:course_id/teachers/:teacher_id/comments`
+- 需要登录
+
+```json
+{
+  "comment": "作业量中等，期末题风格很稳定。"
+}
+```
+
+#### `GET /api/courses/:course_id/teachers/:teacher_id/grading-standards`
+- 返回某位教师的评分标准列表
+
+#### `POST /api/courses/:course_id/teachers/:teacher_id/grading-standards`
+- 需要登录
+- 提交后进入审核，不会立即公开展示
+
+```json
+{
+  "description": "平时分看作业和签到",
+  "standard": "平时 40%，期末 60%",
+  "standard_img": ""
+}
+```
+
+说明：
+- 评论和评分标准的读取结果会补齐 `user_name` / `teacher_name`
+- 教师目录已经从前端本地状态切到后端持久化
+- 课程广场卡片正文直接读取 `courses.description`
+- 用户不能直接改公开简介，只能提交提案
 
 #### `GET /api/courses/:course_id/papers`
 - 返回该课程下的试卷
@@ -264,7 +378,37 @@ AIRAWeb/
 
 #### `DELETE /api/favorites/:problem_id`
 
-### 6.4 Answers
+### 6.4 Admin Review
+
+#### `GET /api/admin/course-description-submissions?status=pending`
+- 返回课程简介提案列表
+
+#### `POST /api/admin/course-description-submissions/:id/review`
+
+```json
+{
+  "action": "approve",
+  "review_note": "表述准确，允许发布"
+}
+```
+
+说明：
+- `action` 仅支持 `approve` / `reject`
+- `approve` 时会同步更新 `courses.description`
+
+#### `GET /api/admin/teacher-submissions?status=pending`
+- 返回教师信息提案列表
+
+#### `POST /api/admin/teacher-submissions/:id/review`
+- `approve` 时会创建正式教师并出现在教师目录
+
+#### `GET /api/admin/grading-standard-submissions?status=pending`
+- 返回评分标准提案列表
+
+#### `POST /api/admin/grading-standard-submissions/:id/review`
+- `approve` 时会创建正式评分标准并公开展示
+
+### 6.5 Answers
 
 #### `POST /api/answers`
 - 单题记录，主要用于刷题模式
@@ -299,7 +443,7 @@ AIRAWeb/
 #### `GET /api/answers?page=1&size=10`
 - 返回做题记录列表
 
-### 6.5 Wrongbook
+### 6.6 Wrongbook
 
 #### `GET /api/wrongbook?status=unmastered|mastered|trash`
 - 返回按课程聚合后的错题本
@@ -324,7 +468,7 @@ AIRAWeb/
 #### `DELETE /api/wrongbook/trash`
 - 清空垃圾篓
 
-### 6.6 Profile
+### 6.7 Profile
 
 #### `GET /api/profile`
 - 返回：
@@ -347,7 +491,7 @@ AIRAWeb/
 - 字段名：`avatar`
 - 限制：不超过 5MB
 
-### 6.7 Problem Explanations
+### 6.8 Problem Explanations
 
 #### `GET /api/problems/:problem_id/explanations`
 - 公开读
@@ -385,7 +529,7 @@ AIRAWeb/
 - `-1` = 踩
 - `0` = 撤回
 
-### 6.8 Recall
+### 6.9 Recall
 
 #### `GET /api/recall/courses/:course_id/papers`
 #### `POST /api/recall/courses/:course_id/papers`
@@ -398,7 +542,7 @@ AIRAWeb/
 #### `GET /api/recall/questions/:question_id/comments?page=1&size=10`
 #### `POST /api/recall/questions/:question_id/comments`
 
-### 6.9 Admin
+### 6.10 Paper Admin
 
 #### `POST /api/admin/papers`
 #### `PUT /api/admin/papers/:paper_id`

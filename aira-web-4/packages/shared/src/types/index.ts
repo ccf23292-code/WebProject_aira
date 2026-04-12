@@ -80,6 +80,84 @@ export interface Course {
   description: string;
 }
 
+export interface HomepageMessage {
+  id: number;
+  user_id: number;
+  user_name: string;
+  avatar_url?: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AddHomepageMessageDto {
+  content: string;
+}
+
+export interface UpdateHomepageMessageDto {
+  content: string;
+}
+
+export interface CourseDescriptionSubmission {
+  id: number;
+  course_id: string;
+  user_id: string;
+  content: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewed_by?: string;
+  review_note?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SubmitCourseDescriptionDto {
+  content: string;
+}
+
+export interface ReviewCourseDescriptionDto {
+  action: 'approve' | 'reject';
+  review_note?: string;
+}
+
+export interface TeacherSubmission {
+  id: number;
+  course_id: string;
+  user_id: string;
+  name: string;
+  title?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewed_by?: string;
+  review_note?: string;
+  published_teacher_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GradingStandardSubmission {
+  id: number;
+  course_id: string;
+  teacher_id: string;
+  user_id: string;
+  description?: string;
+  standard?: string;
+  standard_img?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewed_by?: string;
+  review_note?: string;
+  published_standard_id?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TeacherDirectoryEntry {
+  id: string;
+  course_id: string;
+  name: string;
+  title?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface CourseComment {
   id: string | number;
   course_id?: string;
@@ -105,6 +183,12 @@ export interface GradingStandard {
   standard_img?: string;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface AddTeacherDto {
+  id?: string;
+  name: string;
+  title?: string;
 }
 
 /** GET /api/courses/{course_id}/papers — 试卷 */

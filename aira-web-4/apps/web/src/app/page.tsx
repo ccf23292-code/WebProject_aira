@@ -3,12 +3,28 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import type { HomepageMessage } from '@aira/shared';
+import { ErrorState } from '@/components/layout/StateDisplay';
+import { useFetch } from '@/hooks/useFetch';
 import { useAuth } from '@/lib/auth';
+import {
+  addHomepageMessage,
+  deleteHomepageMessage,
+  getHomepageMessages,
+  updateHomepageMessage,
+} from '@/lib/homepage';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const [query, setQuery] = useState('');
+  const [messageValue, setMessageValue] = useState('');
+  const [messageError, setMessageError] = useState('');
+  const [submittingMessage, setSubmittingMessage] = useState(false);
+  const messagesQuery = useFetch(
+    () => getHomepageMessages(),
+    [],
+  );
 
   const quickLinks = useMemo(() => (
     isLoggedIn
@@ -27,6 +43,27 @@ export default function HomePage() {
   const handleSearch = () => {
     const trimmed = query.trim();
     router.push(trimmed ? `/courses?query=${encodeURIComponent(trimmed)}` : '/courses');
+  };
+
+  const handleSubmitMessage = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const content = messageValue.trim();
+    if (!content) {
+      setMessageError('留言内容不能为空。');
+      return;
+    }
+
+    setSubmittingMessage(true);
+    setMessageError('');
+    try {
+      await addHomepageMessage({ content });
+      setMessageValue('');
+      messagesQuery.refetch();
+    } catch (error) {
+      setMessageError(error instanceof Error ? error.message : '发布失败，请稍后重试。');
+    } finally {
+      setSubmittingMessage(false);
+    }
   };
 
   return (
@@ -119,6 +156,87 @@ export default function HomePage() {
           </ol>
         </div>
       </section>
+
+      <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="grid gap-6 lg:grid-cols-[0.95fr,1.05fr]">
+          <div className="space-y-4">
+            <div>
+              <div className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600">
+                留言广场
+              </div>
+              <h2 className="mt-3 text-2xl font-semibold text-gray-900">留下你希望这个项目继续改进的地方</h2>
+              <p className="mt-2 text-sm leading-7 text-gray-500">
+                这里收集对题库、课程页、模拟考、题解协作和用户中心的改进建议。留言直接公开展示，方便持续迭代。
+              </p>
+            </div>
+
+            {isLoggedIn ? (
+              <form className="space-y-3 rounded-2xl border border-gray-200 bg-gray-50 p-4" onSubmit={handleSubmitMessage}>
+                <textarea
+                  value={messageValue}
+                  onChange={(event) => setMessageValue(event.target.value)}
+                  rows={6}
+                  placeholder="例如：希望课程详情页补充章节导航、留言支持筛选、模拟考支持断点恢复。"
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm leading-6 outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+                />
+                {messageError ? <p className="text-sm text-red-600">{messageError}</p> : null}
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={submittingMessage}
+                    className="rounded-xl bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                  >
+                    {submittingMessage ? '发布中...' : '发布留言'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-5 text-sm leading-7 text-gray-500">
+                当前可先浏览其他用户的建议。登录后，你也可以直接发布对项目的改进意见。
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">最新留言</h3>
+                <p className="mt-1 text-sm text-gray-500">按时间倒序展示首页反馈。</p>
+              </div>
+              <button
+                type="button"
+                onClick={messagesQuery.refetch}
+                className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50"
+              >
+                刷新
+              </button>
+            </div>
+
+            {messagesQuery.error ? (
+              <ErrorState message={messagesQuery.error} onRetry={messagesQuery.refetch} />
+            ) : messagesQuery.loading ? (
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-5 text-sm text-gray-500">
+                正在加载留言...
+              </div>
+            ) : messagesQuery.data && messagesQuery.data.length > 0 ? (
+              <div className="space-y-3">
+                {messagesQuery.data.map((item) => (
+                  <HomepageMessageCard
+                    key={item.id}
+                    item={item}
+                    currentUserId={user?.userId ?? null}
+                    onChanged={messagesQuery.refetch}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-5 text-sm text-gray-500">
+                还没有留言。你可以先发布第一条改进建议。
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -130,4 +248,134 @@ function InfoCard({ title, value }: { title: string; value: string }) {
       <div className="mt-2 text-lg font-semibold text-gray-900">{value}</div>
     </div>
   );
+}
+
+function HomepageMessageCard({
+  item,
+  currentUserId,
+  onChanged,
+}: {
+  item: HomepageMessage;
+  currentUserId: string | null;
+  onChanged: () => void;
+}) {
+  const isOwner = currentUserId === formatFrontendUserId(item.user_id);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(item.content);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSave = async () => {
+    const content = draft.trim();
+    if (!content) {
+      setError('留言内容不能为空。');
+      return;
+    }
+    setSubmitting(true);
+    setError('');
+    try {
+      await updateHomepageMessage(item.id, { content });
+      setEditing(false);
+      onChanged();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : '保存失败，请稍后重试。');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('确定删除这条留言吗？')) return;
+    setSubmitting(true);
+    setError('');
+    try {
+      await deleteHomepageMessage(item.id);
+      onChanged();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : '删除失败，请稍后重试。');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <article className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+      <div className="flex items-start gap-3">
+        {item.avatar_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.avatar_url}
+            alt={item.user_name}
+            className="h-10 w-10 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-white">
+            {item.user_name?.charAt(0)?.toUpperCase() ?? 'U'}
+          </div>
+        )}
+
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <div className="text-sm font-medium text-gray-900">{item.user_name || '匿名同学'}</div>
+              <div className="text-xs text-gray-500">
+                {new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(item.created_at))}
+              </div>
+            </div>
+            {isOwner ? (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDraft(item.content);
+                    setEditing((value) => !value);
+                    setError('');
+                  }}
+                  disabled={submitting}
+                  className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {editing ? '取消' : '编辑'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={submitting}
+                  className="rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs text-rose-700 transition-colors hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  删除
+                </button>
+              </div>
+            ) : null}
+          </div>
+          {editing ? (
+            <div className="mt-3 space-y-3">
+              <textarea
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                rows={4}
+                className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm leading-6 outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={submitting}
+                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                >
+                  {submitting ? '保存中...' : '保存修改'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-gray-600">{item.content}</p>
+          )}
+          {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function formatFrontendUserId(id: number) {
+  return `u-${String(id).padStart(8, '0')}`;
 }

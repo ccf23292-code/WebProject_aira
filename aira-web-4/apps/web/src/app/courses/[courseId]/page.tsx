@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import type { ReactNode } from 'react';
 import type { Course, Paper } from '@aira/shared';
+import { CourseDescriptionPanel } from '@/components/course/CourseDescriptionPanel';
 import { CourseCommunityPanel } from '@/components/course/CourseCommunityPanel';
 import { DetailSkeleton } from '@/components/layout/Skeleton';
 import { EmptyState, ErrorState } from '@/components/layout/StateDisplay';
@@ -110,6 +111,8 @@ export default function CourseDetailPage() {
           />
         )}
       </section>
+
+      {course ? <CourseDescriptionPanel course={course} /> : null}
 
       <CourseCommunityPanel courseId={courseId} courseName={courseName} />
     </div>

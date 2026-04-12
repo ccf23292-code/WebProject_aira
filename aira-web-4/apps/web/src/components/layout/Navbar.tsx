@@ -26,6 +26,7 @@ export function Navbar() {
     { href: '/', label: '首页' },
     { href: '/courses', label: '课程' },
     ...(isLoggedIn ? [{ href: '/profile', label: '个人中心' }] : []),
+    ...(user?.roles?.includes('admin') ? [{ href: '/admin/reviews', label: '管理审核' }] : []),
   ];
 
   useEffect(() => {

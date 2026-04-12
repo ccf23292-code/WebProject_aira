@@ -3,6 +3,10 @@ package main
 import (
 	"log"
 	"os"
+<<<<<<< HEAD
+=======
+	"strings"
+>>>>>>> dzz
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -26,9 +30,13 @@ func main() {
 		&models.EmailVerification{},
 		&models.Course{},
 		&models.Teacher{},
+		&models.TeacherSubmission{},
 		&models.GradingStandard{},
+		&models.GradingStandardSubmission{},
 		&models.TeacherComment{},
 		&models.CourseComment{},
+		&models.CourseDescriptionSubmission{},
+		&models.HomepageMessage{},
 		&models.TestPaper{},
 		&models.Problem{},
 		&models.Favorite{},
@@ -39,10 +47,25 @@ func main() {
 	); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
+<<<<<<< HEAD
 
 	authService := services.NewAuthService(db)
+=======
+	// ── 初始化服务层 ──────────────────────────────
+	var mailer services.Mailer
+	if !isVerificationEchoEnabled() {
+		smtpConfig, err := services.LoadSMTPConfigFromEnv()
+		if err != nil {
+			log.Fatalf("smtp init failed: %v", err)
+		}
+		mailer = services.NewSMTPMailer(smtpConfig)
+	}
+
+	authService := services.NewAuthService(db, mailer)
+>>>>>>> dzz
 	paperService := services.NewPaperService(db)
 	courseService := services.NewCourseService(db)
+	homepageService := services.NewHomepageService(db)
 	recallService := services.NewRecallService(db)
 	favoriteService := services.NewFavoriteService(db, paperService)
 	answerService := services.NewAnswerService(db, paperService)
@@ -56,8 +79,9 @@ func main() {
 	authCtl := routers.NewAuthController(authService)
 	paperCtl := routers.NewPaperController(paperService, courseService)
 	courseCtl := routers.NewCourseController(courseService)
+	homepageCtl := routers.NewHomepageController(homepageService)
 	favoriteCtl := routers.NewFavoriteController(favoriteService)
-	adminCtl := routers.NewAdminController(paperService)
+	adminCtl := routers.NewAdminController(paperService, courseService)
 	recallCtl := routers.NewRecallController(recallService)
 	answerCtl := routers.NewAnswerController(answerService)
 	wrongCtl := routers.NewWrongBookController(wrongBookService)
@@ -87,6 +111,7 @@ func main() {
 		authCtl.RegisterRoutes(authGroup)
 
 		paperCtl.RegisterRoutes(api)
+		homepageCtl.RegisterPublicRoutes(api)
 		api.Use(middlewares.TryAuth(authService))
 		explanationCtl.RegisterPublicRoutes(api)
 
@@ -118,6 +143,13 @@ func main() {
 		courseGroup := api.Group("", middlewares.AuthRequired(authService))
 		courseCtl.RegisterRoutes(courseGroup)
 
+<<<<<<< HEAD
+=======
+		homepageGroup := api.Group("", middlewares.AuthRequired(authService))
+		homepageCtl.RegisterProtectedRoutes(homepageGroup)
+
+		// 9. explanation_module —— 题解（公开读，登录后写/投票）
+>>>>>>> dzz
 		explanationGroup := api.Group("", middlewares.AuthRequired(authService))
 		explanationCtl.RegisterProtectedRoutes(explanationGroup)
 	}
@@ -126,4 +158,9 @@ func main() {
 	if err := r.Run(":3001"); err != nil {
 		log.Fatalf("server failed to start: %v", err)
 	}
+}
+
+func isVerificationEchoEnabled() bool {
+	value := strings.ToLower(strings.TrimSpace(os.Getenv("DEV_EMAIL_ECHO")))
+	return value == "1" || value == "true" || value == "yes"
 }
