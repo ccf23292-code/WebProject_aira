@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -43,7 +45,16 @@ func main() {
 		log.Fatalf("database migrate failed: %v", err)
 	}
 	// ── 初始化服务层 ──────────────────────────────
-	authService := services.NewAuthService(db)
+	var mailer services.Mailer
+	if !isVerificationEchoEnabled() {
+		smtpConfig, err := services.LoadSMTPConfigFromEnv()
+		if err != nil {
+			log.Fatalf("smtp init failed: %v", err)
+		}
+		mailer = services.NewSMTPMailer(smtpConfig)
+	}
+
+	authService := services.NewAuthService(db, mailer)
 	paperService := services.NewPaperService(db)
 	courseService := services.NewCourseService(db)
 	homepageService := services.NewHomepageService(db)
@@ -140,4 +151,9 @@ func main() {
 	if err := r.Run(":3001"); err != nil {
 		log.Fatalf("server failed to start: %v", err)
 	}
+}
+
+func isVerificationEchoEnabled() bool {
+	value := strings.ToLower(strings.TrimSpace(os.Getenv("DEV_EMAIL_ECHO")))
+	return value == "1" || value == "true" || value == "yes"
 }

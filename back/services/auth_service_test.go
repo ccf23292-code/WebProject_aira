@@ -12,6 +12,17 @@ import (
 	"warehouse-web/models"
 )
 
+type fakeMailer struct {
+	emails []string
+	codes  []string
+}
+
+func (m *fakeMailer) SendVerificationCode(email, code string, expiresIn time.Duration) error {
+	m.emails = append(m.emails, email)
+	m.codes = append(m.codes, code)
+	return nil
+}
+
 func newAuthTestDB(t *testing.T) *gorm.DB {
 	t.Helper()
 
@@ -131,5 +142,34 @@ func TestVerificationCodePersistsAcrossServiceInstances(t *testing.T) {
 		AgreeToPolicy:    true,
 	}); err != nil {
 		t.Fatalf("register after restart: %v", err)
+	}
+}
+
+func TestSendVerificationCodeRequiresZJUDomain(t *testing.T) {
+	db := newAuthTestDB(t)
+	service := NewAuthService(db)
+
+	if _, err := service.SendVerificationCode("alice@example.com", true); err == nil {
+		t.Fatalf("expected non-zju email to be rejected")
+	}
+}
+
+func TestSendVerificationCodeUsesMailerWhenEchoDisabled(t *testing.T) {
+	db := newAuthTestDB(t)
+	mailer := &fakeMailer{}
+	service := NewAuthService(db, mailer)
+
+	resp, err := service.SendVerificationCode("dave@zju.edu.cn", false)
+	if err != nil {
+		t.Fatalf("send verification code: %v", err)
+	}
+	if !resp.Sent {
+		t.Fatalf("expected sent response")
+	}
+	if len(mailer.emails) != 1 || mailer.emails[0] != "dave@zju.edu.cn" {
+		t.Fatalf("expected mailer to receive target email, got %#v", mailer.emails)
+	}
+	if len(mailer.codes) != 1 || len(mailer.codes[0]) != 6 {
+		t.Fatalf("expected mailer to receive a 6-digit code, got %#v", mailer.codes)
 	}
 }

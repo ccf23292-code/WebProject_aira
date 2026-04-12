@@ -41,12 +41,17 @@ func newServiceError(code string, status int, message string) *ServiceError {
 
 // AuthService 提供认证相关的业务逻辑（数据库版本）。
 type AuthService struct {
-	db *gorm.DB
+	db     *gorm.DB
+	mailer Mailer
 }
 
 // NewAuthService 创建数据库版认证服务，并确保默认管理员存在。
-func NewAuthService(db *gorm.DB) *AuthService {
-	return &AuthService{db: db}
+func NewAuthService(db *gorm.DB, mailers ...Mailer) *AuthService {
+	var mailer Mailer
+	if len(mailers) > 0 {
+		mailer = mailers[0]
+	}
+	return &AuthService{db: db, mailer: mailer}
 }
 
 type LoginRequest struct {
@@ -284,8 +289,8 @@ func (s *AuthService) ValidateAccessToken(token string) (*TokenClaims, error) {
 // SendVerificationCode 生成并缓存邮箱验证码（开发环境可选择回显）。
 func (s *AuthService) SendVerificationCode(email string, echo bool) (*VerificationCodeResponse, error) {
 	email = strings.TrimSpace(email)
-	if !emailRegex.MatchString(email) {
-		return nil, newServiceError("invalid_request", http.StatusBadRequest, "email format is invalid")
+	if err := validateZJUEmail(email); err != nil {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, err.Error())
 	}
 
 	emailKey := strings.ToLower(email)
@@ -301,6 +306,14 @@ func (s *AuthService) SendVerificationCode(email string, echo bool) (*Verificati
 	}
 
 	code := generateVerificationCode()
+	if !echo {
+		if s.mailer == nil {
+			return nil, newServiceError("service_unavailable", http.StatusServiceUnavailable, "email service is not configured")
+		}
+		if err := s.mailer.SendVerificationCode(emailKey, code, verificationCodeTTL); err != nil {
+			return nil, newServiceError("email_send_failed", http.StatusBadGateway, "failed to send verification email")
+		}
+	}
 	if err == nil {
 		entry.Code = code
 		entry.ExpiresAt = now.Add(verificationCodeTTL)
@@ -341,8 +354,8 @@ func (s *AuthService) validateRegister(req RegisterRequest) *ServiceError {
 		return newServiceError("invalid_request", http.StatusBadRequest, "username must be <= 64 characters")
 	}
 	email := strings.TrimSpace(req.Email)
-	if !emailRegex.MatchString(email) {
-		return newServiceError("invalid_request", http.StatusBadRequest, "email format is invalid")
+	if err := validateZJUEmail(email); err != nil {
+		return newServiceError("invalid_request", http.StatusBadRequest, err.Error())
 	}
 	if err := validatePassword(req.Password); err != nil {
 		return newServiceError("invalid_request", http.StatusBadRequest, err.Error())
@@ -384,6 +397,17 @@ func validatePassword(password string) error {
 	}
 	if !hasLetter || !hasNumber {
 		return fmt.Errorf("password must contain both letters and numbers")
+	}
+	return nil
+}
+
+func validateZJUEmail(email string) error {
+	email = strings.TrimSpace(email)
+	if !emailRegex.MatchString(email) {
+		return fmt.Errorf("email format is invalid")
+	}
+	if !strings.HasSuffix(strings.ToLower(email), "@zju.edu.cn") {
+		return fmt.Errorf("email must use the @zju.edu.cn domain")
 	}
 	return nil
 }
