@@ -94,6 +94,10 @@ export interface AddHomepageMessageDto {
   content: string;
 }
 
+export interface UpdateHomepageMessageDto {
+  content: string;
+}
+
 export interface CourseDescriptionSubmission {
   id: number;
   course_id: string;

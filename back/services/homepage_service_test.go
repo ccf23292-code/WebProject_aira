@@ -109,3 +109,66 @@ func TestListHomepageMessagesHydratesProfileFields(t *testing.T) {
 		t.Fatalf("expected avatar to be hydrated, got %#v", items[0])
 	}
 }
+
+func TestUpdateHomepageMessageAllowsAuthor(t *testing.T) {
+	db := newHomepageTestDB(t)
+	service := NewHomepageService(db)
+
+	if err := db.Create(&models.User{ID: 3, Username: "owner", Email: "owner@example.com", PasswordHash: "hash", Role: models.RoleStudent}).Error; err != nil {
+		t.Fatalf("create user: %v", err)
+	}
+	if err := db.Create(&models.HomepageMessage{UserID: 3, Content: "旧内容"}).Error; err != nil {
+		t.Fatalf("create message: %v", err)
+	}
+
+	item, err := service.UpdateMessage(3, 1, "新内容")
+	if err != nil {
+		t.Fatalf("update message: %v", err)
+	}
+	if item.Content != "新内容" {
+		t.Fatalf("expected updated content, got %#v", item)
+	}
+}
+
+func TestUpdateHomepageMessageRejectsNonAuthor(t *testing.T) {
+	db := newHomepageTestDB(t)
+	service := NewHomepageService(db)
+
+	if err := db.Create(&models.User{ID: 3, Username: "owner", Email: "owner@example.com", PasswordHash: "hash", Role: models.RoleStudent}).Error; err != nil {
+		t.Fatalf("create user: %v", err)
+	}
+	if err := db.Create(&models.User{ID: 4, Username: "other", Email: "other@example.com", PasswordHash: "hash", Role: models.RoleStudent}).Error; err != nil {
+		t.Fatalf("create other user: %v", err)
+	}
+	if err := db.Create(&models.HomepageMessage{ID: 7, UserID: 3, Content: "旧内容"}).Error; err != nil {
+		t.Fatalf("create message: %v", err)
+	}
+
+	if _, err := service.UpdateMessage(4, 7, "新内容"); err == nil {
+		t.Fatal("expected non-author update to fail")
+	}
+}
+
+func TestDeleteHomepageMessageAllowsAuthor(t *testing.T) {
+	db := newHomepageTestDB(t)
+	service := NewHomepageService(db)
+
+	if err := db.Create(&models.User{ID: 3, Username: "owner", Email: "owner@example.com", PasswordHash: "hash", Role: models.RoleStudent}).Error; err != nil {
+		t.Fatalf("create user: %v", err)
+	}
+	if err := db.Create(&models.HomepageMessage{ID: 9, UserID: 3, Content: "待删除"}).Error; err != nil {
+		t.Fatalf("create message: %v", err)
+	}
+
+	if err := service.DeleteMessage(3, 9); err != nil {
+		t.Fatalf("delete message: %v", err)
+	}
+
+	var count int64
+	if err := db.Model(&models.HomepageMessage{}).Where("id = ?", 9).Count(&count).Error; err != nil {
+		t.Fatalf("count messages: %v", err)
+	}
+	if count != 0 {
+		t.Fatalf("expected message to be deleted, count=%d", count)
+	}
+}

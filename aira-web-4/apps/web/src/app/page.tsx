@@ -7,11 +7,16 @@ import type { HomepageMessage } from '@aira/shared';
 import { ErrorState } from '@/components/layout/StateDisplay';
 import { useFetch } from '@/hooks/useFetch';
 import { useAuth } from '@/lib/auth';
-import { addHomepageMessage, getHomepageMessages } from '@/lib/homepage';
+import {
+  addHomepageMessage,
+  deleteHomepageMessage,
+  getHomepageMessages,
+  updateHomepageMessage,
+} from '@/lib/homepage';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const [query, setQuery] = useState('');
   const [messageValue, setMessageValue] = useState('');
   const [messageError, setMessageError] = useState('');
@@ -216,7 +221,12 @@ export default function HomePage() {
             ) : messagesQuery.data && messagesQuery.data.length > 0 ? (
               <div className="space-y-3">
                 {messagesQuery.data.map((item) => (
-                  <HomepageMessageCard key={item.id} item={item} />
+                  <HomepageMessageCard
+                    key={item.id}
+                    item={item}
+                    currentUserId={user?.userId ?? null}
+                    onChanged={messagesQuery.refetch}
+                  />
                 ))}
               </div>
             ) : (
@@ -240,7 +250,54 @@ function InfoCard({ title, value }: { title: string; value: string }) {
   );
 }
 
-function HomepageMessageCard({ item }: { item: HomepageMessage }) {
+function HomepageMessageCard({
+  item,
+  currentUserId,
+  onChanged,
+}: {
+  item: HomepageMessage;
+  currentUserId: string | null;
+  onChanged: () => void;
+}) {
+  const isOwner = currentUserId === formatFrontendUserId(item.user_id);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(item.content);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSave = async () => {
+    const content = draft.trim();
+    if (!content) {
+      setError('留言内容不能为空。');
+      return;
+    }
+    setSubmitting(true);
+    setError('');
+    try {
+      await updateHomepageMessage(item.id, { content });
+      setEditing(false);
+      onChanged();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : '保存失败，请稍后重试。');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('确定删除这条留言吗？')) return;
+    setSubmitting(true);
+    setError('');
+    try {
+      await deleteHomepageMessage(item.id);
+      onChanged();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : '删除失败，请稍后重试。');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <article className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
       <div className="flex items-start gap-3">
@@ -258,15 +315,67 @@ function HomepageMessageCard({ item }: { item: HomepageMessage }) {
         )}
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <div className="text-sm font-medium text-gray-900">{item.user_name || '匿名同学'}</div>
-            <div className="text-xs text-gray-500">
-              {new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(item.created_at))}
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <div className="text-sm font-medium text-gray-900">{item.user_name || '匿名同学'}</div>
+              <div className="text-xs text-gray-500">
+                {new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(item.created_at))}
+              </div>
             </div>
+            {isOwner ? (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDraft(item.content);
+                    setEditing((value) => !value);
+                    setError('');
+                  }}
+                  disabled={submitting}
+                  className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {editing ? '取消' : '编辑'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={submitting}
+                  className="rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs text-rose-700 transition-colors hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  删除
+                </button>
+              </div>
+            ) : null}
           </div>
-          <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-gray-600">{item.content}</p>
+          {editing ? (
+            <div className="mt-3 space-y-3">
+              <textarea
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                rows={4}
+                className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm leading-6 outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={submitting}
+                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                >
+                  {submitting ? '保存中...' : '保存修改'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-gray-600">{item.content}</p>
+          )}
+          {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
         </div>
       </div>
     </article>
   );
+}
+
+function formatFrontendUserId(id: number) {
+  return `u-${String(id).padStart(8, '0')}`;
 }

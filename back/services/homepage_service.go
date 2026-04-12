@@ -46,6 +46,50 @@ func (s *HomepageService) AddMessage(userID uint64, content string) (*models.Hom
 	return item, nil
 }
 
+// UpdateMessage updates one homepage message owned by the given user.
+func (s *HomepageService) UpdateMessage(userID, messageID uint64, content string) (*models.HomepageMessage, error) {
+	content = strings.TrimSpace(content)
+	if content == "" {
+		return nil, newServiceError("invalid_request", http.StatusBadRequest, "content 不能为空")
+	}
+
+	var item models.HomepageMessage
+	if err := s.db.First(&item, messageID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, newServiceError("not_found", http.StatusNotFound, "homepage message not found")
+		}
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to load homepage message")
+	}
+	if item.UserID != userID {
+		return nil, newServiceError("forbidden", http.StatusForbidden, "只能编辑自己发布的留言")
+	}
+
+	item.Content = content
+	if err := s.db.Save(&item).Error; err != nil {
+		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to update homepage message")
+	}
+	s.hydrateOne(&item)
+	return &item, nil
+}
+
+// DeleteMessage deletes one homepage message owned by the given user.
+func (s *HomepageService) DeleteMessage(userID, messageID uint64) error {
+	var item models.HomepageMessage
+	if err := s.db.First(&item, messageID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return newServiceError("not_found", http.StatusNotFound, "homepage message not found")
+		}
+		return newServiceError("internal_error", http.StatusInternalServerError, "failed to load homepage message")
+	}
+	if item.UserID != userID {
+		return newServiceError("forbidden", http.StatusForbidden, "只能删除自己发布的留言")
+	}
+	if err := s.db.Delete(&item).Error; err != nil {
+		return newServiceError("internal_error", http.StatusInternalServerError, "failed to delete homepage message")
+	}
+	return nil
+}
+
 func (s *HomepageService) hydrateOne(item *models.HomepageMessage) {
 	if item == nil {
 		return
