@@ -6,8 +6,8 @@ import "time"
 type AuthSession struct {
 	ID               uint64    `gorm:"primaryKey;autoIncrement" json:"id"`
 	UserID           uint64    `gorm:"index;not null"           json:"user_id"`
-	AccessToken      string    `gorm:"size:128;uniqueIndex"     json:"access_token"`
-	RefreshToken     string    `gorm:"size:128;uniqueIndex"     json:"refresh_token"`
+	AccessTokenHash  string    `gorm:"size:64;uniqueIndex"      json:"-"`
+	RefreshTokenHash string    `gorm:"size:64;uniqueIndex"      json:"-"`
 	AccessExpiresAt  time.Time `gorm:"index"                    json:"access_expires_at"`
 	RefreshExpiresAt time.Time `gorm:"index"                   json:"refresh_expires_at"`
 	CreatedAt        time.Time `json:"created_at"`

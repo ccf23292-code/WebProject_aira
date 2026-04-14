@@ -22,14 +22,14 @@ const (
 
 // User 对应数据库 users 表。
 type User struct {
-	ID            uint64    `gorm:"primaryKey;autoIncrement" json:"id"`
-	Username      string    `gorm:"size:64;uniqueIndex"      json:"username"`
-	Email         string    `gorm:"size:128;uniqueIndex"     json:"email"`
-	PasswordHash  string    `gorm:"size:255"                 json:"-"`
-	Role          Role      `gorm:"size:32"                  json:"role"`
-	RememberToken string    `gorm:"size:255"                 json:"-"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID                uint64    `gorm:"primaryKey;autoIncrement" json:"id"`
+	Username          string    `gorm:"size:64;uniqueIndex"      json:"username"`
+	Email             string    `gorm:"size:128;uniqueIndex"     json:"email"`
+	PasswordHash      string    `gorm:"size:255"                 json:"-"`
+	Role              Role      `gorm:"size:32"                  json:"role"`
+	RememberTokenHash string    `gorm:"column:remember_token;size:255" json:"-"`
+	CreatedAt         time.Time `json:"createdAt"`
+	UpdatedAt         time.Time `json:"updatedAt"`
 }
 
 // Valid 报告该角色是否为受支持的值之一。

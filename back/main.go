@@ -73,7 +73,7 @@ func main() {
 	courseCtl := routers.NewCourseController(courseService)
 	homepageCtl := routers.NewHomepageController(homepageService)
 	favoriteCtl := routers.NewFavoriteController(favoriteService)
-	adminCtl := routers.NewAdminController(paperService, courseService)
+	adminCtl := routers.NewAdminController(paperService, courseService, recallService)
 	recallCtl := routers.NewRecallController(recallService)
 	answerCtl := routers.NewAnswerController(answerService)
 	wrongCtl := routers.NewWrongBookController(wrongBookService)
@@ -91,11 +91,12 @@ func main() {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: false,
 	}))
+	r.Use(middlewares.RequireHTTPS())
 
 	api := r.Group("/api")
 	{

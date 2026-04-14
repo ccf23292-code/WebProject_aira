@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -44,9 +45,15 @@ func newAuthTestDB(t *testing.T) *gorm.DB {
 	return db
 }
 
+func newAuthTestService(t *testing.T, db *gorm.DB, mailers ...Mailer) *AuthService {
+	t.Helper()
+	t.Setenv("AUTH_SECRET", "test-auth-secret")
+	return NewAuthService(db, mailers...)
+}
+
 func TestRegisterPersistsUserAndProfile(t *testing.T) {
 	db := newAuthTestDB(t)
-	service := NewAuthService(db)
+	service := newAuthTestService(t, db)
 
 	sendResp, err := service.SendVerificationCode("alice@zju.edu.cn", true)
 	if err != nil {
@@ -68,7 +75,7 @@ func TestRegisterPersistsUserAndProfile(t *testing.T) {
 		t.Fatalf("expected tokens in register response: %#v", registerResp)
 	}
 
-	restarted := NewAuthService(db)
+	restarted := newAuthTestService(t, db)
 	loginResp, err := restarted.Login(LoginRequest{
 		Username: "alice",
 		Password: "Alice123",
@@ -92,7 +99,7 @@ func TestRegisterPersistsUserAndProfile(t *testing.T) {
 
 func TestLogoutRemovesRefreshTokenSession(t *testing.T) {
 	db := newAuthTestDB(t)
-	service := NewAuthService(db)
+	service := newAuthTestService(t, db)
 
 	sendResp, err := service.SendVerificationCode("bob@zju.edu.cn", true)
 	if err != nil {
@@ -125,14 +132,14 @@ func TestLogoutRemovesRefreshTokenSession(t *testing.T) {
 
 func TestVerificationCodePersistsAcrossServiceInstances(t *testing.T) {
 	db := newAuthTestDB(t)
-	service := NewAuthService(db)
+	service := newAuthTestService(t, db)
 
 	sendResp, err := service.SendVerificationCode("carol@zju.edu.cn", true)
 	if err != nil {
 		t.Fatalf("send verification code: %v", err)
 	}
 
-	restarted := NewAuthService(db)
+	restarted := newAuthTestService(t, db)
 	if _, err := restarted.Register(RegisterRequest{
 		Username:         "carol",
 		Email:            "carol@zju.edu.cn",
@@ -147,7 +154,7 @@ func TestVerificationCodePersistsAcrossServiceInstances(t *testing.T) {
 
 func TestSendVerificationCodeRequiresZJUDomain(t *testing.T) {
 	db := newAuthTestDB(t)
-	service := NewAuthService(db)
+	service := newAuthTestService(t, db)
 
 	if _, err := service.SendVerificationCode("alice@example.com", true); err == nil {
 		t.Fatalf("expected non-zju email to be rejected")
@@ -157,7 +164,7 @@ func TestSendVerificationCodeRequiresZJUDomain(t *testing.T) {
 func TestSendVerificationCodeUsesMailerWhenEchoDisabled(t *testing.T) {
 	db := newAuthTestDB(t)
 	mailer := &fakeMailer{}
-	service := NewAuthService(db, mailer)
+	service := newAuthTestService(t, db, mailer)
 
 	resp, err := service.SendVerificationCode("dave@zju.edu.cn", false)
 	if err != nil {
@@ -171,5 +178,96 @@ func TestSendVerificationCodeUsesMailerWhenEchoDisabled(t *testing.T) {
 	}
 	if len(mailer.codes) != 1 || len(mailer.codes[0]) != 6 {
 		t.Fatalf("expected mailer to receive a 6-digit code, got %#v", mailer.codes)
+	}
+}
+
+func TestVerificationCodeStoredAsHash(t *testing.T) {
+	db := newAuthTestDB(t)
+	service := newAuthTestService(t, db)
+
+	resp, err := service.SendVerificationCode("eve@zju.edu.cn", true)
+	if err != nil {
+		t.Fatalf("send verification code: %v", err)
+	}
+
+	var entry models.EmailVerification
+	if err := db.Where("email = ?", "eve@zju.edu.cn").First(&entry).Error; err != nil {
+		t.Fatalf("load verification entry: %v", err)
+	}
+	if entry.CodeHash == "" {
+		t.Fatalf("expected code hash to be stored")
+	}
+	if entry.CodeHash == resp.Code {
+		t.Fatalf("verification code should not be stored in plain text")
+	}
+	if len(entry.CodeHash) != 64 {
+		t.Fatalf("expected sha256 hex hash, got %q", entry.CodeHash)
+	}
+}
+
+func TestSessionTokensStoredAsHash(t *testing.T) {
+	db := newAuthTestDB(t)
+	service := newAuthTestService(t, db)
+
+	sendResp, err := service.SendVerificationCode("frank@zju.edu.cn", true)
+	if err != nil {
+		t.Fatalf("send verification code: %v", err)
+	}
+	registerResp, err := service.Register(RegisterRequest{
+		Username:         "frank",
+		Email:            "frank@zju.edu.cn",
+		Password:         "Frank123",
+		ConfirmPassword:  "Frank123",
+		VerificationCode: sendResp.Code,
+		AgreeToPolicy:    true,
+	})
+	if err != nil {
+		t.Fatalf("register: %v", err)
+	}
+
+	var session models.AuthSession
+	if err := db.First(&session).Error; err != nil {
+		t.Fatalf("load session: %v", err)
+	}
+	if session.AccessTokenHash == "" || session.RefreshTokenHash == "" {
+		t.Fatalf("expected token hashes to be stored: %#v", session)
+	}
+	if session.AccessTokenHash == registerResp.AccessToken || session.RefreshTokenHash == registerResp.RefreshToken {
+		t.Fatalf("tokens should not be stored in plain text")
+	}
+	if len(session.AccessTokenHash) != 64 || len(session.RefreshTokenHash) != 64 {
+		t.Fatalf("expected sha256 hex hashes, got %#v", session)
+	}
+
+	var user models.User
+	if err := db.First(&user).Error; err != nil {
+		t.Fatalf("load user: %v", err)
+	}
+	if user.RememberTokenHash == "" {
+		t.Fatalf("expected remember token hash to be stored")
+	}
+	if user.RememberTokenHash == registerResp.RefreshToken {
+		t.Fatalf("remember token should not match raw refresh token")
+	}
+}
+
+func TestLoadAuthSecretUsesEnvOverride(t *testing.T) {
+	t.Setenv("AUTH_SECRET", "env-secret")
+	if got := loadAuthSecret(); got != "env-secret" {
+		t.Fatalf("expected env auth secret, got %q", got)
+	}
+}
+
+func TestLoadAuthSecretFallsBackInDev(t *testing.T) {
+	original, hadOriginal := os.LookupEnv("AUTH_SECRET")
+	if hadOriginal {
+		defer os.Setenv("AUTH_SECRET", original)
+	} else {
+		defer os.Unsetenv("AUTH_SECRET")
+	}
+	_ = os.Unsetenv("AUTH_SECRET")
+
+	if got := loadAuthSecret(); got == "" {
+		t.Fatalf("expected fallback auth secret")
 	}
 }

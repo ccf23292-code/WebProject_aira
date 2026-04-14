@@ -124,8 +124,8 @@ func (s *PaperService) CreatePaper(req CreatePaperRequest) (models.TestPaper, er
 	}
 
 	paper := models.TestPaper{
-		CourseID:  req.CourseID,
-		Name:      req.Name,
+		CourseID: req.CourseID,
+		Name:     req.Name,
 		CreatedAt: time.Now().UTC(),
 	}
 	if err := s.db.Create(&paper).Error; err != nil {

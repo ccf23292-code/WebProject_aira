@@ -346,12 +346,45 @@ export interface UserProfile {
   updated_at: string;
 }
 
+export interface UploadedAsset {
+  type: 'image' | 'file';
+  original_name: string;
+  filename: string;
+  size: number;
+  content_type: string;
+  public_path: string;
+  url: string;
+}
+
 /* ══════════ admin_module ══════════ */
 
 /** POST /api/admin/papers — 上传试卷响应 data */
 export interface UploadPaperData {
   paper_id: number;
   inserted_problems_count: number;
+}
+
+export interface AdminRecallPaper {
+  id: number;
+  course_id: string;
+  title: string;
+  created_by: number;
+  converted_paper_id?: number;
+  converted_at?: string;
+  question_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConvertRecallPaperDto {
+  name?: string;
+}
+
+export interface ConvertRecallPaperResult {
+  recall_paper_id: number;
+  paper_id: number;
+  paper_name: string;
+  question_count: number;
 }
 
 /* ══════════ recall_module (回忆卷) ══════════ */

@@ -47,6 +47,23 @@ async function request<T>(
   return body.data as T;
 }
 
+async function uploadRequest<T>(path: string, formData: FormData): Promise<T> {
+  const headers: Record<string, string> = {};
+  const token = getToken();
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    body: formData,
+    headers,
+  });
+  const body = await res.json();
+  if (!res.ok || body.code >= 400) {
+    throw new Error(body.message ?? `Request failed: ${res.status}`);
+  }
+  return body.data as T;
+}
+
 export const api = {
   get: <T>(path: string, noAuth = false) =>
     request<T>(path, { method: 'GET', noAuth }),
@@ -62,4 +79,7 @@ export const api = {
 
   delete: <T>(path: string) =>
     request<T>(path, { method: 'DELETE' }),
+
+  upload: <T>(path: string, formData: FormData) =>
+    uploadRequest<T>(path, formData),
 };

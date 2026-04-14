@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import type {
+  AdminRecallPaper,
   CourseDescriptionSubmission,
   GradingStandardSubmission,
   TeacherSubmission,
@@ -11,8 +12,10 @@ import { ErrorState, EmptyState } from '@/components/layout/StateDisplay';
 import { useFetch } from '@/hooks/useFetch';
 import { useAuth } from '@/lib/auth';
 import {
+  convertRecallPaper,
   getCourseDescriptionSubmissions,
   getGradingStandardSubmissions,
+  getRecallPapers,
   getTeacherSubmissions,
   reviewCourseDescriptionSubmission,
   reviewGradingStandardSubmission,
@@ -33,6 +36,10 @@ export default function AdminReviewsPage() {
   );
   const gradingQuery = useFetch(
     () => (isAdmin ? getGradingStandardSubmissions('pending') : Promise.resolve([])),
+    [isAdmin],
+  );
+  const recallQuery = useFetch(
+    () => (isAdmin ? getRecallPapers('pending') : Promise.resolve([])),
     [isAdmin],
   );
 
@@ -127,6 +134,7 @@ export default function AdminReviewsPage() {
           gradingQuery.refetch();
         }}
       />
+      <RecallConversionSection query={recallQuery} onConverted={recallQuery.refetch} />
     </div>
   );
 }
@@ -229,6 +237,92 @@ function ReviewCard(props: {
         </div>
       </div>
       <div className="mt-3">{children}</div>
+      {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
+    </div>
+  );
+}
+
+function RecallConversionSection(props: {
+  query: {
+    data: AdminRecallPaper[] | null;
+    loading: boolean;
+    error: string | null;
+    refetch: () => void;
+  };
+  onConverted: () => void;
+}) {
+  const { query, onConverted } = props;
+
+  return (
+    <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="mb-5">
+        <h2 className="text-xl font-semibold text-gray-900">Recall Paper Conversion</h2>
+        <p className="mt-1 text-sm leading-6 text-gray-500">
+          Convert pending recall papers into formal paper records using the highest-supported version for each question.
+        </p>
+      </div>
+
+      {query.error ? (
+        <ErrorState message={query.error} onRetry={query.refetch} />
+      ) : query.loading ? (
+        <div className="text-sm text-gray-500">Loading...</div>
+      ) : query.data && query.data.length > 0 ? (
+        <div className="space-y-4">
+          {query.data.map((item) => (
+            <RecallConversionCard key={item.id} item={item} onConverted={onConverted} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="No pending recall papers"
+          description="All recall papers have already been converted or there is nothing to convert."
+        />
+      )}
+    </section>
+  );
+}
+
+function RecallConversionCard(props: {
+  item: AdminRecallPaper;
+  onConverted: () => void;
+}) {
+  const { item, onConverted } = props;
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleConvert = async () => {
+    setSubmitting(true);
+    setError('');
+    try {
+      await convertRecallPaper(item.id, {});
+      onConverted();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Conversion failed.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-2">
+          <div className="text-base font-medium text-gray-900">{item.title}</div>
+          <div className="text-sm text-gray-600">Course: {item.course_id}</div>
+          <div className="text-sm text-gray-600">Questions: {item.question_count}</div>
+          <div className="text-xs text-gray-500">
+            Created: {new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(item.created_at))}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleConvert}
+          disabled={submitting || item.question_count === 0}
+          className="rounded-xl bg-gray-900 px-4 py-2 text-sm text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {submitting ? 'Converting...' : 'Convert to paper'}
+        </button>
+      </div>
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
     </div>
   );

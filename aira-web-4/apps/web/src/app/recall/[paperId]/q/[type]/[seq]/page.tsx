@@ -22,6 +22,8 @@ import { useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import type { RecallQuestion, RecallComment, RecallCommentListData, PatchRecallQuestionDto } from '@aira/shared';
+import { MarkdownBlock } from '@/components/Markdown';
+import MarkdownImageUploadButton from '@/components/form/MarkdownImageUploadButton';
 import { DetailSkeleton } from '@/components/layout/Skeleton';
 import { ErrorState, EmptyState } from '@/components/layout/StateDisplay';
 import { useFetch } from '@/hooks/useFetch';
@@ -177,9 +179,10 @@ function VersionCard({
         ) : (
           <>
             {/* 题干 */}
-            <div className="mb-3 whitespace-pre-wrap text-sm leading-relaxed text-gray-800">
-              {q.content}
-            </div>
+            <MarkdownBlock
+              content={q.content}
+              className="mb-3 prose prose-sm max-w-none break-words text-gray-800"
+            />
 
             {/* 选项 */}
             {q.options && q.options.length > 0 && (
@@ -203,7 +206,10 @@ function VersionCard({
             {q.answer && (!q.options || q.options.length === 0) && (
               <div className="mb-3 rounded-md border border-green-200 bg-green-50 p-3">
                 <div className="mb-1 text-xs font-medium text-green-700">参考答案</div>
-                <div className="whitespace-pre-wrap text-sm text-green-800">{q.answer}</div>
+                <MarkdownBlock
+                  content={q.answer}
+                  className="prose prose-sm max-w-none break-words text-green-800"
+                />
               </div>
             )}
 
@@ -265,6 +271,13 @@ function EditForm({
     <div className="space-y-3">
       <div>
         <label className="mb-1 block text-xs font-medium text-gray-500">题干 (Markdown)</label>
+        <div className="mb-2 flex flex-wrap gap-2">
+          <MarkdownImageUploadButton
+            label="Upload image to stem"
+            altText="stem-image"
+            onUploaded={(markdown) => setContent((prev) => (prev.trim() ? `${prev}\n\n${markdown}` : markdown))}
+          />
+        </div>
         <textarea value={content} onChange={(e) => setContent(e.target.value)}
           rows={6}
           className="w-full rounded-md border border-gray-200 px-3 py-2 font-mono text-sm
@@ -272,6 +285,13 @@ function EditForm({
       </div>
       <div>
         <label className="mb-1 block text-xs font-medium text-gray-500">答案 (Markdown，可为空)</label>
+        <div className="mb-2 flex flex-wrap gap-2">
+          <MarkdownImageUploadButton
+            label="Upload image to answer"
+            altText="answer-image"
+            onUploaded={(markdown) => setAnswer((prev) => (prev.trim() ? `${prev}\n\n${markdown}` : markdown))}
+          />
+        </div>
         <textarea value={answer} onChange={(e) => setAnswer(e.target.value)}
           rows={3}
           className="w-full rounded-md border border-gray-200 px-3 py-2 font-mono text-sm

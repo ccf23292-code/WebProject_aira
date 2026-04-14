@@ -12,5 +12,6 @@ next-env.d.ts
 
 back/storage/*
 !back/storage/.gitkeep
+back/.env
 
 *.tsbuildinfo

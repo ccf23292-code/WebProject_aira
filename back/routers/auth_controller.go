@@ -97,6 +97,9 @@ func (ctl *AuthController) SendVerificationCode(c *gin.Context) {
 
 func shouldEchoVerificationCode() bool {
 	val := strings.ToLower(strings.TrimSpace(os.Getenv("DEV_EMAIL_ECHO")))
+	if gin.Mode() == gin.ReleaseMode {
+		return false
+	}
 	return val == "1" || val == "true" || val == "yes"
 }
 

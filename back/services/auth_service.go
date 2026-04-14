@@ -2,9 +2,12 @@ package services
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -43,6 +46,7 @@ func newServiceError(code string, status int, message string) *ServiceError {
 type AuthService struct {
 	db     *gorm.DB
 	mailer Mailer
+	secret string
 }
 
 // NewAuthService 创建数据库版认证服务，并确保默认管理员存在。
@@ -51,7 +55,11 @@ func NewAuthService(db *gorm.DB, mailers ...Mailer) *AuthService {
 	if len(mailers) > 0 {
 		mailer = mailers[0]
 	}
-	return &AuthService{db: db, mailer: mailer}
+	return &AuthService{
+		db:     db,
+		mailer: mailer,
+		secret: loadAuthSecret(),
+	}
 }
 
 type LoginRequest struct {
@@ -242,7 +250,8 @@ func (s *AuthService) Logout(req LogoutRequest) (*LogoutResponse, error) {
 		return nil, newServiceError("invalid_request", http.StatusBadRequest, "refreshToken is required")
 	}
 
-	res := s.db.Where("refresh_token = ?", strings.TrimSpace(req.RefreshToken)).Delete(&models.AuthSession{})
+	refreshHash := s.hashToken(strings.TrimSpace(req.RefreshToken))
+	res := s.db.Where("refresh_token_hash = ?", refreshHash).Delete(&models.AuthSession{})
 	if res.Error != nil {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to remove session")
 	}
@@ -257,9 +266,10 @@ func (s *AuthService) ValidateAccessToken(token string) (*TokenClaims, error) {
 	if token == "" {
 		return nil, fmt.Errorf("invalid token")
 	}
+	tokenHash := s.hashToken(token)
 
 	var session models.AuthSession
-	if err := s.db.Where("access_token = ?", token).First(&session).Error; err != nil {
+	if err := s.db.Where("access_token_hash = ?", tokenHash).First(&session).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, fmt.Errorf("invalid token")
 		}
@@ -306,6 +316,7 @@ func (s *AuthService) SendVerificationCode(email string, echo bool) (*Verificati
 	}
 
 	code := generateVerificationCode()
+	codeHash := s.hashVerificationCode(emailKey, code, "register")
 	if !echo {
 		if s.mailer == nil {
 			return nil, newServiceError("service_unavailable", http.StatusServiceUnavailable, "email service is not configured")
@@ -315,7 +326,7 @@ func (s *AuthService) SendVerificationCode(email string, echo bool) (*Verificati
 		}
 	}
 	if err == nil {
-		entry.Code = code
+		entry.CodeHash = codeHash
 		entry.ExpiresAt = now.Add(verificationCodeTTL)
 		entry.LastSentAt = now
 		if saveErr := s.db.Save(&entry).Error; saveErr != nil {
@@ -324,7 +335,7 @@ func (s *AuthService) SendVerificationCode(email string, echo bool) (*Verificati
 	} else {
 		entry = models.EmailVerification{
 			Email:      emailKey,
-			Code:       code,
+			CodeHash:   codeHash,
 			ExpiresAt:  now.Add(verificationCodeTTL),
 			LastSentAt: now,
 			CreatedAt:  now,
@@ -447,8 +458,8 @@ func (s *AuthService) issueTokens(tx *gorm.DB, user *models.User, rememberMe boo
 
 	session := models.AuthSession{
 		UserID:           user.ID,
-		AccessToken:      access,
-		RefreshToken:     refresh,
+		AccessTokenHash:  s.hashToken(access),
+		RefreshTokenHash: s.hashToken(refresh),
 		AccessExpiresAt:  now.Add(accessTokenTTL),
 		RefreshExpiresAt: now.Add(ttl),
 		CreatedAt:        now,
@@ -458,7 +469,7 @@ func (s *AuthService) issueTokens(tx *gorm.DB, user *models.User, rememberMe boo
 		return "", "", newServiceError("internal_error", http.StatusInternalServerError, "failed to create session")
 	}
 
-	user.RememberToken = models.Varchar(refresh)
+	user.RememberTokenHash = models.Varchar(s.hashToken(refresh))
 	if err := tx.Save(user).Error; err != nil {
 		return "", "", newServiceError("internal_error", http.StatusInternalServerError, "failed to update user session state")
 	}
@@ -476,7 +487,7 @@ func (s *AuthService) validateVerificationCode(tx *gorm.DB, email, code string) 
 		}
 		return newServiceError("internal_error", http.StatusInternalServerError, "failed to load verification code")
 	}
-	if time.Now().UTC().After(entry.ExpiresAt) || entry.Code != code {
+	if time.Now().UTC().After(entry.ExpiresAt) || entry.CodeHash != s.hashVerificationCode(emailKey, code, "register") {
 		_ = tx.Delete(&entry).Error
 		return newServiceError("invalid_verification_code", http.StatusUnprocessableEntity, "verification code invalid or expired")
 	}
@@ -508,4 +519,28 @@ func userExistsByEmail(db *gorm.DB, emailKey string) (bool, *ServiceError) {
 		return false, newServiceError("internal_error", http.StatusInternalServerError, "failed to check email")
 	}
 	return count > 0, nil
+}
+
+func loadAuthSecret() string {
+	secret := strings.TrimSpace(os.Getenv("AUTH_SECRET"))
+	if secret != "" {
+		return secret
+	}
+	return "dev-auth-secret-change-me"
+}
+
+func (s *AuthService) hashToken(token string) string {
+	return sha256Hex(strings.TrimSpace(token) + ":" + s.secret)
+}
+
+func (s *AuthService) hashVerificationCode(email, code, scene string) string {
+	emailKey := strings.ToLower(strings.TrimSpace(email))
+	code = strings.TrimSpace(code)
+	scene = strings.TrimSpace(scene)
+	return sha256Hex(emailKey + ":" + code + ":" + scene + ":" + s.secret)
+}
+
+func sha256Hex(value string) string {
+	sum := sha256.Sum256([]byte(value))
+	return hex.EncodeToString(sum[:])
 }

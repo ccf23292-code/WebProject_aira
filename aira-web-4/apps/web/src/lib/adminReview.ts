@@ -1,4 +1,7 @@
 import type {
+  AdminRecallPaper,
+  ConvertRecallPaperDto,
+  ConvertRecallPaperResult,
   CourseDescriptionSubmission,
   GradingStandardSubmission,
   ReviewCourseDescriptionDto,
@@ -49,4 +52,14 @@ export function reviewGradingStandardSubmission(
     `/admin/grading-standard-submissions/${id}/review`,
     payload,
   );
+}
+
+export function getRecallPapers(status = 'pending') {
+  return api.get<AdminRecallPaper[]>(
+    `/admin/recall-papers?status=${encodeURIComponent(status)}`,
+  );
+}
+
+export function convertRecallPaper(id: number, payload: ConvertRecallPaperDto = {}) {
+  return api.post<ConvertRecallPaperResult>(`/admin/recall-papers/${id}/convert`, payload);
 }

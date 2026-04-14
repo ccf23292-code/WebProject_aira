@@ -14,28 +14,30 @@ type RecallQuestionOption struct {
 
 // RecallPaper 对应回忆卷主表。
 type RecallPaper struct {
-	ID        uint64    `gorm:"primaryKey;autoIncrement" json:"id"`
-	CourseID  string    `gorm:"size:64;index"            json:"course_id"`
-	Title     string    `gorm:"size:256"                 json:"title"`
-	CreatedBy uint64    `gorm:"index"                    json:"created_by"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID               uint64     `gorm:"primaryKey;autoIncrement" json:"id"`
+	CourseID         string     `gorm:"size:64;index"            json:"course_id"`
+	Title            string     `gorm:"size:256"                 json:"title"`
+	CreatedBy        uint64     `gorm:"index"                    json:"created_by"`
+	ConvertedPaperID *uint64    `gorm:"index"                    json:"converted_paper_id,omitempty"`
+	ConvertedAt      *time.Time `json:"converted_at,omitempty"`
+	CreatedAt        time.Time  `json:"created_at"`
+	UpdatedAt        time.Time  `json:"updated_at"`
 }
 
 // RecallQuestion 对应回忆题目主表。
 type RecallQuestion struct {
-	ID           uint64    `gorm:"primaryKey;autoIncrement" json:"id"`
-	PaperID      uint64    `gorm:"index"                    json:"paper_id"`
-	QuestionType string    `gorm:"size:32;index"            json:"question_type"`
-	Sequence     int       `gorm:"index"                    json:"sequence"`
-	Content      string    `gorm:"type:text"                json:"content"`
-	Answer       string    `gorm:"type:text"                json:"answer"`
+	ID           uint64         `gorm:"primaryKey;autoIncrement" json:"id"`
+	PaperID      uint64         `gorm:"index"                    json:"paper_id"`
+	QuestionType string         `gorm:"size:32;index"            json:"question_type"`
+	Sequence     int            `gorm:"index"                    json:"sequence"`
+	Content      string         `gorm:"type:text"                json:"content"`
+	Answer       string         `gorm:"type:text"                json:"answer"`
 	OptionsJSON  datatypes.JSON `gorm:"type:jsonb"               json:"-"`
-	SourceUserID uint64    `gorm:"index"                    json:"source_user_id"`
-	SupportCount int       `gorm:"default:0"                json:"support_count"`
-	LastEditorID uint64    `gorm:"index"                    json:"last_editor_id"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	SourceUserID uint64         `gorm:"index"                    json:"source_user_id"`
+	SupportCount int            `gorm:"default:0"                json:"support_count"`
+	LastEditorID uint64         `gorm:"index"                    json:"last_editor_id"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
 }
 
 // RecallQuestionSupport 记录用户对题目的支持。

@@ -20,6 +20,7 @@ import { useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { QuestionTypeInfo, CreateRecallQuestionDto, ProblemOption } from '@aira/shared';
+import MarkdownImageUploadButton from '@/components/form/MarkdownImageUploadButton';
 import { useFetch } from '@/hooks/useFetch';
 import { api } from '@/lib/api';
 
@@ -193,6 +194,13 @@ export default function NewQuestionPage() {
             题干
             <span className="ml-1 font-normal text-gray-400">(支持 Markdown 语法)</span>
           </label>
+          <div className="mb-2 flex flex-wrap gap-2">
+            <MarkdownImageUploadButton
+              label="Upload image to stem"
+              altText="stem-image"
+              onUploaded={(markdown) => setContent((prev) => (prev.trim() ? `${prev}\n\n${markdown}` : markdown))}
+            />
+          </div>
           <textarea value={content} onChange={(e) => setContent(e.target.value)}
             rows={8} placeholder="输入题目内容，支持 Markdown 和图片链接 ![alt](url)"
             className="w-full rounded-md border border-gray-200 px-3 py-2 font-mono text-sm leading-relaxed
@@ -258,6 +266,13 @@ export default function NewQuestionPage() {
               参考答案
               <span className="ml-1 font-normal text-gray-400">(可为空，支持 Markdown)</span>
             </label>
+            <div className="mb-2 flex flex-wrap gap-2">
+              <MarkdownImageUploadButton
+                label="Upload image to answer"
+                altText="answer-image"
+                onUploaded={(markdown) => setAnswer((prev) => (prev.trim() ? `${prev}\n\n${markdown}` : markdown))}
+              />
+            </div>
             <textarea value={answer} onChange={(e) => setAnswer(e.target.value)}
               rows={4} placeholder="输入参考答案（可选）"
               className="w-full rounded-md border border-gray-200 px-3 py-2 font-mono text-sm
