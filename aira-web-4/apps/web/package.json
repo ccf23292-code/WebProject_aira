@@ -10,14 +10,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "^14.2.0",
+    "@aira/shared": "*",
+    "katex": "^0.16.9",
+    "next": "^16.2.3",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "react-markdown": "^9.0.1",
-    "remark-math": "^6.0.0",
     "rehype-katex": "^7.0.0",
-    "katex": "^0.16.9",
-    "@aira/shared": "*"
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.0",
