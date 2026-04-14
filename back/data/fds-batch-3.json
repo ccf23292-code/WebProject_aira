@@ -1,0 +1,2132 @@
+[
+  {
+    "id": "q-115",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 1,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If $N$ numbers are stored in a doubly linked list in increasing order, then the average time complexity for binary search is $O(\\log N)$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "linked-list",
+      "binary-search",
+      "time-complexity"
+    ]
+  },
+  {
+    "id": "q-116",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 2,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Mergesort is stable.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "sorting",
+      "merge-sort"
+    ]
+  },
+  {
+    "id": "q-117",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 3,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If the preorder and the postorder traversal sequences of a binary tree have exactly the opposite orders, then none of the nodes in the tree has two subtrees.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "traversal"
+    ]
+  },
+  {
+    "id": "q-118",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 4,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Linear probing is equivalent to double hashing with a secondary hash function of $\\text{Hash}_2(k) = 1$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "hashing",
+      "linear-probing",
+      "double-hashing"
+    ]
+  },
+  {
+    "id": "q-119",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 5,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "To sort $N$ records, heap sort requires at least $O(N)$ extra space.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "sorting",
+      "heap-sort",
+      "space-complexity"
+    ]
+  },
+  {
+    "id": "q-120",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 6,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "$\\log N^{20}$ is $O(N)$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "time-complexity",
+      "asymptotic-analysis"
+    ]
+  },
+  {
+    "id": "q-121",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 7,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If keys are pushed onto a stack in the order abcde, then it's impossible to obtain the output sequence cedab.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "stack",
+      "permutation"
+    ]
+  },
+  {
+    "id": "q-122",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 8,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Let P be the shortest path from S to T. If the weight of every edge in the graph is incremented by 1, P will still be the shortest path from S to T.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "shortest-path"
+    ]
+  },
+  {
+    "id": "q-123",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 9,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "For a graph, if each vertex has an even degree, we can find an Euler circuit that visits every vertex exactly once.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "euler-circuit"
+    ]
+  },
+  {
+    "id": "q-124",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 10,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a binary search tree with 20 integer keys which include 5, 6, and 7, if 5 and 7 are on the same level, then 6 must be their parent.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "binary-search-tree"
+    ]
+  },
+  {
+    "id": "q-125",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 11,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "In order to convert the infix expression $4 + 3 \\times (6 \\times 3 - 12)$ to postfix expression using a stack $S$, then the minimum size of $S$ must be:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "5",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "stack",
+      "expression",
+      "infix-to-postfix"
+    ]
+  },
+  {
+    "id": "q-126",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 12,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Suppose that the size of a hash table is 11, and the hash function is $H(key) = key \\% 11$. The following 4 elements have been inserted into the table as $Addr(14) = 3$, $Addr(38) = 5$, $Addr(61) = 6$, $Addr(86) = 9$. When open addressing with quadratic probing is used to solve collisions, the address of the element with key=49 will be:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "10",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "7",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "8",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "hashing",
+      "quadratic-probing"
+    ]
+  },
+  {
+    "id": "q-127",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 13,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given input $\\{15, 9, 7, 8, 20, -1, 4\\}$. If the result of the 1st run of Shell sort is $\\{15, -1, 4, 8, 20, 9, 7\\}$, then the initial increment must be:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "1",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "4",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "shell-sort"
+    ]
+  },
+  {
+    "id": "q-128",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 14,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which one of the following is a possible postorder traversal sequence of a binary search tree?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "3 1 6 2 5 8 10 9 7 4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "3 1 2 6 5 8 10 9 7 4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "1 3 2 6 5 8 10 9 7 4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "1 3 2 6 8 5 10 9 7 4",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "binary-search-tree",
+      "traversal",
+      "postorder"
+    ]
+  },
+  {
+    "id": "q-129",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 15,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given input (46, 79, 56, 38, 40, 84). After the first partition (with the left most record as the pivot) of quick sort, the resulting sequence is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "{38, 46, 79, 56, 40, 84}",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "{38, 79, 56, 46, 40, 84}",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "{38, 46, 56, 79, 40, 84}",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "{40, 38, 46, 56, 79, 84}",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "sorting",
+      "quick-sort",
+      "partition"
+    ]
+  },
+  {
+    "id": "q-130",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 16,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Following is the C-like pseudo code of a function that takes a Queue as an argument.\n\n```\nvoid foo(Queue Q) {\n    Queue Q1 = CreateQueue(); // create an empty queue\n    while (!IsEmpty(Q)) {\n        // dequeue an item from Q and enqueue it into Q1\n        Enqueue(Q1, Dequeue(Q));\n    }\n    while (!IsEmpty(Q1)) {\n        // dequeue an item from Q1 and enqueue it into Q\n        Enqueue(Q, Dequeue(Q1));\n    }\n    DisposeQueue(Q1);\n}\n```\n\nWhat does the above function do?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "Removes the last item from Q",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "Keeps Q unchanged",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "Makes Q empty",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "Reverses Q",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "queue"
+    ]
+  },
+  {
+    "id": "q-131",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 17,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Let $T$ be a tree of $N$ nodes created by union-by-size without path compression, then the minimum depth of $T$ may be:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "1",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$\\log N$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$N$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$N/2$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "union-find",
+      "disjoint-set"
+    ]
+  },
+  {
+    "id": "q-132",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 18,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For an in-order threaded binary tree, if the pre-order and in-order traversal sequences are D A B C F E and B A C D E F respectively, which pair of nodes' left links are both threads?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "D and A",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "A and F",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "C and E",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "C and F",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "tree",
+      "threaded-binary-tree",
+      "traversal"
+    ]
+  },
+  {
+    "id": "q-133",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 19,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The following is the part of depth-first search tree to find the articulation points, and the Num(v) value has been marked beside each vertex v. The back edges are not shown. Which of the following situation is impossible?",
+      "imageUrls": [
+        "assets/fds/18-19秋冬期末/images/ab902de865ff78299d28ef6af260f836c492fbdc29a5c82d93cc0585b625e670.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "low(v6) is greater than low(v7)",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "low(v4) is 2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "low(v6) is 3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "low(v7) is 2",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "dfs",
+      "articulation-point"
+    ]
+  },
+  {
+    "id": "q-134",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 20,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Insert (18, 23, 4, 26, 31, 33, 17, 39) one by one into an initially empty hash table of size 13 with the hash function $H(Key) = Key \\% 13$ and linear probing is used to resolve collisions. What is the loading density when the first collision occurs?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "0.54",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "0.63",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "0.31",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "0.62",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "hashing",
+      "linear-probing"
+    ]
+  },
+  {
+    "id": "q-135",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 21,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "To find the minimum spanning tree with Prim's algorithm for the following graph, a sequence of vertices 6, 1, 2, 3 was found during the algorithm's early steps. Which one vertex will be added in the next step?",
+      "imageUrls": [
+        "assets/fds/18-19秋冬期末/images/dd5d8e39f4ce37c531fb37819e86e977b10bda07a04322782fd54fd19051b8b9.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "0",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "the vertex serial is incorrect",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "minimum-spanning-tree",
+      "prim"
+    ]
+  },
+  {
+    "id": "q-136",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 22,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which one of the following is the expression tree corresponding to the postfix expression $a\\ e\\ f\\ *\\ +\\ b\\ c\\ *\\ +$ ?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "Expression tree A",
+        "imageUrls": [
+          "assets/fds/18-19秋冬期末/images/502364ed2c5205780bb11bd731ef8c65c743393ce5af71031d992fe5393cf16e.jpg"
+        ]
+      },
+      {
+        "optionId": "B",
+        "text": "Expression tree B",
+        "imageUrls": [
+          "assets/fds/18-19秋冬期末/images/bc389c391d8f39884f8077b018c6bf110fe3ed6ce200d958e85db3032ee052da.jpg"
+        ]
+      },
+      {
+        "optionId": "C",
+        "text": "Expression tree C",
+        "imageUrls": [
+          "assets/fds/18-19秋冬期末/images/bcac0456ce64df096b06bb39a358c23ec74739da7d6dc95f58051c7be13cb27c.jpg"
+        ]
+      },
+      {
+        "optionId": "D",
+        "text": "Expression tree D",
+        "imageUrls": [
+          "assets/fds/18-19秋冬期末/images/9806ac8417c3995360a3f293365ea666aefb317af76be89e9db527d60a7465fd.jpg"
+        ]
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "expression-tree"
+    ]
+  },
+  {
+    "id": "q-137",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 23,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "It is known that a 3-heap is a heap whose nodes have 3 children. Suppose that the level-order traversal sequence of a max-3-heap is (88, 76, 65, 82, 68, 46, 52, 44, 62, 33, 75, 60, 55, 28). Use the linear algorithm to adjust this max-3-heap into a min-3-heap, and then run DeleteMin. As a result, there are __ nodes whose positions are not moved in the process.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "5",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "priority-queue"
+    ]
+  },
+  {
+    "id": "q-138",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 24,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "A graph with 100 vertices and 12 edges must have at most __ connected component(s).",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "87",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "88",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "94",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "95",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "connected-component"
+    ]
+  },
+  {
+    "id": "q-139",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 25,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "When inserting a new key $K$ into a binary search tree $T$ with 512 nodes, the worst-case number of comparisons between $K$ and the keys already in $T$ is in the range of:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "[10, 511]",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "[9, 511]",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "[9, 512]",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "[10, 512]",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-search-tree",
+      "time-complexity"
+    ]
+  },
+  {
+    "id": "q-140",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 26,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given a tree of degree 6. Suppose that the numbers of nodes of degrees 1, 2, 3, 4, 5, 6 are 3, 5, 1, 2, 4, 3, respectively. Then the number of leaf nodes must be:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "35",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "39",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "43",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "45",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "degree"
+    ]
+  },
+  {
+    "id": "q-141",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 27,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given the structure of a binary search tree (as shown in the figure), which one of the following insertion sequences is impossible?",
+      "imageUrls": [
+        "assets/fds/18-19秋冬期末/images/ec21ec53322b80df084716df15b39f1eff56c96302c3802feba41bd772235e74.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "83 67 91 98 20 75",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "83 67 75 91 20 98",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "83 91 67 98 20 75",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "83 91 98 67 75 20",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-search-tree",
+      "insertion"
+    ]
+  },
+  {
+    "id": "q-142",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 28,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The maximum flow from v1 to v6 is:",
+      "imageUrls": [
+        "assets/fds/18-19秋冬期末/images/59bde64bf696541b00ec4dae3203a107243ce7b39179c3949afa186450b0c0f0.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "11",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "12",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "13",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "0",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "network-flow",
+      "max-flow"
+    ]
+  },
+  {
+    "id": "q-143",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 29,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The inorder and the postorder traversal sequences of a binary tree are abcdefg and acbgfed, respectively. Then the preorder traversal sequence is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "d b a c f e g",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "d b a c e f g",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "d a c b f e g",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "d c a b e f g",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "traversal",
+      "inorder",
+      "postorder",
+      "preorder"
+    ]
+  },
+  {
+    "id": "q-144",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 30,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Use Dijkstra algorithm to find the shortest paths from 1 to every other vertices. In which order that the destinations must be obtained?",
+      "imageUrls": [
+        "assets/fds/18-19秋冬期末/images/50cddbbbd7941276f33b126fcf1720594db566690df7df79d255fc60c05c8b16.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "6, 7, 5, 3, 2, 4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "6, 2, 5, 7, 3, 4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "2, 3, 4, 5, 6, 7",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "2, 4, 3, 6, 5, 7",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "A"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "shortest-path",
+      "dijkstra"
+    ]
+  },
+  {
+    "id": "q-145",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 31,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The function is to find the K-th largest element in a list A of N elements. The function BuildMinHeap(H, K) is to arrange elements H[1] ... H[K] into a min-heap. Please complete the following program.\n\n```c\nElementType FindKthLargest(int A[], int N, int K) {\n    /* it is assumed that K <= N */\n    ElementType *H;\n    int i, next, child;\n    H = (ElementType *)malloc((K+1) * sizeof(ElementType));\n    for (i = 1; i <= K; i++)\n        H[i] = A[i-1];\n    BuildMinHeap(H, K);\n    for (next = __blank1__; next < N; next++) {\n        H[0] = A[next];\n        if (H[0] > H[1]) {\n            for (i = 1; i*2 <= K; i = child) {\n                child = __blank2__;\n                if (child+1 <= K && H[child] > H[child+1])\n                    child++;\n                if (H[child] < H[0])\n                    H[i] = H[child];\n                else break;\n            }\n            H[i] = H[0];\n        }\n    }\n    return H[1];\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "blank1: K; blank2: i*2",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "selection",
+      "priority-queue"
+    ]
+  },
+  {
+    "id": "q-146",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 32,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given an array a[] of n integers, the function MissingMin is to find and return the minimum positive integer which is NOT in the array. For example, given {3, -1, 8, 1, 0}, 2 is the smallest positive integer which is missing.\n\n```c\nint MissingMin(int a[], int n) {\n    int i, j, min, missing = 1;\n    for (i = 0; i < n; i++) {\n        min = i;\n        for (j = i + 1; j < n; j++)\n            if (__blank1__) min = j;\n        if (min != i) swap(a[i], a[min]);\n        if (a[i] == missing) missing++;\n        else if (a[i] > missing) __blank2__;\n    }\n    return missing;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "blank1: a[j] < a[min]; blank2: break",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "array",
+      "selection-sort",
+      "algorithm"
+    ]
+  },
+  {
+    "id": "q-147",
+    "courseId": "FDS",
+    "category": "2018-autumn-winter-final",
+    "sequenceId": 33,
+    "questionType": "programming",
+    "sourceUrl": "",
+    "content": {
+      "text": "Write a program to test if a given sequence Seq is a topological order of a given graph Graph.\n\nFormat of functions:\n```c\nbool IsTopSeq(LGraph Graph, Vertex Seq[]);\n```\n\nwhere LGraph is defined as the following:\n```c\ntypedef struct AdjVNode *PtrToAdjVNode;\nstruct AdjVNode {\n    Vertex AdjV;\n    PtrToAdjVNode Next;\n};\ntypedef struct Vnode {\n    PtrToAdjVNode FirstEdge;\n} AdjList[MaxVertexNum];\ntypedef struct GNode *PtrToGNode;\nstruct GNode {\n    int Nv;\n    int Ne;\n    AdjList G;\n};\ntypedef PtrToGNode LGraph;\n```\n\nThe function IsTopSeq must return true if Seq does correspond to a topological order; otherwise return false.\n\nNote: Although the vertices are numbered from 1 to MaxVertexNum, they are indexed from 0 in the LGraph structure.",
+      "imageUrls": [
+        "assets/fds/18-19秋冬期末/images/fb3b81a109936b9d7a1d0d652625f1f9f17a0661d1d98886cab00d5bf0f2ec93.jpg"
+      ]
+    },
+    "options": [],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [],
+      "codeSnippet": "bool IsTopSeq(LGraph Graph, Vertex Seq[]) {\n    int degree[MaxVertexNum];\n    int i;\n    PtrToAdjVNode p;\n    for (i = 0; i < Graph->Nv; i++)\n        degree[i] = 0;\n    for (i = 0; i < Graph->Nv; i++)\n        for (p = Graph->G[i].FirstEdge; p; p = p->Next)\n            degree[p->AdjV]++;\n    for (i = 0; i < Graph->Nv; i++) {\n        if (degree[Seq[i] - 1] != 0)\n            return false;\n        for (p = Graph->G[Seq[i] - 1].FirstEdge; p; p = p->Next)\n            degree[p->AdjV]--;\n    }\n    return true;\n}",
+      "codeLanguage": "C"
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "topological-sort"
+    ]
+  },
+  {
+    "id": "q-148",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 1,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "$\\sqrt{N} \\log N$ is $O(N)$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "time-complexity",
+      "asymptotic-analysis"
+    ]
+  },
+  {
+    "id": "q-149",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 2,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In Union/Find algorithm, if Unions are done by size, the depth of any node must be no more than $N/2$, but not $O(\\log N)$.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "False",
+      "correctOptionIds": [
+        "F"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "union-find",
+      "disjoint-set"
+    ]
+  },
+  {
+    "id": "q-150",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 3,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "If a linear list is represented by a 1-dimensional array, the addresses of the elements in the memory must be consecutive.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "array",
+      "linear-list"
+    ]
+  },
+  {
+    "id": "q-151",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 4,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "ADT is the abbreviation for Abstract Data Type in the textbook of data structures.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "abstract-data-type"
+    ]
+  },
+  {
+    "id": "q-152",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 5,
+    "questionType": "trueOrFalse",
+    "sourceUrl": "",
+    "content": {
+      "text": "In a directed graph, the sum of the in-degrees must be equal to the sum of the out-degrees of all the vertices.",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "True",
+      "correctOptionIds": [
+        "T"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "graph",
+      "degree"
+    ]
+  },
+  {
+    "id": "q-153",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 6,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "If a binary search tree of $N$ nodes is also a complete binary tree, then among the following, which one is FALSE?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "The average search time is $O(\\log N)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "The largest key must be on the last level",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "The median key must be at either the root or in the left subtree of the root",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "The smallest key must be at a leaf node",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "binary-search-tree",
+      "complete-binary-tree"
+    ]
+  },
+  {
+    "id": "q-154",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 7,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The following figure shows the AOE network of a project with 8 activities. The earliest and the latest start times of the activity d are __, respectively.",
+      "imageUrls": [
+        "assets/remote/images.ptausercontent.com/28de33de-076f-4f94-b856-445865994fb0.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "15 and 15",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "12 and 14",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "12 and 12",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "3 and 7",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "graph",
+      "AOE-network",
+      "critical-path"
+    ]
+  },
+  {
+    "id": "q-155",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 8,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Which one of the following is the data structure that is best represented by the picture shown in the figure?",
+      "imageUrls": [
+        "assets/remote/images.ptausercontent.com/e8409833-8ff2-4a95-9c5f-23e90ed6ae4f.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "Complete binary tree",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "Two-dimensional array",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "Directed graph",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "Circularly linked list",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "data-structure",
+      "graph"
+    ]
+  },
+  {
+    "id": "q-156",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 9,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "For a sequentially stored linear list of length $N$, the time complexities for query and insertion are:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$O(1)$, $O(1)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$O(1)$, $O(N)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$O(N)$, $O(1)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$O(N)$, $O(N)$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "array",
+      "linear-list",
+      "time-complexity"
+    ]
+  },
+  {
+    "id": "q-157",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 10,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "If graph G is NOT connected and has 27 edges, then it must have at least ____ vertices.",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "8",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "10",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "7",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "9",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "connected-component"
+    ]
+  },
+  {
+    "id": "q-158",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 11,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "A full tree of degree 3 is a tree in which every node other than the leaves has 3 children. How many leaves does a full tree of degree 3 have if it has 127 nodes?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "41",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "86",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "42",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "85",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "degree"
+    ]
+  },
+  {
+    "id": "q-159",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 12,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Since the speed of a printer cannot match the speed of a computer, a buffer is designed to temporarily store the data from a computer so that later the printer can retrieve data in order. Then the proper structure of the buffer shall be a:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "tree",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "stack",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "queue",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "graph",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "queue"
+    ]
+  },
+  {
+    "id": "q-160",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 13,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Let $n$ be a non-negative integer representing the size of input. The time complexity of the following piece of code is:\n\n```\nx = 0;\nwhile ( n >= (x+1)*(x+1) )\n    x = x+1;\n```",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "$O(\\log n)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "$O(n^{1/2})$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "$O(n)$",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "$O(n^2)$",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "easy",
+    "tag": [
+      "time-complexity"
+    ]
+  },
+  {
+    "id": "q-161",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 14,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "From the given graph shown by the figure, how many different topological orders can we obtain?",
+      "imageUrls": [
+        "assets/remote/images.ptausercontent.com/79.jpg"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "1",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "4",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "topological-sort"
+    ]
+  },
+  {
+    "id": "q-162",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 15,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "If besides finding the shortest path from S to every other vertices, we also need to count the number of different shortest paths, we can modify the Dijkstra algorithm in the following way: add an array count[] so that count[V] records the number of different shortest paths from S to V. Then count[V] shall be initialized as:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "count[V]=1 for all vertices",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "count[S]=1; and count[V]=0 for other V",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "count[V]=0 for all vertices",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "count[S]=0; and count[V]=1 for other V",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "B"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "shortest-path",
+      "dijkstra"
+    ]
+  },
+  {
+    "id": "q-163",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 16,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given the shape of a binary tree shown by the figure below. If its postorder traversal sequence is { e, a, c, b, d, f }, then the node on the same level of b must be:",
+      "imageUrls": [
+        "assets/remote/images.ptausercontent.com/2d267eab-f47e-44ea-9019-5d0a102f741a.JPG"
+      ]
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "None",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "c",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "a",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "e",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "tree",
+      "traversal",
+      "postorder"
+    ]
+  },
+  {
+    "id": "q-164",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 17,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "The array representation of the disjoint sets is given by {2, -4, 2, 3, -3, 5, 6, 9, -2}. Keep in mind that the elements are numbered from 1 to 9. After invoking Union(Find(4), Find(6)) with union-by-size, which elements will be changed in the resulting array?",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "elements of index 4 and 6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "elements of index 2 and 6",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "elements of index 4 and 5",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "elements of index 2 and 5",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "D"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "union-find",
+      "disjoint-set"
+    ]
+  },
+  {
+    "id": "q-165",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 18,
+    "questionType": "singleChoice",
+    "sourceUrl": "",
+    "content": {
+      "text": "Given the popping sequence of a stack as {1, 2, 3, 4, 5}. Among the following, the impossible pushing sequence is:",
+      "imageUrls": []
+    },
+    "options": [
+      {
+        "optionId": "A",
+        "text": "4 5 1 3 2",
+        "imageUrls": []
+      },
+      {
+        "optionId": "B",
+        "text": "3 2 1 5 4",
+        "imageUrls": []
+      },
+      {
+        "optionId": "C",
+        "text": "5 4 1 2 3",
+        "imageUrls": []
+      },
+      {
+        "optionId": "D",
+        "text": "5 1 2 3 4",
+        "imageUrls": []
+      }
+    ],
+    "answer": {
+      "text": "",
+      "correctOptionIds": [
+        "C"
+      ],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "stack",
+      "permutation"
+    ]
+  },
+  {
+    "id": "q-166",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 19,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The function Dijkstra is to find the shortest path from Vertex S to every other vertices in a given Graph. The distances are stored in dist[], and path[] records the paths.\n\n```c\nvoid Dijkstra( MGraph Graph, int dist[], int path[], Vertex S )\n{\n    int collected[MaxVertexNum];\n    Vertex V, W;\n\n    for ( V=0; V<Graph->Nv; V++ ) {\n        dist[V] = Graph->G[S][V];\n        path[V] = -1;\n        collected[V] = false;\n    }\n    dist[S] = 0;\n    collected[S] = true;\n\n    while (1) {\n        V = FindMinDist( Graph, dist, collected );\n        if ( V==ERROR ) break;\n        collected[V] = true;\n        for( W=0; W<Graph->Nv; W++ )\n            if ( collected[W]==false && Graph->G[V][W]<INFINITY ) {\n                if ( __blank1__ ) {\n                    dist[W] = __blank2__;\n                    path[W] = __blank3__;\n                }\n            }\n    }\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "blank1: dist[V] + Graph->G[V][W] < dist[W]; blank2: dist[V] + Graph->G[V][W]; blank3: V",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "graph",
+      "shortest-path",
+      "dijkstra"
+    ]
+  },
+  {
+    "id": "q-167",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 20,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "The function is to return the reverse linked list of L, with a dummy header.\n\n```c\nList Reverse( List L )\n{\n    Position Old_head, New_head, Temp;\n    New_head = NULL;\n    Old_head = L->Next;\n\n    while ( Old_head ) {\n        Temp = Old_head->Next;\n        __blank1__;\n        New_head = Old_head;\n        Old_head = Temp;\n    }\n    __blank2__;\n    return L;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "blank1: Old_head->Next = New_head; blank2: L->Next = New_head",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "medium",
+    "tag": [
+      "linked-list",
+      "reverse"
+    ]
+  },
+  {
+    "id": "q-168",
+    "courseId": "FDS",
+    "category": "2019-autumn-winter-midterm",
+    "sequenceId": 21,
+    "questionType": "fillBlanks",
+    "sourceUrl": "",
+    "content": {
+      "text": "Please fill in the blanks in the program which deletes a given element at position p from a max-heap H.\n\n```c\nDeletion( PriorityQueue H, int p )  /* delete the element H->Elements[p] */\n{\n    ElementType temp;\n    int child;\n\n    temp = H->Elements[ H->Size-- ];\n    if ( temp > H->Elements[p] ) {\n        while ( (p != 1) && (temp > H->Elements[p/2]) ) {\n            __blank1__;\n            p /= 2;\n        }\n    }\n    else {\n        while( (child = 2*p) <= H->Size) {\n            if ( child != H->Size && __blank2__ )\n                child++;\n            if ( __blank3__ ) {\n                H->Elements[p] = H->Elements[child];\n                p = child;\n            }\n            else\n                break;\n        }\n    }\n    H->Elements[p] = temp;\n}\n```",
+      "imageUrls": []
+    },
+    "options": [],
+    "answer": {
+      "text": "blank1: H->Elements[p] = H->Elements[p/2]; blank2: H->Elements[child] < H->Elements[child+1]; blank3: H->Elements[child] > temp",
+      "correctOptionIds": [],
+      "codeSnippet": "",
+      "codeLanguage": ""
+    },
+    "difficulty": "hard",
+    "tag": [
+      "heap",
+      "priority-queue",
+      "deletion"
+    ]
+  }
+]
