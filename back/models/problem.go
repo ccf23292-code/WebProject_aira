@@ -9,6 +9,7 @@ type Option struct {
 }
 
 // Problem 对应数据库 problems 表，表示一道题目。
+// Status 字段表示题目的状态，如 "pending", "processing", "processed", "error" 等。
 type Problem struct {
 	ID           uint64         `gorm:"primaryKey;autoIncrement"                 json:"id"`
 	TestpaperID  uint64         `gorm:"index;uniqueIndex:idx_source_paper"       json:"testpaper_id"`
@@ -26,4 +27,7 @@ type Problem struct {
 	OptionsJSON  datatypes.JSON `gorm:"type:jsonb"                               json:"-"`
 	TagsJSON     datatypes.JSON `gorm:"type:jsonb"                               json:"-"`
 	Options      []Option       `gorm:"-"                                        json:"options"`
+	Status       string         `gorm:"size:32;index"                            json:"status"`
+	LLM          string         `gorm:"type:text"                                json:"llm"`
+	LLMAnswer    string         `gorm:"type:text"                                json:"llm_answer"`
 }
