@@ -6,7 +6,7 @@
  * 所有方法返回解包后的 data 字段
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://zjuaira:3001/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 
 /** 从 localStorage 读取 token（仅客户端） */
 function getToken(): string | null {
