@@ -8,7 +8,7 @@
  *   POST /api/auth/logout   → 登出，清 token
  *
  * 用法：
- *   const { user, login, logout, isLoggedIn } = useAuth();
+ *   const { user, login, logout, isLoggedIn, updateAvatar } = useAuth();
  */
 
 'use client';
@@ -28,6 +28,7 @@ interface AuthUser {
   userId: string;
   displayName: string;
   roles: string[];
+  avatarUrl?: string;
 }
 
 interface AuthContextValue {
@@ -37,17 +38,16 @@ interface AuthContextValue {
   login: (username: string, password: string) => Promise<void>;
   register: (payload: RegisterDto) => Promise<void>;
   logout: () => Promise<void>;
+  updateAvatar: (url: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-/** 保存 token 到 localStorage */
 function saveTokens(data: { accessToken: string; refreshToken: string }) {
   localStorage.setItem('accessToken', data.accessToken);
   localStorage.setItem('refreshToken', data.refreshToken);
 }
 
-/** 清除 token */
 function clearTokens() {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
@@ -58,7 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 页面加载时从 localStorage 恢复登录状态
   useEffect(() => {
     try {
       const saved = localStorage.getItem('authUser');
@@ -67,14 +66,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
-  /** 登录 */
   const login = useCallback(async (username: string, password: string) => {
     console.log('[Auth] login request:', { username, url: '/auth/login' });
-    const data = await api.post<LoginData>(
-      '/auth/login',
-      { username, password },
-      true, // noAuth: 登录接口不需要 token
-    );
+    const data = await api.post<LoginData>('/auth/login', { username, password }, true);
     console.log('[Auth] login response:', data);
     saveTokens(data);
     const authUser: AuthUser = {
@@ -86,14 +80,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(authUser);
   }, []);
 
-  /** 注册 */
   const register = useCallback(async (payload: RegisterDto) => {
     console.log('[Auth] register request:', { username: payload.username, url: '/auth/register' });
-    const data = await api.post<RegisterData>(
-      '/auth/register',
-      payload,
-      true,
-    );
+    const data = await api.post<RegisterData>('/auth/register', payload, true);
     console.log('[Auth] register response:', data);
     saveTokens(data);
     const authUser: AuthUser = {
@@ -105,7 +94,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(authUser);
   }, []);
 
-  /** 登出 */
+  /** 更新头像 URL — 上传成功后调用，同步到 localStorage 和 Navbar */
+  const updateAvatar = useCallback((url: string) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, avatarUrl: url };
+      localStorage.setItem('authUser', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await api.post('/auth/logout', {
@@ -118,7 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoggedIn: !!user, loading, login, register, logout }}
+      value={{ user, isLoggedIn: !!user, loading, login, register, logout, updateAvatar }}
     >
       {children}
     </AuthContext.Provider>
