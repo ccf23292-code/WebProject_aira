@@ -1,8 +1,8 @@
+@import "katex/dist/katex.min.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import "katex/dist/katex.min.css";
 
 body {
   @apply bg-gray-50 text-gray-900 antialiased;
