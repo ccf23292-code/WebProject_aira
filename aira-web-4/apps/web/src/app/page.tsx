@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import type { HomepageMessage } from '@aira/shared';
+import { DailyFortune } from '@/components/DailyFortune';
 import { ErrorState } from '@/components/layout/StateDisplay';
 import { useFetch } from '@/hooks/useFetch';
 import { useAuth } from '@/lib/auth';
@@ -117,6 +118,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid gap-3">
+            <DailyFortune />
             <InfoCard title="课程广场" value="课程搜索 / 课程详情" />
             <InfoCard title="做题模式" value="刷题 / 模拟考" />
             <InfoCard title="个人沉淀" value="错题本 / 收藏 / 记录" />
