@@ -1,31 +1,40 @@
 /**
  * components/DailyFortune.tsx
- * 每日运势签到卡片（纯前端版）
+ * 每日运势签到卡片（接入后端版）
  *
- * 设计说明：
- *  - 运势随机种子 = hash(日期 + 用户唯一标识)，保证：
- *      * 同一用户同一天刷新页面看到的运势保持一致
- *      * 不同用户同一天看到的运势不同
- *      * 第二天自然换一份
- *  - 签到状态、连续天数使用 localStorage 持久化，key 按 userId 隔离
- *  - 未登录用户用 'anonymous' 作为 userKey，体验上同样可用
- *  - 所有"未来对接后端"的位置已用 TODO(后端对接) 注释标出
+ * 状态来源：
+ *  - 签到状态、连签天数完全由后端 user_checkins 表持久化
+ *    GET  /api/checkin/today  → 拉取
+ *    POST /api/checkin        → 提交
+ *  - 运势内容（等级 + 宜忌 + 段子）仍在前端用伪随机生成
+ *    种子 = hash(today + userId)，同用户同日刷新结果保持一致
+ *
+ * 业务约束：
+ *  - 未登录用户：签到按钮置灰，文案"登录后解锁运势打卡"，不调用任何接口
+ *  - 重复签到（HTTP 409）：静默把按钮切到"今日已签到"灰态，不显示错误红框
+ *  - 其它错误（5xx / 网络异常）：显示行内提示，可重试
  */
 
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useAuth } from '@/lib/auth';
+import {
+  CheckinApiError,
+  getCheckinStatus,
+  submitCheckin,
+  type CheckinStatus,
+} from '@/lib/checkin';
 
 /* ════════════════════ 语料库 ════════════════════ */
 
 type FortuneTone =
-  | 'great'      // 大吉
-  | 'good'       // 吉
-  | 'small-good' // 小吉
-  | 'neutral'    // 中平
-  | 'small-bad'  // 小凶
-  | 'bad';       // 凶
+  | 'great'
+  | 'good'
+  | 'small-good'
+  | 'neutral'
+  | 'small-bad'
+  | 'bad';
 
 interface FortuneLevel {
   label: string;
@@ -33,7 +42,6 @@ interface FortuneLevel {
   tone: FortuneTone;
 }
 
-/** 运势等级 + 权重（大吉/凶最稀有，中平最常见） */
 const LEVELS: FortuneLevel[] = [
   { label: '大吉', weight: 1, tone: 'great' },
   { label: '吉',   weight: 3, tone: 'good' },
@@ -43,7 +51,6 @@ const LEVELS: FortuneLevel[] = [
   { label: '凶',   weight: 1, tone: 'bad' },
 ];
 
-/** 宜：贴近大学生日常的正面行为 */
 const GOOD_THINGS: string[] = [
   '刷题，做一道会一道',
   '背书，看一遍就记下了',
@@ -67,7 +74,6 @@ const GOOD_THINGS: string[] = [
   '把代码 commit 推到远端',
 ];
 
-/** 忌：反向的大学生 meme */
 const BAD_THINGS: string[] = [
   '熬夜内卷',
   '空腹做实验',
@@ -91,7 +97,6 @@ const BAD_THINGS: string[] = [
   '把代码改完不 commit 就关机',
 ];
 
-/** 不同运势对应的小段子，弹幕风格 */
 const QUOTES: Record<FortuneTone, string[]> = {
   'great': [
     '看一遍就背下来了',
@@ -128,7 +133,6 @@ const QUOTES: Record<FortuneTone, string[]> = {
 
 /* ════════════════════ 伪随机算法 ════════════════════ */
 
-/** FNV-1a 32 位字符串哈希，结果稳定，跨浏览器一致 */
 function hashString(s: string): number {
   let h = 2166136261 >>> 0;
   for (let i = 0; i < s.length; i++) {
@@ -138,7 +142,6 @@ function hashString(s: string): number {
   return h >>> 0;
 }
 
-/** Mulberry32：给一个种子生成一个确定性的 [0, 1) 序列 */
 function mulberry32(seed: number): () => number {
   let state = seed >>> 0;
   return function rand(): number {
@@ -150,7 +153,6 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-/** 按 weight 加权抽取一项 */
 function pickWeighted<T extends { weight: number }>(items: T[], r: number): T {
   const total = items.reduce((s, it) => s + it.weight, 0);
   let acc = r * total;
@@ -161,7 +163,6 @@ function pickWeighted<T extends { weight: number }>(items: T[], r: number): T {
   return items[items.length - 1];
 }
 
-/** 从数组中随机不重复抽取 n 项 */
 function pickN<T>(items: readonly T[], n: number, rand: () => number): T[] {
   const pool = items.slice();
   const out: T[] = [];
@@ -175,21 +176,12 @@ function pickN<T>(items: readonly T[], n: number, rand: () => number): T[] {
 
 /* ════════════════════ 日期工具 ════════════════════ */
 
-function formatDate(d: Date): string {
+function todayString(): string {
+  const d = new Date();
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
-}
-
-function todayString(): string {
-  return formatDate(new Date());
-}
-
-function yesterdayString(): string {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return formatDate(d);
 }
 
 /* ════════════════════ 运势计算 ════════════════════ */
@@ -225,75 +217,9 @@ const TONE_STYLES: Record<FortuneTone, { badge: string; ring: string; accent: st
   'bad':        { badge: 'bg-slate-100 text-slate-700 border-slate-300',      ring: 'ring-slate-300/60',   accent: 'text-slate-600' },
 };
 
-/* ════════════════════ 组件 ════════════════════ */
+/* ════════════════════ 卡片外壳 ════════════════════ */
 
-export function DailyFortune() {
-  const { user } = useAuth();
-
-  // 未登录时也允许使用，但走匿名 key，避免 streak 在登录后被覆盖
-  const userKey = user?.userId ?? 'anonymous';
-  const today = todayString();
-
-  // localStorage key 按用户隔离，防止多账户登录互相覆盖
-  const storageKeyDate = `aira:fortune:lastDate:${userKey}`;
-  const storageKeyStreak = `aira:fortune:streak:${userKey}`;
-
-  const [hasCheckedIn, setHasCheckedIn] = useState(false);
-  const [streak, setStreak] = useState(0);
-  const [hydrated, setHydrated] = useState(false);
-
-  // 首次水合时读取 localStorage（SSR 阶段不可用，避免 hydration mismatch）
-  useEffect(() => {
-    // TODO(后端对接): 调用 GET /api/checkin/today，返回
-    //   { checked: boolean, last_date: string, streak: number, fortune?: FortuneResult }
-    //   - 若后端 fortune 不为空，应直接使用后端结果（保证多设备一致）
-    //   - 若 checked === false，再走前端的伪随机预览
-    const lastDate = typeof window !== 'undefined' ? window.localStorage.getItem(storageKeyDate) : null;
-    const savedStreak = typeof window !== 'undefined' ? Number(window.localStorage.getItem(storageKeyStreak) ?? '0') : 0;
-    setHasCheckedIn(lastDate === today);
-    setStreak(Number.isFinite(savedStreak) ? savedStreak : 0);
-    setHydrated(true);
-  }, [storageKeyDate, storageKeyStreak, today]);
-
-  // 当日运势（用 useMemo 缓存；签到前作为"预览"展示也无妨，但默认遮起来更有仪式感）
-  const fortune = useMemo<FortuneResult>(
-    () => generateFortune(today, userKey),
-    [today, userKey],
-  );
-  const tone = TONE_STYLES[fortune.level.tone];
-
-  const handleCheckIn = () => {
-    // TODO(后端对接): 调用 POST /api/checkin
-    //   - 请求体 { date?: string }，后端以服务器时区为准
-    //   - 响应 { streak: number, last_date: string, fortune: FortuneResult }
-    //   - 接入后端后，下面的 localStorage 写入可保留为离线降级，也可移除
-    if (typeof window === 'undefined') return;
-
-    const last = window.localStorage.getItem(storageKeyDate);
-    let nextStreak: number;
-    if (last === today) {
-      nextStreak = streak;            // 同日重复点击，按理走不到这里（按钮已禁用）
-    } else if (last === yesterdayString()) {
-      nextStreak = streak + 1;        // 昨天也签了：连签 +1
-    } else {
-      nextStreak = 1;                 // 断签 / 首次签到
-    }
-
-    window.localStorage.setItem(storageKeyDate, today);
-    window.localStorage.setItem(storageKeyStreak, String(nextStreak));
-    setStreak(nextStreak);
-    setHasCheckedIn(true);
-  };
-
-  // 水合占位，防止 server / client 不一致
-  if (!hydrated) {
-    return (
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-        <div className="h-40 animate-pulse rounded-xl bg-gray-100" />
-      </div>
-    );
-  }
-
+function FortuneFrame({ today, children }: { today: string; children: ReactNode }) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
@@ -302,80 +228,237 @@ export function DailyFortune() {
         </div>
         <div className="font-mono text-xs text-gray-400">{today}</div>
       </div>
-
-      {hasCheckedIn ? (
-        <>
-          <div className="mt-4 flex flex-col items-center text-center">
-            <div
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-lg font-semibold ring-4 ${tone.badge} ${tone.ring}`}
-            >
-              <span className="opacity-60">§</span>
-              <span>{fortune.level.label}</span>
-              <span className="opacity-60">§</span>
-            </div>
-            <p className={`mt-2 text-sm ${tone.accent}`}>{fortune.quote}</p>
-          </div>
-
-          <div className="mt-4 space-y-2 rounded-xl bg-gray-50 p-3 text-sm">
-            {fortune.goods.map((g, i) => (
-              <div key={`good-${i}`} className="flex items-start gap-2">
-                <span className="mt-0.5 shrink-0 rounded-md bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-700">
-                  宜
-                </span>
-                <span className="flex-1 text-gray-700">{g}</span>
-              </div>
-            ))}
-            {fortune.bads.map((b, i) => (
-              <div key={`bad-${i}`} className="flex items-start gap-2">
-                <span className="mt-0.5 shrink-0 rounded-md bg-rose-100 px-1.5 py-0.5 text-xs font-medium text-rose-700">
-                  忌
-                </span>
-                <span className="flex-1 text-gray-700">{b}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 flex items-center justify-between border-t border-dashed border-gray-200 pt-3">
-            <div className="text-xs text-gray-500">
-              已连续签到 <span className="font-mono font-semibold text-brand-600">{streak}</span> 天
-            </div>
-            <button
-              type="button"
-              disabled
-              className="cursor-not-allowed rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-500"
-            >
-              今日已签到
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="mt-5 rounded-xl border border-dashed border-gray-200 bg-gray-50/60 px-4 py-6 text-center">
-            <div className="text-sm text-gray-500">点签到，看看今天宜做什么、忌做什么。</div>
-            <div className="mt-1 text-xs text-gray-400">同一天内刷新页面运势保持一致。</div>
-          </div>
-
-          <div className="mt-4 flex items-center justify-between border-t border-dashed border-gray-200 pt-3">
-            <div className="text-xs text-gray-500">
-              {streak > 0 ? (
-                <>
-                  上一次连签 <span className="font-mono font-semibold text-brand-600">{streak}</span> 天
-                </>
-              ) : (
-                <>第一次来？签到开始记录连签</>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={handleCheckIn}
-              className="rounded-lg bg-brand-600 px-4 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700"
-            >
-              签到
-            </button>
-          </div>
-        </>
-      )}
+      {children}
     </div>
+  );
+}
+
+/* ════════════════════ 主组件 ════════════════════ */
+
+export function DailyFortune() {
+  const { user, isLoggedIn } = useAuth();
+
+  const today = todayString();
+
+  const [status, setStatus] = useState<CheckinStatus | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string>('');
+
+  // 拉取签到状态：仅在登录态下发起请求
+  useEffect(() => {
+    if (!isLoggedIn || !user) {
+      setStatus(null);
+      setError('');
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+    setError('');
+
+    getCheckinStatus()
+      .then((data) => {
+        if (!cancelled) setStatus(data);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        const message = err instanceof Error ? err.message : '加载签到状态失败';
+        setError(message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoggedIn, user]);
+
+  const fortune = useMemo<FortuneResult>(
+    () => generateFortune(today, user?.userId ?? 'anonymous'),
+    [today, user?.userId],
+  );
+  const tone = TONE_STYLES[fortune.level.tone];
+
+  const handleCheckIn = async () => {
+    if (!isLoggedIn || submitting) return;
+    setSubmitting(true);
+    setError('');
+    try {
+      const next = await submitCheckin();
+      setStatus(next);
+    } catch (err: unknown) {
+      // 409 already_checked：优雅降级，仅刷新状态
+      if (err instanceof CheckinApiError && err.status === 409) {
+        try {
+          const refreshed = await getCheckinStatus();
+          setStatus(refreshed);
+        } catch {
+          setStatus({
+            checked_today: true,
+            last_checkin_date: today,
+            continuous_days: status?.continuous_days ?? 1,
+            max_continuous: status?.max_continuous ?? 1,
+            total_days: status?.total_days ?? 1,
+          });
+        }
+      } else {
+        const message = err instanceof Error ? err.message : '签到失败，请稍后重试';
+        setError(message);
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleReload = () => {
+    setError('');
+    setLoading(true);
+    getCheckinStatus()
+      .then((data) => setStatus(data))
+      .catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : '加载签到状态失败';
+        setError(message);
+      })
+      .finally(() => setLoading(false));
+  };
+
+  /* ─── 渲染分支 ─── */
+
+  // 1. 未登录态
+  if (!isLoggedIn) {
+    return (
+      <FortuneFrame today={today}>
+        <div className="mt-5 rounded-xl border border-dashed border-gray-200 bg-gray-50/60 px-4 py-6 text-center">
+          <div className="text-sm text-gray-500">签到后揭晓今日运势 · 宜 · 忌</div>
+          <div className="mt-1 text-xs text-gray-400">登录后连签天数自动云端同步</div>
+        </div>
+        <div className="mt-4 flex items-center justify-end border-t border-dashed border-gray-200 pt-3">
+          <button
+            type="button"
+            disabled
+            className="cursor-not-allowed rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-500"
+          >
+            登录后解锁运势打卡
+          </button>
+        </div>
+      </FortuneFrame>
+    );
+  }
+
+  // 2. 加载态
+  if (loading && !status) {
+    return (
+      <FortuneFrame today={today}>
+        <div className="mt-4 h-32 animate-pulse rounded-xl bg-gray-100" />
+      </FortuneFrame>
+    );
+  }
+
+  // 3. 拉取失败
+  if (error && !status) {
+    return (
+      <FortuneFrame today={today}>
+        <div className="mt-5 rounded-xl border border-dashed border-rose-200 bg-rose-50/60 px-4 py-5 text-center">
+          <div className="text-sm text-rose-700">{error}</div>
+        </div>
+        <div className="mt-4 flex items-center justify-end border-t border-dashed border-gray-200 pt-3">
+          <button
+            type="button"
+            onClick={handleReload}
+            className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-600 transition-colors hover:bg-gray-50"
+          >
+            重新加载
+          </button>
+        </div>
+      </FortuneFrame>
+    );
+  }
+
+  const checkedToday = status?.checked_today ?? false;
+  const streak = status?.continuous_days ?? 0;
+
+  // 4. 已签到态
+  if (checkedToday) {
+    return (
+      <FortuneFrame today={today}>
+        <div className="mt-4 flex flex-col items-center text-center">
+          <div
+            className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-lg font-semibold ring-4 ${tone.badge} ${tone.ring}`}
+          >
+            <span className="opacity-60">§</span>
+            <span>{fortune.level.label}</span>
+            <span className="opacity-60">§</span>
+          </div>
+          <p className={`mt-2 text-sm ${tone.accent}`}>{fortune.quote}</p>
+        </div>
+
+        <div className="mt-4 space-y-2 rounded-xl bg-gray-50 p-3 text-sm">
+          {fortune.goods.map((g, i) => (
+            <div key={`good-${i}`} className="flex items-start gap-2">
+              <span className="mt-0.5 shrink-0 rounded-md bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-700">
+                宜
+              </span>
+              <span className="flex-1 text-gray-700">{g}</span>
+            </div>
+          ))}
+          {fortune.bads.map((b, i) => (
+            <div key={`bad-${i}`} className="flex items-start gap-2">
+              <span className="mt-0.5 shrink-0 rounded-md bg-rose-100 px-1.5 py-0.5 text-xs font-medium text-rose-700">
+                忌
+              </span>
+              <span className="flex-1 text-gray-700">{b}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 flex items-center justify-between border-t border-dashed border-gray-200 pt-3">
+          <div className="text-xs text-gray-500">
+            已连续签到 <span className="font-mono font-semibold text-brand-600">{streak}</span> 天
+          </div>
+          <button
+            type="button"
+            disabled
+            className="cursor-not-allowed rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-500"
+          >
+            今日已签到
+          </button>
+        </div>
+      </FortuneFrame>
+    );
+  }
+
+  // 5. 未签到态
+  return (
+    <FortuneFrame today={today}>
+      <div className="mt-5 rounded-xl border border-dashed border-gray-200 bg-gray-50/60 px-4 py-6 text-center">
+        <div className="text-sm text-gray-500">点签到，看看今天宜做什么、忌做什么。</div>
+        <div className="mt-1 text-xs text-gray-400">连签记录会同步到云端。</div>
+      </div>
+
+      {error ? <p className="mt-3 text-xs text-rose-600">{error}</p> : null}
+
+      <div className="mt-4 flex items-center justify-between border-t border-dashed border-gray-200 pt-3">
+        <div className="text-xs text-gray-500">
+          {streak > 0 ? (
+            <>
+              上一次连签 <span className="font-mono font-semibold text-brand-600">{streak}</span> 天
+            </>
+          ) : (
+            <>第一次来？签到开始记录连签</>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={handleCheckIn}
+          disabled={submitting}
+          className="rounded-lg bg-brand-600 px-4 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          {submitting ? '签到中…' : '签到'}
+        </button>
+      </div>
+    </FortuneFrame>
   );
 }
 

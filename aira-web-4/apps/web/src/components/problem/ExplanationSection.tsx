@@ -10,6 +10,7 @@ import type {
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { MarkdownBlock } from '@/components/Markdown';
+import { AIExplanationPanel } from '@/components/problem/AIExplanationPanel';
 
 interface ExplanationSectionProps {
   problemId: number;
@@ -100,6 +101,8 @@ export function ExplanationSection({
           <MarkdownBlock content={officialExplanation} className="prose prose-sm mt-2 max-w-none text-gray-800" />
         </section>
       )}
+
+      {isLoggedIn ? <AIExplanationPanel problemId={problemId} /> : null}
 
       {loading ? (
         <div className="text-sm text-gray-500">题解加载中...</div>

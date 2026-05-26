@@ -41,6 +41,7 @@ func main() {
 		&models.WrongQuestion{},
 		&models.ProblemExplanation{},
 		&models.ProblemExplanationVote{},
+		&models.UserCheckin{},
 	); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
@@ -64,6 +65,11 @@ func main() {
 	wrongBookService := services.NewWrongBookService(db, paperService)
 	profileService := services.NewProfileService(db)
 	explanationService := services.NewProblemExplanationService(db, paperService)
+	checkinService := services.NewCheckinService(db)
+	llmService := services.NewLLMService(services.LoadLLMConfigFromEnv(), paperService)
+	if !llmService.Enabled() {
+		log.Println("LLM service disabled: LLM_API_KEY not set, /api/llm/* will return 503")
+	}
 	if err := recallService.AutoMigrate(); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
@@ -79,6 +85,8 @@ func main() {
 	wrongCtl := routers.NewWrongBookController(wrongBookService)
 	profileCtl := routers.NewProfileController(profileService)
 	explanationCtl := routers.NewProblemExplanationController(explanationService)
+	checkinCtl := routers.NewCheckinController(checkinService)
+	llmCtl := routers.NewLLMController(llmService)
 	fileCtl := routers.NewFileController()
 
 	if err := os.MkdirAll("storage", 0o755); err != nil {
@@ -129,6 +137,12 @@ func main() {
 
 		profileGroup := api.Group("/profile", middlewares.AuthRequired(authService))
 		profileCtl.RegisterRoutes(profileGroup)
+
+		checkinGroup := api.Group("/checkin", middlewares.AuthRequired(authService))
+		checkinCtl.RegisterRoutes(checkinGroup)
+
+		llmGroup := api.Group("/llm", middlewares.AuthRequired(authService))
+		llmCtl.RegisterRoutes(llmGroup)
 
 		fileGroup := api.Group("/files", middlewares.AuthRequired(authService))
 		fileCtl.RegisterRoutes(fileGroup)
