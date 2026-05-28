@@ -452,8 +452,22 @@ function CommentList({
       {items.map((item) => (
         <article key={String(item.id)} className="rounded-2xl border border-gray-200 p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="text-sm font-semibold text-gray-900">
-              {item.user_name || '匿名同学'}
+            <div className="flex items-center gap-2">
+              {item.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.avatar_url}
+                  alt={item.user_name ?? 'avatar'}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
+                  {item.user_name?.charAt(0)?.toUpperCase() ?? 'U'}
+                </div>
+              )}
+              <div className="text-sm font-semibold text-gray-900">
+                {item.user_name || '匿名同学'}
+              </div>
             </div>
             <div className="text-xs text-gray-400">{formatDate(item.updated_at ?? item.created_at)}</div>
           </div>

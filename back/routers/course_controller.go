@@ -82,6 +82,7 @@ func (ctl *CourseController) AddCourseComment(c *gin.Context) {
 		ctl.handleError(c, err)
 		return
 	}
+	comment.AvatarURL = toPublicURL(c, comment.AvatarURL)
 	utils.JSONSuccess(c, http.StatusCreated, comment)
 }
 
@@ -119,6 +120,7 @@ func (ctl *CourseController) AddTeacherComment(c *gin.Context) {
 		ctl.handleError(c, err)
 		return
 	}
+	comment.AvatarURL = toPublicURL(c, comment.AvatarURL)
 	utils.JSONSuccess(c, http.StatusCreated, comment)
 }
 

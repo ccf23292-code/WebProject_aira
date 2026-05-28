@@ -73,6 +73,7 @@ function normalizeCourseComment(item: unknown, fallbackCourseId: string): Course
       record.user_name ?? record.author_name ?? record.display_name ?? record.nickname,
       '匿名同学',
     ),
+    avatar_url: getStringValue(record.avatar_url ?? record.avatarUrl) || undefined,
     comment: getStringValue(record.comment ?? record.content ?? record.body),
     created_at: getStringValue(record.created_at),
     updated_at: getStringValue(record.updated_at),

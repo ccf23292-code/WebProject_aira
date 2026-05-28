@@ -86,6 +86,9 @@ func (ctl *PaperController) GetCourseComments(c *gin.Context) {
 		ctl.handleError(c, err)
 		return
 	}
+	for i := range comments {
+		comments[i].AvatarURL = toPublicURL(c, comments[i].AvatarURL)
+	}
 	utils.JSONSuccess(c, http.StatusOK, comments)
 }
 
@@ -98,6 +101,9 @@ func (ctl *PaperController) GetTeacherComments(c *gin.Context) {
 	if err != nil {
 		ctl.handleError(c, err)
 		return
+	}
+	for i := range comments {
+		comments[i].AvatarURL = toPublicURL(c, comments[i].AvatarURL)
 	}
 	utils.JSONSuccess(c, http.StatusOK, comments)
 }
