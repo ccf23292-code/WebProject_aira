@@ -1,11 +1,11 @@
+@import "katex/dist/katex.min.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import "katex/dist/katex.min.css";
-
 body {
-  @apply bg-gray-50 text-gray-900 antialiased;
+  @apply bg-stone-50 text-stone-900 antialiased;
 }
 
 .code-editor {
@@ -13,7 +13,7 @@ body {
   tab-size: 4;
 }
 
-.status-accepted { @apply text-green-600 bg-green-50; }
-.status-wrong    { @apply text-red-600 bg-red-50; }
-.status-pending  { @apply text-yellow-600 bg-yellow-50; }
-.status-error    { @apply text-orange-600 bg-orange-50; }
+.status-accepted { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100; }
+.status-wrong    { @apply bg-rose-50 text-rose-700 ring-1 ring-rose-100; }
+.status-pending  { @apply bg-amber-50 text-amber-700 ring-1 ring-amber-100; }
+.status-error    { @apply bg-orange-50 text-orange-700 ring-1 ring-orange-100; }
