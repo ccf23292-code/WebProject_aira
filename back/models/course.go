@@ -94,6 +94,7 @@ type TeacherComment struct {
 	CourseID    string    `gorm:"size:128;index" json:"course_id"` // xskcdm
 	UserID      string    `gorm:"size:128;index" json:"user_id"`   // 用户 ID
 	UserName    string    `gorm:"-" json:"user_name,omitempty"`
+	AvatarURL   string    `gorm:"-" json:"avatar_url,omitempty"`
 	TeacherID   string    `gorm:"size:128;index" json:"teacher_id"` // jsdm
 	TeacherName string    `gorm:"-" json:"teacher_name,omitempty"`
 	Comment     string    `gorm:"type:text" json:"comment"`
@@ -107,6 +108,7 @@ type CourseComment struct {
 	CourseID  string    `gorm:"size:128;index" json:"course_id"` // xskcdm
 	UserID    string    `gorm:"size:128;index" json:"user_id"`   // 用户 ID
 	UserName  string    `gorm:"-" json:"user_name,omitempty"`
+	AvatarURL string    `gorm:"-" json:"avatar_url,omitempty"`
 	Comment   string    `gorm:"type:text" json:"comment"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

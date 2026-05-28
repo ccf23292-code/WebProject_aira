@@ -311,8 +311,9 @@ func (s *CourseService) AddCourseComment(courseID string, userID models.PrimaryK
 	if err := s.db.Create(&item).Error; err != nil {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create course comment")
 	}
-	if name, ok := s.lookupUserDisplayNames([]uint64{uint64(userID)})[strconv.FormatUint(uint64(userID), 10)]; ok {
-		item.UserName = name
+	if display, ok := s.lookupUserDisplays([]uint64{uint64(userID)})[strconv.FormatUint(uint64(userID), 10)]; ok {
+		item.UserName = display.Name
+		item.AvatarURL = display.Avatar
 	}
 	return &item, nil
 }
@@ -369,7 +370,10 @@ func (s *CourseService) AddTeacherComment(courseID, teacherID string, userID mod
 	if err := s.db.Create(&item).Error; err != nil {
 		return nil, newServiceError("internal_error", http.StatusInternalServerError, "failed to create teacher comment")
 	}
-	item.UserName = s.lookupUserDisplayNames([]uint64{uint64(userID)})[strconv.FormatUint(uint64(userID), 10)]
+	if display, ok := s.lookupUserDisplays([]uint64{uint64(userID)})[strconv.FormatUint(uint64(userID), 10)]; ok {
+		item.UserName = display.Name
+		item.AvatarURL = display.Avatar
+	}
 	item.TeacherName = s.lookupTeacherNamesByKey([]string{courseID + "::" + teacherID})[courseID+"::"+teacherID]
 	return &item, nil
 }
@@ -516,10 +520,11 @@ func (s *CourseService) hydrateCourseCommentUsers(comments []models.CourseCommen
 		}
 	}
 
-	displayNames := s.lookupUserDisplayNames(userIDs)
+	displays := s.lookupUserDisplays(userIDs)
 	for idx := range comments {
-		if display, ok := displayNames[comments[idx].UserID]; ok {
-			comments[idx].UserName = display
+		if display, ok := displays[comments[idx].UserID]; ok {
+			comments[idx].UserName = display.Name
+			comments[idx].AvatarURL = display.Avatar
 		}
 	}
 }
@@ -545,6 +550,7 @@ func (s *CourseService) hydrateTeacherCommentDisplayFields(comments []models.Tea
 	teacherNames := s.lookupTeacherNamesByKey(teacherKeys)
 	for idx := range comments {
 		comments[idx].UserName = courseComments[idx].UserName
+		comments[idx].AvatarURL = courseComments[idx].AvatarURL
 		comments[idx].TeacherName = teacherNames[comments[idx].CourseID+"::"+comments[idx].TeacherID]
 	}
 }
@@ -571,35 +577,45 @@ func (s *CourseService) hydrateGradingTeacherNames(standards []models.GradingSta
 	}
 }
 
-func (s *CourseService) lookupUserDisplayNames(userIDs []uint64) map[string]string {
+// userDisplay 聚合评论展示所需的用户昵称与头像。
+type userDisplay struct {
+	Name   string
+	Avatar string
+}
+
+// lookupUserDisplays 按 userID 实时查出最新昵称与头像，供评论读取时填充。
+// Avatar 为数据库中存储的相对路径，由 controller 统一转换为可访问的绝对 URL。
+func (s *CourseService) lookupUserDisplays(userIDs []uint64) map[string]userDisplay {
 	if len(userIDs) == 0 {
-		return map[string]string{}
+		return map[string]userDisplay{}
 	}
 
 	var users []models.User
 	if err := s.db.Where("id IN ?", userIDs).Find(&users).Error; err != nil {
-		return map[string]string{}
+		return map[string]userDisplay{}
 	}
 
 	var profiles []models.UserProfile
 	_ = s.db.Where("user_id IN ?", userIDs).Find(&profiles).Error
 
-	profileNames := make(map[uint64]string, len(profiles))
+	profileMap := make(map[uint64]models.UserProfile, len(profiles))
 	for _, profile := range profiles {
-		if nickname := strings.TrimSpace(profile.Nickname); nickname != "" {
-			profileNames[profile.UserID] = nickname
-		}
+		profileMap[profile.UserID] = profile
 	}
 
-	displayNames := make(map[string]string, len(users))
+	displays := make(map[string]userDisplay, len(users))
 	for _, user := range users {
-		name := strings.TrimSpace(profileNames[user.ID])
+		profile := profileMap[user.ID]
+		name := strings.TrimSpace(profile.Nickname)
 		if name == "" {
 			name = user.Username
 		}
-		displayNames[strconv.FormatUint(user.ID, 10)] = name
+		displays[strconv.FormatUint(user.ID, 10)] = userDisplay{
+			Name:   name,
+			Avatar: strings.TrimSpace(profile.AvatarURL),
+		}
 	}
-	return displayNames
+	return displays
 }
 
 func (s *CourseService) lookupTeacherNamesByKey(keys []string) map[string]string {

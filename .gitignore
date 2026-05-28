@@ -14,4 +14,10 @@ back/storage/*
 !back/storage/.gitkeep
 back/.env
 
+# 本地编译产物 / 数据库，不纳入版本控制（队友需自行 go build / go run）
+back/aira-server.exe
+back/*.db
+back/*.db-shm
+back/*.db-wal
+
 *.tsbuildinfo
