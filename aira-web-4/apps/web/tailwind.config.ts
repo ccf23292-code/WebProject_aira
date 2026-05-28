@@ -6,8 +6,8 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe',
-          500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1a2e5a',
+          50: '#fff8f1', 100: '#f6eadc', 200: '#ead5bd',
+          500: '#c87941', 600: '#b5652f', 700: '#8f4e27', 800: '#6f3d22', 900: '#3f2a1f',
         },
       },
       fontFamily: {
