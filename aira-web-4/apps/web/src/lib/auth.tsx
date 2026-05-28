@@ -21,7 +21,7 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
-import type { LoginData, RegisterData, RegisterDto } from '@aira/shared';
+import type { LoginData, RegisterData, RegisterDto, UserProfile } from '@aira/shared';
 import { api } from './api';
 
 interface AuthUser {
@@ -58,13 +58,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // 从后端拉取最新资料（昵称 + 头像），让导航栏在刷新/重新登录后也能持久显示头像。
+  const refreshProfile = useCallback(async () => {
+    if (typeof window === 'undefined') return;
+    if (!localStorage.getItem('accessToken')) return;
+    try {
+      const profile = await api.get<UserProfile>('/profile');
+      setUser((prev) => {
+        const updated: AuthUser = {
+          userId: prev?.userId ?? String(profile.user_id ?? ''),
+          displayName: profile.nickname || profile.username || prev?.displayName || '',
+          roles: prev?.roles ?? [],
+          avatarUrl: profile.avatar_url || undefined,
+        };
+        localStorage.setItem('authUser', JSON.stringify(updated));
+        return updated;
+      });
+    } catch { /* 拉取失败时保留本地缓存 */ }
+  }, []);
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem('authUser');
       if (saved) setUser(JSON.parse(saved));
     } catch { /* ignore */ }
     setLoading(false);
-  }, []);
+    void refreshProfile();
+  }, [refreshProfile]);
 
   const login = useCallback(async (username: string, password: string) => {
     console.log('[Auth] login request:', { username, url: '/auth/login' });
@@ -78,7 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     localStorage.setItem('authUser', JSON.stringify(authUser));
     setUser(authUser);
-  }, []);
+    void refreshProfile();
+  }, [refreshProfile]);
 
   const register = useCallback(async (payload: RegisterDto) => {
     console.log('[Auth] register request:', { username: payload.username, url: '/auth/register' });
@@ -92,7 +113,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     localStorage.setItem('authUser', JSON.stringify(authUser));
     setUser(authUser);
-  }, []);
+    void refreshProfile();
+  }, [refreshProfile]);
 
   /** 更新头像 URL — 上传成功后调用，同步到 localStorage 和 Navbar */
   const updateAvatar = useCallback((url: string) => {
