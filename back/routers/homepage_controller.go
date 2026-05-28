@@ -39,6 +39,9 @@ func (ctl *HomepageController) ListMessages(c *gin.Context) {
 		ctl.handleError(c, err)
 		return
 	}
+	for i := range items {
+		items[i].AvatarURL = toPublicURL(c, items[i].AvatarURL)
+	}
 	utils.JSONSuccess(c, http.StatusOK, items)
 }
 
@@ -54,6 +57,7 @@ func (ctl *HomepageController) AddMessage(c *gin.Context) {
 		ctl.handleError(c, err)
 		return
 	}
+	item.AvatarURL = toPublicURL(c, item.AvatarURL)
 	utils.JSONSuccess(c, http.StatusCreated, item)
 }
 
@@ -75,6 +79,7 @@ func (ctl *HomepageController) UpdateMessage(c *gin.Context) {
 		ctl.handleError(c, svcErr)
 		return
 	}
+	item.AvatarURL = toPublicURL(c, item.AvatarURL)
 	utils.JSONSuccess(c, http.StatusOK, item)
 }
 
