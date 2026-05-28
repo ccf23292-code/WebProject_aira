@@ -14,6 +14,42 @@
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 
+/** GET /api/llm/explain/cached 的响应 data —— 与后端 cachedExplanationResponse 对齐 */
+export interface CachedExplanation {
+  found: boolean;
+  content?: string;
+  model?: string;
+  created_at?: string;
+}
+
+/** 通用响应包装 */
+interface ApiEnvelope<T> {
+  code: number;
+  message: string;
+  data: T;
+}
+
+/**
+ * 查询指定题目最近一条 LLM 缓存解析。
+ * 永远返回正常 promise；命中与否由 found 字段表达。网络错误才会 reject。
+ */
+export async function fetchCachedExplanation(problemId: number): Promise<CachedExplanation> {
+  const res = await fetch(`${API_BASE}/llm/explain/cached?problem_id=${problemId}`, {
+    method: 'GET',
+    headers: { ...authHeader() },
+  });
+  if (!res.ok) {
+    // 401 / 5xx 等：视为未命中，让 UI 走"未生成"分支即可
+    return { found: false };
+  }
+  try {
+    const body = (await res.json()) as ApiEnvelope<CachedExplanation>;
+    return body.data ?? { found: false };
+  } catch {
+    return { found: false };
+  }
+}
+
 export interface StreamHandlers {
   /** 每来一段 token 文本时回调；上层应做"追加到尾部" */
   onToken: (text: string) => void;

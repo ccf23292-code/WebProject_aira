@@ -5,14 +5,17 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
+	"warehouse-web/middlewares"
+	"warehouse-web/models"
 	"warehouse-web/services"
 	"warehouse-web/utils"
 )
 
-// LLMController 处理 LLM 相关请求（流式 SSE）。
+// LLMController 处理 LLM 相关请求（流式 SSE + 缓存查询）。
 type LLMController struct {
 	service *services.LLMService
 }
@@ -24,13 +27,51 @@ func NewLLMController(service *services.LLMService) *LLMController {
 
 // RegisterRoutes 将 LLM 相关路由绑定到指定的路由组（该组应已挂载 AuthRequired 中间件）。
 //
-//	POST /api/llm/explain   body: { "problem_id": 123 }
+//	POST /api/llm/explain                          body: { "problem_id": 123 }
+//	GET  /api/llm/explain/cached?problem_id=123    返回最近一条缓存（或 found:false）
 func (ctl *LLMController) RegisterRoutes(group *gin.RouterGroup) {
 	group.POST("/explain", ctl.Explain)
+	group.GET("/explain/cached", ctl.GetCached)
 }
 
 type explainRequest struct {
 	ProblemID uint64 `json:"problem_id" binding:"required"`
+}
+
+// cachedExplanationResponse 是 GET /explain/cached 的响应 data 结构。
+// 用 found 字段而非 HTTP 404 表达"未命中"，让前端用一次 fetch 解决。
+type cachedExplanationResponse struct {
+	Found     bool   `json:"found"`
+	Content   string `json:"content,omitempty"`
+	Model     string `json:"model,omitempty"`
+	CreatedAt string `json:"created_at,omitempty"`
+}
+
+// GetCached 返回指定题目最近一条 LLM 缓存解析。
+// GET /api/llm/explain/cached?problem_id=123
+func (ctl *LLMController) GetCached(c *gin.Context) {
+	raw := c.Query("problem_id")
+	problemID, err := strconv.ParseUint(raw, 10, 64)
+	if err != nil || problemID == 0 {
+		utils.JSONError(c, http.StatusBadRequest, "invalid_request", "problem_id 必须为正整数")
+		return
+	}
+
+	record, err := ctl.service.GetLatestExplanation(problemID)
+	if err != nil {
+		ctl.handleError(c, err)
+		return
+	}
+	if record == nil {
+		utils.JSONSuccess(c, http.StatusOK, cachedExplanationResponse{Found: false})
+		return
+	}
+	utils.JSONSuccess(c, http.StatusOK, cachedExplanationResponse{
+		Found:     true,
+		Content:   record.Content,
+		Model:     record.Model,
+		CreatedAt: record.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+	})
 }
 
 // Explain 针对指定题目流式返回 AI 解析（Server-Sent Events）。
@@ -42,6 +83,7 @@ type explainRequest struct {
 //	event: error   data: {"message":"..."}
 //
 // 客户端断开会通过 c.Request.Context() 传播到 service 层，stream 优雅关闭。
+// 正常结束时 service 会异步落库到 llm_explanations 表（前端无需额外保存请求）。
 //
 // TODO: add per-user rate limit（在此处或独立中间件实现）
 func (ctl *LLMController) Explain(c *gin.Context) {
@@ -51,7 +93,8 @@ func (ctl *LLMController) Explain(c *gin.Context) {
 		return
 	}
 
-	chunks, err := ctl.service.StreamExplain(c.Request.Context(), req.ProblemID)
+	userID := ctl.currentUserID(c)
+	chunks, err := ctl.service.StreamExplain(c.Request.Context(), userID, req.ProblemID)
 	if err != nil {
 		ctl.handleError(c, err)
 		return
@@ -71,7 +114,6 @@ func (ctl *LLMController) Explain(c *gin.Context) {
 		select {
 		case chunk, ok := <-chunks:
 			if !ok {
-				// service 那边正常关闭了 channel
 				return false
 			}
 			switch chunk.Kind {
@@ -93,25 +135,29 @@ func (ctl *LLMController) Explain(c *gin.Context) {
 			}
 
 		case <-clientGone:
-			// 客户端断开：service 端 ctx 也会随之取消，goroutine 会自行退出
 			return false
 		}
 	})
 }
 
-// writeSSE 将一条 SSE 事件写入响应。失败时只能尽力——客户端可能已断开。
+// writeSSE 将一条 SSE 事件写入响应。
 func writeSSE(c *gin.Context, event string, payload any) {
 	data, err := json.Marshal(payload)
 	if err != nil {
 		return
 	}
-	// 手写 SSE 格式而非 c.SSEvent，是为了精确控制 event/data 字段顺序及空行
 	_, _ = c.Writer.WriteString("event: ")
 	_, _ = c.Writer.WriteString(event)
 	_, _ = c.Writer.WriteString("\ndata: ")
 	_, _ = c.Writer.Write(data)
 	_, _ = c.Writer.WriteString("\n\n")
 	c.Writer.Flush()
+}
+
+// currentUserID 从 gin.Context 中取出当前登录用户的 ID。
+func (ctl *LLMController) currentUserID(c *gin.Context) models.PrimaryKey {
+	val, _ := c.Get(middlewares.CtxKeyUserID)
+	return val.(models.PrimaryKey)
 }
 
 // handleError 统一处理服务层错误（在 SSE 流开始前调用）。

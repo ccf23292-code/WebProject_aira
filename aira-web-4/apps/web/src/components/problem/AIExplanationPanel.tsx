@@ -1,21 +1,30 @@
 /**
  * components/problem/AIExplanationPanel.tsx
- * 题目 AI 解析面板（SSE 流式）
+ * 题目 AI 解析面板（SSE 流式 + 缓存预拉）
+ *
+ * 加载时序：
+ *   mount → GET /api/llm/explain/cached  ← 自动预拉缓存
+ *     ├── 命中：直接静默渲染完整文本；按钮 = "重新生成 ✨"
+ *     └── 未命中：显示初始空态；按钮 = "AI 辅导 ✨"
+ *
+ *   点击按钮 → POST /api/llm/explain (SSE)
+ *     ├── 流式 token 逐字追加；按钮 = "停止生成"
+ *     └── 流结束：后端异步落库，前端不需要二次保存
  *
  * 状态机：
  *   idle           初始 / 已生成完毕（可重新生成）
+ *   prefetching    挂载后查缓存中
  *   streaming      正在接收 token
  *   error          流式过程中失败
- * 与服务端 routers/llm_controller.go 的 SSE 事件协议一一对齐。
  */
 
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { streamExplain } from '@/lib/llm';
+import { fetchCachedExplanation, streamExplain } from '@/lib/llm';
 import { MarkdownBlock } from '@/components/Markdown';
 
-type Status = 'idle' | 'streaming' | 'error';
+type Status = 'idle' | 'prefetching' | 'streaming' | 'error';
 
 interface Props {
   problemId: number;
@@ -23,39 +32,61 @@ interface Props {
 
 export function AIExplanationPanel({ problemId }: Props) {
   const [content, setContent] = useState<string>('');
-  const [status, setStatus] = useState<Status>('idle');
+  const [status, setStatus] = useState<Status>('prefetching');
   const [errorMsg, setErrorMsg] = useState<string>('');
-  const [hasGenerated, setHasGenerated] = useState(false);
+  /** 区分"从未生成 / 用户已经生成过 / 命中过缓存"：决定按钮文案 */
+  const [hasContent, setHasContent] = useState(false);
+  const [cachedAt, setCachedAt] = useState<string>(''); // 缓存命中时记录时间
   const controllerRef = useRef<AbortController | null>(null);
 
-  // 卸载时取消未完成的流，防止内存泄漏 / setState on unmounted
+  // 挂载时尝试预拉缓存
   useEffect(() => {
+    let cancelled = false;
+    setStatus('prefetching');
+
+    fetchCachedExplanation(problemId)
+      .then((cache) => {
+        if (cancelled) return;
+        if (cache.found && cache.content) {
+          setContent(cache.content);
+          setHasContent(true);
+          setCachedAt(cache.created_at ?? '');
+        }
+        setStatus('idle');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        // 预拉失败时静默回落到"未生成"态，不打扰用户
+        setStatus('idle');
+      });
+
     return () => {
+      cancelled = true;
+      // 离开页面时取消流，防止后台残留
       controllerRef.current?.abort();
     };
-  }, []);
+  }, [problemId]);
 
   const start = () => {
-    // 上一轮还没结束就 abort
     controllerRef.current?.abort();
     setContent('');
     setErrorMsg('');
+    setCachedAt(''); // 重新生成会覆盖缓存语义
     setStatus('streaming');
 
     controllerRef.current = streamExplain(problemId, {
       onToken: (text) => {
-        // 逐 token 追加：天然形成打字机效果，SSE 推一个 token 触发一次 setState
         setContent((prev) => prev + text);
       },
       onDone: () => {
         setStatus('idle');
-        setHasGenerated(true);
+        setHasContent(true);
         controllerRef.current = null;
       },
       onError: (message) => {
         setStatus('error');
         setErrorMsg(message);
-        setHasGenerated(true);
+        setHasContent(true);
         controllerRef.current = null;
       },
     });
@@ -65,7 +96,7 @@ export function AIExplanationPanel({ problemId }: Props) {
     controllerRef.current?.abort();
     controllerRef.current = null;
     setStatus('idle');
-    setHasGenerated(true);
+    setHasContent(true);
   };
 
   const renderButton = () => {
@@ -80,15 +111,37 @@ export function AIExplanationPanel({ problemId }: Props) {
         </button>
       );
     }
+    if (status === 'prefetching') {
+      return (
+        <button
+          type="button"
+          disabled
+          className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-400"
+        >
+          加载中…
+        </button>
+      );
+    }
     return (
       <button
         type="button"
         onClick={start}
         className="inline-flex items-center gap-1 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-brand-700"
       >
-        {hasGenerated ? '重新生成' : '生成 AI 解析'}
+        {hasContent ? '重新生成 ✨' : 'AI 辅导 ✨'}
       </button>
     );
+  };
+
+  const formatCachedAt = (iso: string): string => {
+    try {
+      return new Intl.DateTimeFormat('zh-CN', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(new Date(iso));
+    } catch {
+      return iso;
+    }
   };
 
   return (
@@ -100,7 +153,11 @@ export function AIExplanationPanel({ problemId }: Props) {
           </span>
           <div>
             <div className="text-sm font-semibold text-gray-900">AI 辅导</div>
-            <div className="text-xs text-gray-500">实时生成参考思路，仅供学习参考</div>
+            <div className="text-xs text-gray-500">
+              {cachedAt && status === 'idle'
+                ? `已加载历史解析（${formatCachedAt(cachedAt)}）`
+                : '实时生成参考思路，仅供学习参考'}
+            </div>
           </div>
         </div>
         {renderButton()}
@@ -128,7 +185,7 @@ export function AIExplanationPanel({ problemId }: Props) {
         </div>
       ) : null}
 
-      {hasGenerated && status === 'idle' ? (
+      {hasContent && status === 'idle' ? (
         <p className="mt-2 text-[11px] text-gray-400">AI 生成，仅供参考。可点"重新生成"再问一次。</p>
       ) : null}
     </section>

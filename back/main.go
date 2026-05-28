@@ -42,6 +42,7 @@ func main() {
 		&models.ProblemExplanation{},
 		&models.ProblemExplanationVote{},
 		&models.UserCheckin{},
+		&models.LLMExplanation{},
 	); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
@@ -66,7 +67,7 @@ func main() {
 	profileService := services.NewProfileService(db)
 	explanationService := services.NewProblemExplanationService(db, paperService)
 	checkinService := services.NewCheckinService(db)
-	llmService := services.NewLLMService(services.LoadLLMConfigFromEnv(), paperService)
+	llmService := services.NewLLMService(services.LoadLLMConfigFromEnv(), db, paperService)
 	if !llmService.Enabled() {
 		log.Println("LLM service disabled: LLM_API_KEY not set, /api/llm/* will return 503")
 	}
