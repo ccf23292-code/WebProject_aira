@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type {
   CourseComment,
@@ -8,6 +9,7 @@ import type {
   TeacherDirectoryEntry,
 } from '@aira/shared';
 import { EmptyState, ErrorState } from '@/components/layout/StateDisplay';
+import { useAuth } from '@/lib/auth';
 import { useFetch } from '@/hooks/useFetch';
 import {
   addTeacherDirectoryEntry,
@@ -429,6 +431,8 @@ function CommentList({
   emptyTitle: string;
   emptyDescription: string;
 }) {
+  const { user, isLoggedIn } = useAuth();
+
   if (loading) {
     return (
       <div className="space-y-3">
@@ -449,31 +453,55 @@ function CommentList({
 
   return (
     <div className="space-y-3">
-      {items.map((item) => (
-        <article key={String(item.id)} className="rounded-2xl border border-gray-200 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              {item.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={item.avatar_url}
-                  alt={item.user_name ?? 'avatar'}
-                  className="h-8 w-8 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
-                  {item.user_name?.charAt(0)?.toUpperCase() ?? 'U'}
+      {items.map((item) => {
+        // 仅对「他人」的评论显示「私信 TA」（自己的评论不显示）
+        const canMessage =
+          isLoggedIn &&
+          item.user_id != null &&
+          String(item.user_id) !== String(user?.userId ?? '');
+        return (
+          <article key={String(item.id)} className="rounded-2xl border border-gray-200 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                {item.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={item.avatar_url}
+                    alt={item.user_name ?? 'avatar'}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
+                    {item.user_name?.charAt(0)?.toUpperCase() ?? 'U'}
+                  </div>
+                )}
+                <div className="text-sm font-semibold text-gray-900">
+                  {item.user_name || '匿名同学'}
                 </div>
-              )}
-              <div className="text-sm font-semibold text-gray-900">
-                {item.user_name || '匿名同学'}
+              </div>
+              <div className="flex items-center gap-3">
+                {canMessage ? (
+                  <Link
+                    href={{
+                      pathname: '/messages',
+                      query: {
+                        to: String(item.user_id),
+                        name: item.user_name || '',
+                        ...(item.avatar_url ? { avatar: item.avatar_url } : {}),
+                      },
+                    }}
+                    className="rounded-full border border-brand-200 px-2.5 py-1 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-50"
+                  >
+                    私信 TA
+                  </Link>
+                ) : null}
+                <div className="text-xs text-gray-400">{formatDate(item.updated_at ?? item.created_at)}</div>
               </div>
             </div>
-            <div className="text-xs text-gray-400">{formatDate(item.updated_at ?? item.created_at)}</div>
-          </div>
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-gray-600">{item.comment}</p>
-        </article>
-      ))}
+            <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-gray-600">{item.comment}</p>
+          </article>
+        );
+      })}
     </div>
   );
 }
