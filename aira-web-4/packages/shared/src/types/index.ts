@@ -163,6 +163,7 @@ export interface CourseComment {
   course_id?: string;
   user_id?: string | number;
   user_name?: string;
+  avatar_url?: string;
   comment: string;
   created_at?: string;
   updated_at?: string;
