@@ -44,7 +44,6 @@ func main() {
 		&models.UserCheckin{},
 		&models.LLMExplanation{},
 		&models.IngestJob{},
-		&models.Message{},
 	); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
@@ -69,7 +68,6 @@ func main() {
 	profileService := services.NewProfileService(db)
 	explanationService := services.NewProblemExplanationService(db, paperService)
 	checkinService := services.NewCheckinService(db)
-	messageService := services.NewMessageService(db)
 	llmService := services.NewLLMService(services.LoadLLMConfigFromEnv(), db, paperService)
 	if !llmService.Enabled() {
 		log.Println("LLM service disabled: LLM_API_KEY not set, /api/llm/* will return 503")
@@ -95,7 +93,6 @@ func main() {
 	profileCtl := routers.NewProfileController(profileService)
 	explanationCtl := routers.NewProblemExplanationController(explanationService)
 	checkinCtl := routers.NewCheckinController(checkinService)
-	messageCtl := routers.NewMessageController(messageService)
 	llmCtl := routers.NewLLMController(llmService)
 	fileCtl := routers.NewFileController()
 	ingestCtl := routers.NewIngestController(ingestService)
@@ -151,9 +148,6 @@ func main() {
 
 		checkinGroup := api.Group("/checkin", middlewares.AuthRequired(authService))
 		checkinCtl.RegisterRoutes(checkinGroup)
-
-		messageGroup := api.Group("/messages", middlewares.AuthRequired(authService))
-		messageCtl.RegisterRoutes(messageGroup)
 
 		llmGroup := api.Group("/llm", middlewares.AuthRequired(authService))
 		llmCtl.RegisterRoutes(llmGroup)

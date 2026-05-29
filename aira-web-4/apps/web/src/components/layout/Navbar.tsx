@@ -8,46 +8,19 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
-import { getUnreadCount } from '@/lib/messages';
 import { useEffect, useRef, useState } from 'react';
-
-const UNREAD_POLL_MS = 20000;
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isLoggedIn, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [unread, setUnread] = useState(0);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const handleLogout = async () => {
     await logout();
     router.push('/login');
   };
-
-  // 私信未读总数：登录后轮询（"延迟更新"），未登录清零
-  useEffect(() => {
-    if (!isLoggedIn) {
-      setUnread(0);
-      return;
-    }
-    let cancelled = false;
-    const tick = async () => {
-      try {
-        const n = await getUnreadCount();
-        if (!cancelled) setUnread(n);
-      } catch {
-        /* 静默：轮询失败不打扰 */
-      }
-    };
-    void tick();
-    const timer = setInterval(tick, UNREAD_POLL_MS);
-    return () => {
-      cancelled = true;
-      clearInterval(timer);
-    };
-  }, [isLoggedIn, pathname]);
 
   const links = [
     { href: '/', label: '首页' },
@@ -98,25 +71,6 @@ export function Navbar() {
               </Link>
             );
           })}
-
-          {/* 私信入口（带未读小红点） */}
-          {isLoggedIn ? (
-            <Link
-              href="/messages"
-              className={`relative rounded-md px-3 py-1.5 text-sm transition-colors ${
-                pathname === '/messages' || pathname.startsWith('/messages/')
-                  ? 'bg-brand-50 font-medium text-brand-800 ring-1 ring-brand-100 shadow-[inset_0_-2px_0_rgba(143,78,39,0.32)]'
-                  : 'text-stone-600 hover:bg-brand-50 hover:text-brand-800'
-              }`}
-            >
-              私信
-              {unread > 0 ? (
-                <span className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold text-white">
-                  {unread > 99 ? '99+' : unread}
-                </span>
-              ) : null}
-            </Link>
-          ) : null}
 
           {/* 登录/用户 */}
           {isLoggedIn ? (
