@@ -27,3 +27,20 @@ back/*.db-shm
 back/*.db-wal
 
 *.tsbuildinfo
+
+# 操作系统元数据
+.DS_Store
+**/.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE / 编辑器（个人偏好，不强制全队）
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 日志
+*.log
+logs/
