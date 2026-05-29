@@ -20,6 +20,8 @@ export interface CachedExplanation {
   content?: string;
   model?: string;
   created_at?: string;
+  used?: number;  // 当前用户对该题已生成次数
+  limit?: number; // 每人每题生成上限
 }
 
 /** 通用响应包装 */
@@ -57,6 +59,8 @@ export interface StreamHandlers {
   onDone: (reason: string) => void;
   /** 流异常 / 网络错误 / 用户中断之外的失败 */
   onError: (message: string) => void;
+  /** 触达每人每题生成上限（HTTP 429）；未提供时回落到 onError */
+  onLimit?: (message: string) => void;
 }
 
 function authHeader(): Record<string, string> {
@@ -93,6 +97,11 @@ export function streamExplain(problemId: number, h: StreamHandlers): AbortContro
           if (body?.message) message = body.message;
         } catch {
           /* ignore parse error */
+        }
+        // 429 = 已达每人每题生成上限，单独回调以便 UI 友好提示
+        if (res.status === 429 && h.onLimit) {
+          h.onLimit(message);
+          return;
         }
         h.onError(message);
         return;

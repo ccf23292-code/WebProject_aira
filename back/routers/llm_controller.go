@@ -45,6 +45,8 @@ type cachedExplanationResponse struct {
 	Content   string `json:"content,omitempty"`
 	Model     string `json:"model,omitempty"`
 	CreatedAt string `json:"created_at,omitempty"`
+	Used      int64  `json:"used"`  // 当前用户对该题已生成次数
+	Limit     int    `json:"limit"` // 每人每题生成上限
 }
 
 // GetCached 返回指定题目最近一条 LLM 缓存解析。
@@ -57,13 +59,17 @@ func (ctl *LLMController) GetCached(c *gin.Context) {
 		return
 	}
 
+	// 当前用户对该题已用次数 + 上限，供前端展示剩余/禁用按钮
+	used, _ := ctl.service.CountUserExplanations(ctl.currentUserID(c), problemID)
+	limit := services.MaxExplainPerUserPerProblem
+
 	record, err := ctl.service.GetLatestExplanation(problemID)
 	if err != nil {
 		ctl.handleError(c, err)
 		return
 	}
 	if record == nil {
-		utils.JSONSuccess(c, http.StatusOK, cachedExplanationResponse{Found: false})
+		utils.JSONSuccess(c, http.StatusOK, cachedExplanationResponse{Found: false, Used: used, Limit: limit})
 		return
 	}
 	utils.JSONSuccess(c, http.StatusOK, cachedExplanationResponse{
@@ -71,6 +77,8 @@ func (ctl *LLMController) GetCached(c *gin.Context) {
 		Content:   record.Content,
 		Model:     record.Model,
 		CreatedAt: record.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		Used:      used,
+		Limit:     limit,
 	})
 }
 

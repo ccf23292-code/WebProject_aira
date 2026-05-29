@@ -35,6 +35,12 @@ type LLMChunk struct {
 	Err    error  // Kind=error 时填底层错误
 }
 
+// MaxExplainPerUserPerProblem 限制每个用户对同一题目的 AI 生成次数（总量上限，非每日）。
+const MaxExplainPerUserPerProblem = 3
+
+// explainLimitMessage 是触达生成上限时返回给前端的提示文案。
+const explainLimitMessage = "本题生成次数已用光，去看看同学的解析吧~"
+
 // LLMConfig 收敛 LLM 调用所需的运行时配置。
 type LLMConfig struct {
 	APIKey  string
@@ -104,6 +110,20 @@ func (s *LLMService) Enabled() bool {
 	return s.client != nil
 }
 
+// CountUserExplanations 统计某用户对某题已成功生成（落库）的解析条数，用于次数限制。
+func (s *LLMService) CountUserExplanations(userID models.PrimaryKey, problemID uint64) (int64, error) {
+	if s.db == nil {
+		return 0, nil
+	}
+	var count int64
+	if err := s.db.Model(&models.LLMExplanation{}).
+		Where("problem_id = ? AND user_id = ?", problemID, userID).
+		Count(&count).Error; err != nil {
+		return 0, newServiceError("internal_error", http.StatusInternalServerError, "failed to count explanations")
+	}
+	return count, nil
+}
+
 // GetLatestExplanation 返回指定题目最近一次的 LLM 解析。
 // 不存在时返回 (nil, nil)，方便 controller 区分"未命中"与"出错"。
 func (s *LLMService) GetLatestExplanation(problemID uint64) (*models.LLMExplanation, error) {
@@ -136,6 +156,15 @@ func (s *LLMService) GetLatestExplanation(problemID uint64) (*models.LLMExplanat
 func (s *LLMService) StreamExplain(ctx context.Context, userID models.PrimaryKey, problemID uint64) (<-chan LLMChunk, error) {
 	if !s.Enabled() {
 		return nil, newServiceError("llm_disabled", http.StatusServiceUnavailable, "LLM 服务未配置")
+	}
+
+	// 每人每题生成次数上限：达到上限直接拒绝，不再调用模型（省 token，也防刷）
+	used, err := s.CountUserExplanations(userID, problemID)
+	if err != nil {
+		return nil, err
+	}
+	if used >= MaxExplainPerUserPerProblem {
+		return nil, newServiceError("limit_reached", http.StatusTooManyRequests, explainLimitMessage)
 	}
 
 	problem, err := s.paper.GetProblem(problemID)

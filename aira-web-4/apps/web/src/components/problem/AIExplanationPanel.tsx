@@ -24,6 +24,9 @@ import { useEffect, useRef, useState } from 'react';
 import { fetchCachedExplanation, streamExplain } from '@/lib/llm';
 import { MarkdownBlock } from '@/components/Markdown';
 
+/** 每人每题生成上限达到时的提示文案（与后端 explainLimitMessage 对齐） */
+const LIMIT_NOTICE = '本题生成次数已用光，去看看同学的解析吧~';
+
 type Status = 'idle' | 'prefetching' | 'streaming' | 'error';
 
 interface Props {
@@ -37,7 +40,11 @@ export function AIExplanationPanel({ problemId }: Props) {
   /** 区分"从未生成 / 用户已经生成过 / 命中过缓存"：决定按钮文案 */
   const [hasContent, setHasContent] = useState(false);
   const [cachedAt, setCachedAt] = useState<string>(''); // 缓存命中时记录时间
+  const [used, setUsed] = useState(0);   // 当前用户对该题已生成次数
+  const [limit, setLimit] = useState(3); // 每人每题生成上限（以后端返回为准）
   const controllerRef = useRef<AbortController | null>(null);
+
+  const limitReached = used >= limit;
 
   // 挂载时尝试预拉缓存
   useEffect(() => {
@@ -52,6 +59,8 @@ export function AIExplanationPanel({ problemId }: Props) {
           setHasContent(true);
           setCachedAt(cache.created_at ?? '');
         }
+        if (typeof cache.used === 'number') setUsed(cache.used);
+        if (typeof cache.limit === 'number') setLimit(cache.limit);
         setStatus('idle');
       })
       .catch(() => {
@@ -68,6 +77,7 @@ export function AIExplanationPanel({ problemId }: Props) {
   }, [problemId]);
 
   const start = () => {
+    if (limitReached) return; // 已达上限：不再请求后端，UI 已展示提示
     controllerRef.current?.abort();
     setContent('');
     setErrorMsg('');
@@ -81,12 +91,19 @@ export function AIExplanationPanel({ problemId }: Props) {
       onDone: () => {
         setStatus('idle');
         setHasContent(true);
+        setUsed((n) => n + 1); // 成功生成一次，计数 +1
         controllerRef.current = null;
       },
       onError: (message) => {
         setStatus('error');
         setErrorMsg(message);
         setHasContent(true);
+        controllerRef.current = null;
+      },
+      onLimit: () => {
+        // 后端判定已达上限（兜底：正常情况下按钮已禁用、不会走到这里）
+        setStatus('idle');
+        setUsed(limit);
         controllerRef.current = null;
       },
     });
@@ -119,6 +136,18 @@ export function AIExplanationPanel({ problemId }: Props) {
           className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-400"
         >
           加载中…
+        </button>
+      );
+    }
+    if (limitReached) {
+      return (
+        <button
+          type="button"
+          disabled
+          title={LIMIT_NOTICE}
+          className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-400"
+        >
+          次数已用完
         </button>
       );
     }
@@ -169,6 +198,12 @@ export function AIExplanationPanel({ problemId }: Props) {
         </p>
       ) : null}
 
+      {limitReached && status !== 'streaming' ? (
+        <p className="mt-3 rounded-lg border border-dashed border-amber-200 bg-amber-50/70 px-3 py-2 text-xs text-amber-700">
+          {LIMIT_NOTICE}
+        </p>
+      ) : null}
+
       {status === 'streaming' && !content ? (
         <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
           <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-brand-500" />
@@ -185,8 +220,10 @@ export function AIExplanationPanel({ problemId }: Props) {
         </div>
       ) : null}
 
-      {hasContent && status === 'idle' ? (
-        <p className="mt-2 text-[11px] text-gray-400">AI 生成，仅供参考。可点"重新生成"再问一次。</p>
+      {status === 'idle' && !limitReached ? (
+        <p className="mt-2 text-[11px] text-gray-400">
+          AI 生成，仅供参考{hasContent ? '，可点"重新生成"再问一次' : ''}。本题还可生成 {Math.max(limit - used, 0)} 次。
+        </p>
       ) : null}
     </section>
   );
