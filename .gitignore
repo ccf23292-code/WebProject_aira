@@ -14,4 +14,11 @@ back/storage/*
 !back/storage/.gitkeep
 back/.env
 
+# 本地一次性 SQL 脚本（清理 / 诊断），不属于代码
+back/cleanup_*.sql
+back/diagnose_*.sql
+
+# 测试用样本文件（本地手测 ingest 流程时临时造的）
+test_upload_sample.md
+
 *.tsbuildinfo
