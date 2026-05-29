@@ -13,7 +13,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import type { FavoriteIdList, Problem, ProblemOption } from '@aira/shared';
 import { DetailSkeleton } from '@/components/layout/Skeleton';
@@ -23,6 +23,14 @@ import { ExplanationSection } from '@/components/problem/ExplanationSection';
 import { useFetch } from '@/hooks/useFetch';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import {
+  AttemptApiError,
+  createAttempt,
+  fetchAttempt,
+  submitProblem,
+  type PaperAttempt,
+  type ProblemSubmission,
+} from '@/lib/attempt';
 
 type SessionMode = 'practice' | 'exam';
 
@@ -30,8 +38,12 @@ const DEFAULT_DURATION_MINUTES = 120;
 
 export default function PaperDetailPage() {
   const { paperId } = useParams<{ paperId: string }>();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { isLoggedIn } = useAuth();
   const autoSubmittedRef = useRef(false);
+  // 答对后自动滚动到下一题的延时句柄；新滚动到来时取消旧的，组件卸载时清理
+  const autoScrollTimerRef = useRef<number | null>(null);
 
   const { data, loading, error, refetch } = useFetch(
     () => api.get<Problem[]>(`/papers/${paperId}/problems`),
@@ -50,6 +62,57 @@ export default function PaperDetailPage() {
   const [examStartedAt, setExamStartedAt] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   const [sessionError, setSessionError] = useState<string | null>(null);
+
+  // ── 严格练习模式（仅 practice 用，exam 不动）──
+  const [attempt, setAttempt] = useState<PaperAttempt | null>(null);
+  const [submissions, setSubmissions] = useState<Record<number, ProblemSubmission>>({});
+  const [correctAnswers, setCorrectAnswers] = useState<Record<number, string>>({});
+  const [submittingIds, setSubmittingIds] = useState<Set<number>>(new Set());
+  const [toast, setToast] = useState<string>('');
+
+  const showToast = useCallback((msg: string) => {
+    setToast(msg);
+    window.setTimeout(() => setToast(''), 3500);
+  }, []);
+
+  // 组件卸载时清理潜在的自动滚动 timer，避免 setState on unmounted / DOM 已消失的边缘问题
+  useEffect(() => {
+    return () => {
+      if (autoScrollTimerRef.current !== null) {
+        window.clearTimeout(autoScrollTimerRef.current);
+        autoScrollTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  // URL 上有 ?attempt_id=N → 直接恢复现场（刷新 / 跨标签打开）
+  useEffect(() => {
+    const raw = searchParams.get('attempt_id');
+    if (!raw) return;
+    const aid = Number(raw);
+    if (!Number.isFinite(aid) || aid <= 0) return;
+
+    let cancelled = false;
+    fetchAttempt(aid)
+      .then((detail) => {
+        if (cancelled) return;
+        setAttempt(detail.attempt);
+        const map: Record<number, ProblemSubmission> = {};
+        for (const s of detail.submissions) map[s.problem_id] = s;
+        setSubmissions(map);
+        setMode('practice');
+        setStarted(true);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        // 拉失败：URL 上的 attempt_id 无效，清掉，回入口
+        router.replace(`/papers/${paperId}`);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, paperId]);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -87,10 +150,14 @@ export default function PaperDetailPage() {
     }));
   }, [data]);
 
-  const totalAnswered = Object.keys(answers).length;
-  const totalCorrect = data
-    ? data.filter((problem) => answers[problem.id] !== undefined && isProblemCorrect(problem, answers[problem.id])).length
-    : 0;
+  const totalAnswered = mode === 'practice' && attempt
+    ? attempt.submitted
+    : Object.keys(answers).length;
+  const totalCorrect = mode === 'practice' && attempt
+    ? attempt.correct
+    : (data
+      ? data.filter((problem) => answers[problem.id] !== undefined && isProblemCorrect(problem, answers[problem.id])).length
+      : 0);
 
   const showExamActions = started && mode === 'exam' && !submitted;
 
@@ -132,47 +199,156 @@ export default function PaperDetailPage() {
     void submitExam(true);
   }, [autoSubmitOnTimeout, mode, remainingMs, started, submitExam, submitted]);
 
-  const startSession = useCallback(() => {
+  /**
+   * 进入做题：
+   *   forceReset=false 默认 → 后端 get-or-create，命中旧 in_progress 直接恢复
+   *   forceReset=true       → 后端废弃旧 in_progress 后新建
+   *
+   * 复用旧 attempt 时立即拉 submissions，避免"URL 没变 → useEffect 不重跑"的死角。
+   */
+  const startSession = useCallback(async (forceReset = false) => {
     autoSubmittedRef.current = false;
-    setStarted(true);
     setSubmitted(false);
     setSessionError(null);
     setAnswers({});
     setRevealed(new Set());
     setNow(Date.now());
+
     if (mode === 'exam') {
+      setStarted(true);
       setExamStartedAt(Date.now());
-    } else {
-      setExamStartedAt(null);
+      return;
     }
-  }, [mode]);
+
+    setExamStartedAt(null);
+    try {
+      const result = await createAttempt(Number(paperId), forceReset);
+      setAttempt(result.attempt);
+      setCorrectAnswers({});
+      setSubmittingIds(new Set());
+
+      if (result.created) {
+        // 新建：submissions 必然为空
+        setSubmissions({});
+      } else {
+        // 复用：立即拉一次详情把已答记录灌进来
+        try {
+          const detail = await fetchAttempt(result.attempt.id);
+          setAttempt(detail.attempt);
+          const map: Record<number, ProblemSubmission> = {};
+          for (const s of detail.submissions) map[s.problem_id] = s;
+          setSubmissions(map);
+        } catch {
+          /* 拉详情失败不阻塞进入做题，URL useEffect 还会兜底 */
+        }
+        showToast(
+          `已恢复上次进度（${result.attempt.submitted}/${result.attempt.total} 已完成）`,
+        );
+      }
+
+      setStarted(true);
+      router.replace(`/papers/${paperId}?attempt_id=${result.attempt.id}`);
+    } catch (err) {
+      setSessionError(err instanceof Error ? err.message : '创建尝试失败');
+    }
+  }, [mode, paperId, router, showToast]);
 
   const selectAnswer = useCallback((problem: Problem, value: string) => {
     setAnswers((prev) => ({ ...prev, [problem.id]: value }));
   }, []);
 
-  const revealAnswer = useCallback((problem: Problem, selectedOverride?: string) => {
-    setRevealed((prev) => new Set(prev).add(problem.id));
+  /** 严格练习单题提交：网络往返，成功后锁题 + 拉服务端正确答案 */
+  const submitStrict = useCallback(async (problem: Problem, value: string) => {
+    if (!attempt) return;
+    if (submissions[problem.id]) return; // 已提交
+    if (submittingIds.has(problem.id)) return; // 提交中防双击
+    const trimmed = (value ?? '').trim();
+    if (trimmed === '') return;
 
-    if (!isLoggedIn) return;
-    const selected = selectedOverride ?? answers[problem.id];
-    if (!selected || selected.trim() === '') return;
+    setSubmittingIds((prev) => {
+      const next = new Set(prev);
+      next.add(problem.id);
+      return next;
+    });
 
-    api.post('/answers', {
-      paper_id: Number(paperId),
-      problem_id: problem.id,
-      selected_option: selected,
-      is_correct: isProblemCorrect(problem, selected),
-      mode: 'practice',
-    }).catch(() => {});
-  }, [answers, isLoggedIn, paperId]);
+    try {
+      const result = await submitProblem(attempt.id, problem.id, value);
+      setSubmissions((prev) => ({ ...prev, [problem.id]: result.submission }));
+      setCorrectAnswers((prev) => ({ ...prev, [problem.id]: result.correct_answer }));
+      setAttempt(result.attempt);
+
+      // 答对 → 延时 200ms 后平滑滚到"下一道未提交的题"（同向向后扫，不 wrap）
+      // 若当前题已不在视口（用户主动滚开了），则放弃自动滚动以尊重用户操作
+      if (result.submission.is_correct && data) {
+        const submittedSet = new Set(
+          Object.keys(submissions).map((k) => Number(k)),
+        );
+        submittedSet.add(problem.id);
+
+        const idx = data.findIndex((p) => p.id === problem.id);
+        let next: Problem | null = null;
+        if (idx >= 0) {
+          for (let i = idx + 1; i < data.length; i++) {
+            if (!submittedSet.has(data[i].id)) {
+              next = data[i];
+              break;
+            }
+          }
+        }
+
+        if (next && isProblemCardInViewport(problem.id)) {
+          if (autoScrollTimerRef.current !== null) {
+            window.clearTimeout(autoScrollTimerRef.current);
+          }
+          const nextId = next.id;
+          autoScrollTimerRef.current = window.setTimeout(() => {
+            autoScrollTimerRef.current = null;
+            document
+              .getElementById(`problem-card-${nextId}`)
+              ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 200);
+        }
+      }
+    } catch (err) {
+      if (err instanceof AttemptApiError && err.status === 409) {
+        // 重复提交 / attempt 已被新尝试替代：拉一次状态修复本地
+        try {
+          const detail = await fetchAttempt(attempt.id);
+          setAttempt(detail.attempt);
+          const map: Record<number, ProblemSubmission> = {};
+          for (const s of detail.submissions) map[s.problem_id] = s;
+          setSubmissions(map);
+        } catch {
+          /* ignore */
+        }
+        showToast('当前练习进度已过期，请刷新');
+      } else {
+        showToast(err instanceof Error ? err.message : '提交失败，请稍后重试');
+      }
+    } finally {
+      setSubmittingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(problem.id);
+        return next;
+      });
+    }
+  }, [attempt, data, submissions, submittingIds, showToast]);
 
   const handleSelect = useCallback((problem: Problem, value: string) => {
-    selectAnswer(problem, value);
-    if (started && mode === 'practice' && isImmediateRevealType(problem.question_type) && !revealed.has(problem.id)) {
-      revealAnswer(problem, value);
+    // 严格练习模式：T/F / 单选 / 多选点击即提交；填空 / 编程仅保存草稿
+    if (mode === 'practice' && attempt) {
+      if (submissions[problem.id] || submittingIds.has(problem.id)) return;
+      if (isImmediateRevealType(problem.question_type)) {
+        void submitStrict(problem, value);
+        return;
+      }
+      // 文本题：保存草稿，等用户点"提交并查看解析"
+      selectAnswer(problem, value);
+      return;
     }
-  }, [mode, revealAnswer, revealed, selectAnswer, started]);
+    // exam 模式保持原状
+    selectAnswer(problem, value);
+  }, [attempt, mode, selectAnswer, submissions, submittingIds, submitStrict]);
 
   const toggleFavorite = useCallback(async (problemId: number) => {
     const isFav = favorites.has(problemId);
@@ -208,6 +384,12 @@ export default function PaperDetailPage() {
 
   return (
     <div>
+      {toast ? (
+        <div className="fixed right-6 top-20 z-50 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 shadow-lg">
+          {toast}
+        </div>
+      ) : null}
+
       <nav className="mb-4 text-sm text-gray-500">
         <Link href="/courses" className="transition-colors hover:text-brand-600">课程</Link>
         <span className="mx-2">›</span>
@@ -222,7 +404,12 @@ export default function PaperDetailPage() {
           onModeChange={setMode}
           onDurationChange={setDurationMinutes}
           onAutoSubmitChange={setAutoSubmitOnTimeout}
-          onStart={startSession}
+          onStart={() => void startSession(false)}
+          onReset={() => {
+            if (window.confirm('重置后当前进度会被废弃，确认吗？')) {
+              void startSession(true);
+            }
+          }}
         />
       ) : (
         <>
@@ -256,14 +443,7 @@ export default function PaperDetailPage() {
             )}
 
             <div className="ml-auto flex items-center gap-3">
-              {mode === 'practice' ? (
-                <button
-                  onClick={() => data.forEach((problem) => revealAnswer(problem))}
-                  className="rounded-md bg-brand-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-brand-700"
-                >
-                  全部揭晓
-                </button>
-              ) : showExamActions ? (
+              {mode === 'practice' ? null : showExamActions ? (
                 <button
                   onClick={() => void submitExam(false)}
                   disabled={submitting}
@@ -290,26 +470,53 @@ export default function PaperDetailPage() {
               <QuestionOutline
                 groups={questionGroups}
                 answers={answers}
-                revealed={revealed}
+                revealed={
+                  mode === 'practice' && attempt
+                    ? new Set(Object.keys(submissions).map(Number))
+                    : revealed
+                }
                 onJump={jumpToProblem}
                 mode={mode}
               />
             </aside>
 
             <div className="space-y-5">
-              {data.map((problem) => (
-                <ProblemCard
-                  key={problem.id}
-                  problem={problem}
-                  selected={answers[problem.id] ?? null}
-                  isRevealed={revealed.has(problem.id)}
-                  isFavorite={favorites.has(problem.id)}
-                  mode={mode}
-                  onSelect={(value) => handleSelect(problem, value)}
-                  onReveal={() => revealAnswer(problem)}
-                  onToggleFavorite={() => void toggleFavorite(problem.id)}
-                />
-              ))}
+              {data.map((problem) => {
+                const sub = submissions[problem.id];
+                const isStrict = mode === 'practice' && Boolean(attempt);
+                const selectedDisplay = isStrict
+                  ? (sub?.user_answer ?? answers[problem.id] ?? null)
+                  : (answers[problem.id] ?? null);
+                const isRevealedDisplay = isStrict
+                  ? Boolean(sub)
+                  : revealed.has(problem.id);
+                return (
+                  // 外层 id 用 problem-card-* 给"答对后自动滚下一题"用；
+                  // ProblemCard 内层另有 id="problem-{id}" 给目录侧栏跳题用，两者并存不冲突
+                  <div key={problem.id} id={`problem-card-${problem.id}`}>
+                    <ProblemCard
+                      problem={problem}
+                      selected={selectedDisplay}
+                      isRevealed={isRevealedDisplay}
+                      isFavorite={favorites.has(problem.id)}
+                      mode={mode}
+                      submitting={submittingIds.has(problem.id)}
+                      correctAnswerOverride={correctAnswers[problem.id]}
+                      submissionIsCorrect={sub?.is_correct}
+                      onSelect={(value) => handleSelect(problem, value)}
+                      onReveal={() => {
+                        if (isStrict) {
+                          const value = answers[problem.id] ?? '';
+                          void submitStrict(problem, value);
+                        } else {
+                          // exam 模式下文本题不会走 onReveal（旧 practice 逻辑已被 isStrict 覆盖）
+                        }
+                      }}
+                      onToggleFavorite={() => void toggleFavorite(problem.id)}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         </>
@@ -326,6 +533,7 @@ function ExamSetupPanel({
   onDurationChange,
   onAutoSubmitChange,
   onStart,
+  onReset,
 }: {
   mode: SessionMode;
   durationMinutes: number;
@@ -334,6 +542,8 @@ function ExamSetupPanel({
   onDurationChange: (minutes: number) => void;
   onAutoSubmitChange: (value: boolean) => void;
   onStart: () => void;
+  /** 重置按钮回调；仅 practice 模式下渲染。未传则不显示。 */
+  onReset?: () => void;
 }) {
   return (
     <section className="rounded-2xl border border-gray-200 bg-white px-6 py-6">
@@ -382,13 +592,23 @@ function ExamSetupPanel({
         </div>
       )}
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-col items-start gap-2">
         <button
           onClick={onStart}
           className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700"
         >
           进入试卷
         </button>
+        {/* 重置按钮：仅 practice 模式下显示；视觉权重低于主按钮，下方链接样式 */}
+        {mode === 'practice' && onReset ? (
+          <button
+            type="button"
+            onClick={onReset}
+            className="text-xs text-rose-600 underline-offset-2 transition-colors hover:underline"
+          >
+            重置试卷 — 废弃当前进度，开始新一轮
+          </button>
+        ) : null}
       </div>
     </section>
   );
@@ -470,6 +690,9 @@ interface ProblemCardProps {
   isRevealed: boolean;
   isFavorite: boolean;
   mode: SessionMode;
+  submitting?: boolean;
+  correctAnswerOverride?: string;
+  submissionIsCorrect?: boolean;
   onSelect: (value: string) => void;
   onReveal: () => void;
   onToggleFavorite: () => void;
@@ -481,14 +704,22 @@ function ProblemCard({
   isRevealed,
   isFavorite,
   mode,
+  submitting = false,
+  correctAnswerOverride,
+  submissionIsCorrect,
   onSelect,
   onReveal,
   onToggleFavorite,
 }: ProblemCardProps) {
   const questionType = problem.question_type ?? 'singleChoice';
-  const normalizedAnswer = normalizeAnswer(problem.answer, questionType);
+  // 严格模式下优先用服务端返回的正确答案；否则 fallback 到题目自带的 answer 字段
+  const rawCorrect = correctAnswerOverride ?? problem.answer;
+  const normalizedAnswer = normalizeAnswer(rawCorrect, questionType);
   const isTextQuestion = isTextResponseType(questionType);
-  const isCorrect = selected ? isProblemCorrect(problem, selected) : false;
+  // 已锁时若有服务端 is_correct 用服务端；否则用客户端推断
+  const isCorrect = isRevealed
+    ? (submissionIsCorrect ?? (selected ? isProblemCorrect(problem, selected) : false))
+    : false;
   const answerVisible = isRevealed;
 
   return (
@@ -517,7 +748,7 @@ function ProblemCard({
         <MarkdownBlock content={problem.test} className="prose prose-sm mb-4 max-w-none text-gray-800" />
 
         {questionType === 'trueOrFalse' ? (
-          <div className="mb-4 space-y-2">
+          <div className={`mb-4 space-y-2 ${submitting ? 'opacity-60' : ''}`}>
             {['T', 'F'].map((value) => (
               <OptionButton
                 key={value}
@@ -525,7 +756,7 @@ function ProblemCard({
                 isSelected={selected === value}
                 isAnswer={normalizedAnswer === value}
                 isRevealed={answerVisible}
-                onClick={() => { if (!answerVisible) onSelect(value); }}
+                onClick={() => { if (!answerVisible && !submitting) onSelect(value); }}
               />
             ))}
           </div>
@@ -534,14 +765,14 @@ function ProblemCard({
             <textarea
               value={selected ?? ''}
               onChange={(e) => onSelect(e.target.value)}
-              disabled={answerVisible}
+              disabled={answerVisible || submitting}
               placeholder={questionType === 'programming' ? '输入你的代码思路或答案' : '填写你的答案'}
               rows={questionType === 'programming' ? 8 : 4}
-              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700"
+              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 disabled:bg-gray-50"
             />
           </div>
         ) : (
-          <div className="mb-4 space-y-2">
+          <div className={`mb-4 space-y-2 ${submitting ? 'opacity-60' : ''}`}>
             {problem.options.map((opt) => (
               <OptionButton
                 key={opt.option}
@@ -549,7 +780,7 @@ function ProblemCard({
                 isSelected={selected === opt.option}
                 isAnswer={normalizedAnswer === opt.option}
                 isRevealed={answerVisible}
-                onClick={() => { if (!answerVisible) onSelect(opt.option); }}
+                onClick={() => { if (!answerVisible && !submitting) onSelect(opt.option); }}
               />
             ))}
           </div>
@@ -559,11 +790,17 @@ function ProblemCard({
           {mode === 'practice' && !answerVisible && isTextQuestion && (
             <button
               onClick={onReveal}
-              disabled={!selected?.trim()}
+              disabled={!selected?.trim() || submitting}
               className="rounded-md border border-gray-200 px-3 py-1.5 text-xs text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              提交并查看解析
+              {submitting ? '提交中…' : '提交并查看解析'}
             </button>
+          )}
+          {mode === 'practice' && !answerVisible && !isTextQuestion && submitting && (
+            <span className="inline-flex items-center gap-2 text-xs text-gray-500">
+              <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-brand-500" />
+              提交中…
+            </span>
           )}
 
           {mode === 'exam' && !answerVisible && (
@@ -639,6 +876,19 @@ function OptionButton({
       {isRevealed && isSelected && !isAnswer && <span className="ml-2">✗</span>}
     </button>
   );
+}
+
+/**
+ * isProblemCardInViewport
+ * 判断指定题目卡片是否还在用户当前视口里。
+ * 用于"答对后自动滚到下一题"前的检查：如果用户已经主动滚走，就放弃自动滚动，尊重用户操作。
+ */
+function isProblemCardInViewport(problemId: number): boolean {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return false;
+  const el = document.getElementById(`problem-card-${problemId}`);
+  if (!el) return false;
+  const rect = el.getBoundingClientRect();
+  return rect.bottom > 0 && rect.top < window.innerHeight;
 }
 
 function questionTypeLabel(type?: string) {

@@ -43,6 +43,8 @@ func main() {
 		&models.ProblemExplanationVote{},
 		&models.UserCheckin{},
 		&models.LLMExplanation{},
+		&models.PaperAttempt{},
+		&models.ProblemSubmission{},
 	); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
@@ -68,6 +70,7 @@ func main() {
 	explanationService := services.NewProblemExplanationService(db, paperService)
 	checkinService := services.NewCheckinService(db)
 	llmService := services.NewLLMService(services.LoadLLMConfigFromEnv(), db, paperService)
+	attemptService := services.NewAttemptService(db, paperService)
 	if !llmService.Enabled() {
 		log.Println("LLM service disabled: LLM_API_KEY not set, /api/llm/* will return 503")
 	}
@@ -88,6 +91,7 @@ func main() {
 	explanationCtl := routers.NewProblemExplanationController(explanationService)
 	checkinCtl := routers.NewCheckinController(checkinService)
 	llmCtl := routers.NewLLMController(llmService)
+	attemptCtl := routers.NewAttemptController(attemptService)
 	fileCtl := routers.NewFileController()
 
 	if err := os.MkdirAll("storage", 0o755); err != nil {
@@ -144,6 +148,10 @@ func main() {
 
 		llmGroup := api.Group("/llm", middlewares.AuthRequired(authService))
 		llmCtl.RegisterRoutes(llmGroup)
+
+		// attempts 用空前缀挂载：内部包含 /papers/:id/attempts 和 /attempts/:id/... 两类
+		attemptGroup := api.Group("", middlewares.AuthRequired(authService))
+		attemptCtl.RegisterRoutes(attemptGroup)
 
 		fileGroup := api.Group("/files", middlewares.AuthRequired(authService))
 		fileCtl.RegisterRoutes(fileGroup)
