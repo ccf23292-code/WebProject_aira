@@ -1,12 +1,12 @@
-# AIRA 本地开发 — 一键启动脚本
+﻿# AIRA 本地开发 — 一键启动脚本
 # 用法：PowerShell 中执行 .\start-dev.ps1
 #
 # 启动三个进程，每个在独立窗口：
 #   1. 后端 API server      (:3001)
-#   2. 前端 Next.js dev    (:3000)
-#   3. Worker              (无端口；负责处理 ingest 上传清洗、
-#                           legacy 题目预处理。没启它 /upload 上传
-#                           的任务会卡在 pending 永不动)
+#   2. 前端 Next.js dev     (:3000)
+#   3. Worker               (无端口；负责处理 ingest 上传清洗、
+#                            legacy 题目预处理。没启它 /upload 上传
+#                            的任务会卡在 pending 永不动)
 
 Write-Host "======================================" -ForegroundColor Cyan
 Write-Host "  AIRA 本地开发环境启动" -ForegroundColor Cyan
