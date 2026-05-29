@@ -43,6 +43,7 @@ func main() {
 		&models.ProblemExplanationVote{},
 		&models.UserCheckin{},
 		&models.LLMExplanation{},
+		&models.IngestJob{},
 	); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
@@ -71,6 +72,11 @@ func main() {
 	if !llmService.Enabled() {
 		log.Println("LLM service disabled: LLM_API_KEY not set, /api/llm/* will return 503")
 	}
+	visionClient := services.NewVisionClient(services.LoadVisionConfigFromEnv())
+	if !visionClient.Enabled() {
+		log.Println("Vision client disabled: LLM_VISION_API_KEY not set, image ingest will fail with vision_disabled")
+	}
+	ingestService := services.NewIngestService(db, llmService, visionClient, paperService)
 	if err := recallService.AutoMigrate(); err != nil {
 		log.Fatalf("database migrate failed: %v", err)
 	}
@@ -89,6 +95,7 @@ func main() {
 	checkinCtl := routers.NewCheckinController(checkinService)
 	llmCtl := routers.NewLLMController(llmService)
 	fileCtl := routers.NewFileController()
+	ingestCtl := routers.NewIngestController(ingestService)
 
 	if err := os.MkdirAll("storage", 0o755); err != nil {
 		log.Fatalf("create storage dir failed: %v", err)
@@ -147,6 +154,11 @@ func main() {
 
 		fileGroup := api.Group("/files", middlewares.AuthRequired(authService))
 		fileCtl.RegisterRoutes(fileGroup)
+
+		// 上传清洗模块：普通用户挂 /api/ingest，admin 挂 /api/admin/ingest
+		ingestUserGroup := api.Group("/ingest", middlewares.AuthRequired(authService))
+		ingestCtl.RegisterUserRoutes(ingestUserGroup)
+		ingestCtl.RegisterAdminRoutes(adminGroup)
 
 		courseGroup := api.Group("", middlewares.AuthRequired(authService))
 		courseCtl.RegisterRoutes(courseGroup)

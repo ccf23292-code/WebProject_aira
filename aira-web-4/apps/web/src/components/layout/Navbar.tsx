@@ -25,8 +25,10 @@ export function Navbar() {
   const links = [
     { href: '/', label: '首页' },
     { href: '/courses', label: '课程' },
+    ...(isLoggedIn ? [{ href: '/upload', label: '上传题库' }] : []),
     ...(isLoggedIn ? [{ href: '/profile', label: '个人中心' }] : []),
     ...(user?.roles?.includes('admin') ? [{ href: '/admin/reviews', label: '管理审核' }] : []),
+    ...(user?.roles?.includes('admin') ? [{ href: '/admin/ingest', label: '上传审核' }] : []),
   ];
 
   useEffect(() => {

@@ -455,3 +455,112 @@ export interface RecallCommentListData {
   size: number;
   items: RecallComment[];
 }
+
+/* ══════════ ingest_module — 用户上传 → LLM 清洗 → 审核 → 入库 ══════════ */
+
+export type IngestJobKind = 'question' | 'explanation';
+
+export type IngestJobStatus =
+  | 'pending'
+  | 'processing'
+  | 'awaiting_review'
+  | 'published'
+  | 'rejected'
+  | 'failed';
+
+/** IngestJob — 单条上传任务的全字段视图（后端 GET /api/ingest/:id 直接返回） */
+export interface IngestJob {
+  id: number;
+  user_id: number;
+  kind: IngestJobKind;
+  course_id: string;
+  new_course_name: string;
+  paper_name: string;
+  /** 结构化试卷命名三段 — 题目流程优先，三段都填会触发 (course,year,semester,exam_type) 合并 */
+  year?: number;
+  semester?: string;
+  exam_type?: string;
+  target_paper_id: number | null;
+  filename: string;
+  storage_path: string;
+  mime: string;
+  size: number;
+  status: IngestJobStatus;
+  error_message: string;
+  raw_text: string;
+  /** LLM 清洗结果；按 kind 不同 schema 不同；admin 可编辑 */
+  parsed_json: IngestParsedEnvelope | null;
+  /** 查重结果（题目流程才有）；为 null/空表示没找到疑似重复 */
+  dedup_warnings?: IngestDedupMatch[] | null;
+  llm_model: string;
+  reviewer_id: number | null;
+  reviewed_at: string | null;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Dedup 单条命中记录 — 与 back/services/dedup.go::DedupMatch 对齐 */
+export interface IngestDedupMatch {
+  seq: number;
+  problem_id: number;
+  paper_id: number;
+  paper_name: string;
+  similarity: number;
+  new_snippet: string;
+  existing_snippet: string;
+}
+
+/** 试卷的固定下拉值 — 与 back/models/testpaper.go::PaperSemesters/PaperExamTypes 对齐 */
+export const PAPER_SEMESTERS = ['春夏', '秋冬', '暑期', '全年'] as const;
+export const PAPER_EXAM_TYPES = ['期中', '期末', '小测', '模考', '自测', '其他'] as const;
+export type PaperSemester = typeof PAPER_SEMESTERS[number];
+export type PaperExamType = typeof PAPER_EXAM_TYPES[number];
+
+/** parsed_json 通用信封：实际项目里 question/explanation 共用同一外壳 */
+export interface IngestParsedEnvelope {
+  items: Array<IngestQuestionItem | IngestExplanationItem | Record<string, unknown>>;
+}
+
+/** LLM 输出的题目项 */
+export interface IngestQuestionItem {
+  sequence_id: number;
+  question_type:
+    | 'singleChoice'
+    | 'multipleChoice'
+    | 'trueOrFalse'
+    | 'fillBlank'
+    | 'shortAnswer';
+  test: string;
+  options: Array<{ option: string; text: string }>;
+  answer: string;
+  explanation: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  tags: string[];
+}
+
+/** LLM 输出的题解项 */
+export interface IngestExplanationItem {
+  sequence_id: number;
+  content_md: string;
+}
+
+/** GET /api/ingest/my 分页响应 */
+export interface IngestJobListData {
+  total: number;
+  page: number;
+  size: number;
+  items: IngestJob[];
+}
+
+/** PATCH /api/admin/ingest/:id 请求体（所有字段可选） */
+export interface AdminIngestPatchDto {
+  course_id?: string;
+  new_course_name?: string;
+  paper_name?: string;
+  year?: number;
+  semester?: string;
+  exam_type?: string;
+  target_paper_id?: number;
+  parsed_json?: IngestParsedEnvelope;
+}

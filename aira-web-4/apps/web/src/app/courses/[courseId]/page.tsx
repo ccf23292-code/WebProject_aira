@@ -67,22 +67,29 @@ export default function CourseDetailPage() {
             ) : null}
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+          <div className="flex flex-col gap-3">
             <QuickStat
               label="试卷数"
               value={papersQuery.data ? String(papersQuery.data.length) : '...'}
             />
-            <QuickStat
-              label="回忆卷"
-              value="已接入"
-            />
-            <Link
-              href={`/courses/${encodeURIComponent(courseId)}/recall`}
-              className="flex min-h-28 flex-col justify-between rounded-3xl border border-orange-200 bg-orange-50 p-5 text-orange-800 transition-colors hover:bg-orange-100"
-            >
-              <div className="text-sm font-medium">协作回忆卷</div>
-              <div className="text-lg font-semibold">进入回忆卷空间</div>
-            </Link>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <ContributeCard
+                href={`/upload/file?courseId=${encodeURIComponent(courseId)}`}
+                icon="📤"
+                title="上传文件"
+                subtitle="PDF/DOCX/图片"
+                hint="AI 自动清洗"
+                tone="brand"
+              />
+              <ContributeCard
+                href={`/courses/${encodeURIComponent(courseId)}/recall`}
+                icon="✍️"
+                title="回忆卷"
+                subtitle="凭印象敲题"
+                hint="同学接力 +1"
+                tone="amber"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -162,5 +169,50 @@ function QuickStat({
       <div className="text-sm font-medium text-gray-500">{label}</div>
       <div className="mt-2 text-2xl font-semibold text-gray-900">{value}</div>
     </div>
+  );
+}
+
+/**
+ * ContributeCard — 课程详情页右侧两张并列的"贡献题目"入口卡
+ *   brand 色 → 上传文件清洗 (Ingest)
+ *   amber 色 → 协作回忆卷 (Recall)
+ * 视觉对等，避免之前只有回忆卷一张孤零零的不对称感。
+ */
+function ContributeCard({
+  href,
+  icon,
+  title,
+  subtitle,
+  hint,
+  tone,
+}: {
+  href: string;
+  icon: string;
+  title: string;
+  subtitle: string;
+  hint: string;
+  tone: 'brand' | 'amber';
+}) {
+  const toneClass =
+    tone === 'brand'
+      ? 'border-brand-200 bg-brand-50 text-brand-800 hover:bg-brand-100'
+      : 'border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100';
+  const hintClass = tone === 'brand' ? 'text-brand-600' : 'text-amber-600';
+
+  return (
+    <Link
+      href={href}
+      className={`group flex h-full flex-col gap-2 rounded-3xl border p-4 transition-colors ${toneClass}`}
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-2xl">{icon}</span>
+        <span className="text-base transition-transform group-hover:translate-x-0.5">→</span>
+      </div>
+      <div>
+        <div className="text-base font-semibold">{title}</div>
+        <div className="mt-0.5 text-xs opacity-80">{subtitle}</div>
+      </div>
+      <div className={`mt-auto text-xs font-medium ${hintClass}`}>{hint}</div>
+    </Link>
   );
 }
