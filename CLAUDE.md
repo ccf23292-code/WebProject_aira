@@ -158,6 +158,47 @@ const { user, isLoggedIn, login, logout } = useAuth();
 **KaTeX 仅支持** `$...$`（行内）和 `$$...$$`（块级）。
 **不支持** `\(...\)` 和 `\[...\]` —— 这些会被 markdown 当字符转义吃掉。
 
+### 9. Recall（回忆卷） vs Ingest（上传清洗） —— 不是重复造轮子
+
+这两个模块都是"用户提交 → admin 审核 → 入 `problems` 表"，**但输入路径完全不同**，请勿合并：
+
+| 维度 | Recall（`recall_*` 表） | Ingest（`ingest_jobs` 表） |
+|---|---|---|
+| 用户场景 | 考完试当场凭印象敲题 | 手头有 PDF / DOCX / 图片，整份上传 |
+| 输入形态 | 网页表单逐题打字 | 文件上传，LLM 自动结构化 |
+| 协作模式 | 多人对同一题 `+1 我也记得`，按 support_count 拣选 | 单人单文件，admin 直接审 LLM 输出 |
+| 入口 | `/courses/[id]/recall` | `/upload` |
+| 依赖 LLM | 否 | 强依赖（DeepSeek 清洗 + 千问 VL OCR） |
+| 入正式题库的 admin 动作 | `/admin/reviews` → "convert recall paper" → `paper_service.ConvertRecallPaper` | `/admin/ingest` → "发布" → `ingest_service.PublishJob` |
+
+加新功能前先判断属于哪条路径，别在错的那张表上扩字段。
+
+### 10. Ingest 模块开发者要点
+
+> 详细的设计、流程、踩坑、未来工作见 [`docs/DEVELOPMENT_LOG_ingest.md`](docs/DEVELOPMENT_LOG_ingest.md)。
+> 下面仅列**改这块代码时必须知道**的最小集。
+
+**文件分工：**
+- `services/ingest_extract.go` — 文件 → 文本派发（PDF/DOCX/MD/IMG）
+- `services/vision_client.go` — Qwen-VL OCR（独立 key 体系，与 DeepSeek 不共用）
+- `services/ingest_pipeline.go` — LLM 清洗 prompt + JSON 强制 + 自检规则 A/B/C/D
+- `services/dedup.go` — n-gram + Jaccard 同课粗筛（零外部依赖、零 LLM 调用）
+- `services/ingest_service.go` — 状态机 / CreateJob / runPipeline / PublishJob / 合并语义
+- `routers/ingest_controller.go` — 7 个端点（用户 + admin 分组）
+- `cmd/worker/main.go` — 每 5s 轮询 `ProcessNextPending`
+
+**三个不变量必须维护：**
+
+1. **`SourceID` 用循环序号 `i+1`，不用 `sequence_id`**：唯一约束 `(testpaper_id, source_id)` 不能撞，LLM 输出的 sequence_id 在同任务内可能重复（按题型独立编号时）。
+2. **试卷自动合并的 key 是 `(course_id, year, semester, exam_type)` 完全相等**：四元组任一不同都新建独立 paper。
+3. **per-type 题号是显示层概念，不写进 DB**：DB 里 `sequence_id` 原样保留 LLM 输出（保 source_id 唯一 + 保题解 sequence_id 匹配语义）；前端在渲染时按数组组内位置算"判断题第 N 题"。
+
+**LLM 配置：**
+- `LLM_API_KEY`（DeepSeek）未配 → 文本清洗整体 503
+- `LLM_VISION_API_KEY`（千问 VL）未配 → 图片上传 400 `vision_disabled`，其他格式不受影响
+
+**Worker 改动必须重启 worker 进程**（不只是后端）。dedup 逻辑和文件预处理实际跑在 worker 里，后端只服务 HTTP。
+
 ---
 
 ## 已知坑
