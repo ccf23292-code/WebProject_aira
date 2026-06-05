@@ -298,6 +298,11 @@ go run ./cmd/import_courses --path data/course
 5. **Chocolatey 安装 PostgreSQL 卡 initdb**：现象是进程在但 CPU 时间不涨。耐心等可以，或杀进程后手动 `pg_ctl register` + `Start-Service` 完成收尾。
 6. **唯一约束 `idx_source_paper` 被撞**：我曾把 `sequence_id` 按 question_type 重新编号 → 同任务内 4 个题型都拿到 seq=1 → source_id 模板 `ingest:<job>:<file>:<seq>` 4 个完全一样。修复：source_id 改用循环序号 `i+1`，per-type 编号下沉到前端显示层（保留 sequence_id 与题解上传的匹配语义）。
 7. **GORM `Table().Joins().Scan()` 在某些场景不返回结果**：dedup 查询改写为 `db.Raw(...)` 显式 SQL，规避兼容性问题。
+8. **大试卷 LLM 输出截断**：DeepSeek `chat.completions` 默认 `max_tokens=4096`，约 25-30 题 JSON 就到顶。LLM 在 token 边界**硬切**，运气好 JSON 凑巧能解析但只剩前几题，运气差整段 JSON 损坏。**两层修复**：
+   - 显式 `MaxTokens=8192`（deepseek-chat v3 单次输出上限）+ 检测 `finish_reason=length` 给明确错误
+   - 仍不够时自动按题号边界切块 + 并发清洗 + 合并（见第 12 章）
+9. **PowerShell 5.1 读 `.ps1` 编码问题**：start-dev.ps1 不带 BOM 时被按 GBK 解码，中文字符串边界破坏，一行被拆成多个错误命令执行。**修复**：用 `Out-File -Encoding UTF8`（PS 5.1 会带 BOM）重写。
+10. **Choco PostgreSQL 安装"假死"**：进程在，但 CPU 累计时间不涨。实际是 EDB 后置 Stack Builder 卡住。`pg_ctl register -N postgresql-x64-16 -D <data> -S auto` + `Start-Service` 手动完成收尾即可。
 
 ---
 
@@ -309,6 +314,8 @@ go run ./cmd/import_courses --path data/course
 - **失败任务的重试**：状态机里 `failed` 终态不可达 `pending`。可加"重新清洗"按钮（保留文件，重写 status）。
 - **上传配额 / 速率限制**：worker 单进程串行处理，热点时段可能堆积。可加 token bucket 或多实例 worker。
 - **图片上传必须 admin 配 vision key**：用户上传 jpg/png 而未配 `LLM_VISION_API_KEY` 时拒绝。可在 UI 上禁用图片选项作 UX 改进。
+- **分块边界识别不准的兜底**：滑窗 fallback 用 200 rune 重叠去抢救被切两半的题，但可能产生重复条目。依赖 dedup 算法在 admin 审核页提示重复，admin 人工删除。可优化：在合并阶段加同文本指纹去重。
+- **分块的 sequence_id 全局重编号会丢失原文题号**：源文档里"第 87 题"上传后会被改成"第 N 题"（N 是合并后顺序）。如果用户希望保留原题号给后续题解上传匹配用，需要在合并时保留 LLM 输出的 seq —— 但要解决跨块 seq 冲突，方案是给每块带 `start_seq` 偏移传给 prompt。
 
 ---
 
@@ -341,3 +348,122 @@ ingest: job N wrote 4 dedup_warnings
 - 用户启动指南：[`RUN.md`](../RUN.md)（桌面）
 - 协作约定：[`CLAUDE.md`](../CLAUDE.md)
 - 已加章节 "Recall（回忆卷） vs Ingest（上传清洗） —— 不是重复造轮子"
+
+---
+
+## 12. 大试卷自动分块清洗（方案 B）
+
+> 加入时间：2026-05-29 晚（第二轮迭代）
+> 涉及文件：[`back/services/ingest_chunk.go`](../back/services/ingest_chunk.go) (新) +
+> [`back/services/ingest_pipeline.go`](../back/services/ingest_pipeline.go) +
+> [`back/services/ingest_service.go`](../back/services/ingest_service.go)
+
+### 12.1 动机
+
+DeepSeek `chat.completions` 单次输出上限 8192 tokens，一道题 JSON 约 100-200 tokens，即一次最多识别 40-60 题。**100+ 题的真题集**直接超限：
+
+```
+题 1 ... 题 30  ✅ 正常输出
+题 31 ... 题 60 ⚠️ 在某 token 处硬切
+题 61 ... 题 N  ❌ 丢失
+```
+
+直接报错粗暴。理想方案是让用户无感知。
+
+### 12.2 决策（评估了三条路径）
+
+| 方案 | 工程量 | 用户体验 | 落地否 |
+|---|---|---|---|
+| A. 让用户手动拆批 + 自动合并 | 0 行 | 差，要自己拆文件 | 兜底 |
+| **B. 后端自动分块 + 并发清洗** | ~150 行 | 透明无感 | **✅ 已落地** |
+| C. LLM 多轮续传（"从第 N 题接着输出"） | ~250 行 | 透明但串行 | 未来扩展 |
+
+### 12.3 算法
+
+#### 块边界识别
+
+`chunkRawTextByQuestionBoundary` 用两层正则：
+
+```go
+// 主：行首题号
+questionBoundaryRe = `(?m)^[ \t]*(?:\d+[\.\)、）]\s|第\s*\d+\s*题|#{1,4}\s*\d+[\.\)、）]?|【\s*\d+\s*】)`
+
+// 辅：题型小节（fallback）
+sectionHeaderRe = `(?m)^[ \t]*(?:#{1,4}\s*)?(?:一|二|三|...|判断题|单选题|多选题|填空题|简答题|...)\b`
+```
+
+主正则识别到 ≥ 2 处边界就用它；否则降级到辅；都没有降级到**带 200 rune 重叠的滑窗**。
+
+#### 切块策略
+
+从头扫，累积到 ~4000 rune 就在下一个边界处断开。保证每块以一个题号开头（除第一块可能含前导）。
+
+```
+boundaries: [10, 200, 400, ...]
+start=0, target=4000
+  ...遇到 b=4001 (b-start ≥ 4000) → 切：chunks[0]=runes[0:4001], start=4001
+  ...遇到 b=8003 → 切：chunks[1]=runes[4001:8003], start=8003
+  ...
+tail: chunks[N]=runes[start:]
+```
+
+#### 并发执行
+
+`parallelCleanChunks` 用 `sync.WaitGroup + 带缓冲 channel 信号量` 限并发 3：
+
+```go
+sem := make(chan struct{}, chunkMaxParallel)
+for i, c := range chunks {
+    wg.Add(1); sem <- struct{}{}
+    go func(idx int, chunk string) {
+        defer wg.Done(); defer func() { <-sem }()
+        r, err := cleanFn(ctx, llm, chunk)
+        resCh <- chunkOut{idx, r, err}
+    }(i, c)
+}
+```
+
+- 每块独立超时（继承 LLMService 的 `LLM_TIMEOUT_SECONDS`）
+- 块失败仅日志，不阻塞整体
+- 收 channel 后按 `idx` 排序 → 合并后题目大致保持原文顺序
+
+### 12.4 合并 + 重编号
+
+```go
+out.merged = append(out.merged, o.result.Items...)
+// ...
+for i := range results.merged {
+    results.merged[i]["sequence_id"] = i + 1  // 全局 1..N
+}
+```
+
+为什么全局重编号 — LLM 在每块独立编号时会从 1 开始（块 1 出 1..30，块 2 也出 1..30），合并后 seq 就撞了。重编号既保 `source_id` 唯一约束不撞，也让 admin 审核时编号连贯。
+
+代价：丢失原文题号。短期可接受；若需保留题号见 §9 已知限制。
+
+### 12.5 触发条件 & 性能
+
+| 文本量 (rune) | 行为 | 期望耗时 |
+|---|---|---|
+| < 6000 | 单次 LLM 调用 | 5-15 s |
+| 6000-12000 | 切 2 块并发 | 8-20 s |
+| 12000-30000 | 切 3-5 块并发 | 20-40 s |
+| > 30000 | 切 6+ 块，受 DeepSeek 速率限制约束 | 40-90 s |
+
+### 12.6 调试与观测
+
+Worker 日志现在有四类输出：
+
+```
+ingest: smart clean splitting into 3 chunks (total 12345 runes)
+ingest: clean questions usage in=1543 out=4821 total=6364 finish=stop
+ingest: chunk 1 clean failed: <error>          ← 个别块挂掉
+ingest: job 12 kind=question course_id=xxx items=87
+```
+
+`finish=stop` 正常；`finish=length` 说明该块仍触顶（在重叠区域切到大题），整体 `Truncated=true` 会写入 `error_message` 提醒 admin 核对末尾。
+
+### 12.7 对后续模块的影响
+
+- 题解流程 (`CleanExplanationText`) **未走 Smart 入口**，因为题解通常远小于题目，一次能装下。需要时按同样模板补 `CleanExplanationTextSmart`。
+- dedup 在合并后的全集上跑一次（不是按块跑），保证跨块重题也能检出。

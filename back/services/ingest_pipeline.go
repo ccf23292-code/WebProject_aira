@@ -5,20 +5,29 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/sashabaranov/go-openai"
 )
+
+// llmMaxOutputTokens 让 DeepSeek 一次输出尽可能多的 JSON。
+// deepseek-chat v3 单次响应上限为 8192 tokens；不显式设置时默认只有 4096，
+// 大试卷会被截断（finish_reason=length），导致前几题之后的内容丢失。
+const llmMaxOutputTokens = 8192
 
 // IngestCleanResult 是 LLM 清洗管道对外返回的结果。
 //
 //   - Items 是原始结构化数据（题目或题解列表）。
 //   - RawJSON 是 LLM 原始 JSON 字符串，方便落库后 admin 编辑 / 排错。
 //   - Model 是实际使用的模型名，便于审计。
+//   - Truncated=true 表示 LLM 输出在 finish_reason=length 处停止 —— JSON 虽然
+//     恰好闭合可解析，但很可能末尾几题被截断了，调用方应提示用户人工核对。
 type IngestCleanResult struct {
-	Items   []map[string]any
-	RawJSON string
-	Model   string
+	Items     []map[string]any
+	RawJSON   string
+	Model     string
+	Truncated bool
 }
 
 // CleanQuestionText 把预处理后的 Markdown 全文丢给 LLM，要求结构化为题目数组。
@@ -42,7 +51,8 @@ func CleanQuestionText(
 	defer cancel()
 
 	resp, err := llm.client.CreateChatCompletion(callCtx, openai.ChatCompletionRequest{
-		Model: llm.cfg.Model,
+		Model:     llm.cfg.Model,
+		MaxTokens: llmMaxOutputTokens,
 		Messages: []openai.ChatCompletionMessage{
 			{Role: openai.ChatMessageRoleSystem, Content: questionCleanSystemPrompt},
 			{Role: openai.ChatMessageRoleUser, Content: rawText},
@@ -58,19 +68,30 @@ func CleanQuestionText(
 		return nil, newServiceError("llm_empty_response", 502, "LLM 未返回内容")
 	}
 
-	content := strings.TrimSpace(resp.Choices[0].Message.Content)
+	choice := resp.Choices[0]
+	log.Printf("ingest: clean questions usage in=%d out=%d total=%d finish=%s",
+		resp.Usage.PromptTokens, resp.Usage.CompletionTokens, resp.Usage.TotalTokens, choice.FinishReason)
+
+	content := strings.TrimSpace(choice.Message.Content)
 	items, err := parseItemsEnvelope(content)
 	if err != nil {
+		if choice.FinishReason == "length" {
+			return nil, newServiceError("llm_output_truncated", 502,
+				"LLM 输出被截断（试卷过大，超过单次响应上限）。建议把试卷拆成两批分别上传，或联系管理员开启分块清洗。")
+		}
 		return nil, newServiceError("llm_invalid_json", 502, "LLM 返回不符合 JSON 结构: "+err.Error())
 	}
 	if len(items) == 0 {
 		return nil, newServiceError("llm_no_items", 502, "LLM 未识别到任何题目")
 	}
+	// 输出被截断但 JSON 恰好保住了：返回已识别的部分但在 error_message 里留个尾巴提醒
+	truncated := choice.FinishReason == "length"
 
 	return &IngestCleanResult{
-		Items:   items,
-		RawJSON: content,
-		Model:   llm.cfg.Model,
+		Items:     items,
+		RawJSON:   content,
+		Model:     llm.cfg.Model,
+		Truncated: truncated,
 	}, nil
 }
 
@@ -92,7 +113,8 @@ func CleanExplanationText(
 	defer cancel()
 
 	resp, err := llm.client.CreateChatCompletion(callCtx, openai.ChatCompletionRequest{
-		Model: llm.cfg.Model,
+		Model:     llm.cfg.Model,
+		MaxTokens: llmMaxOutputTokens,
 		Messages: []openai.ChatCompletionMessage{
 			{Role: openai.ChatMessageRoleSystem, Content: explanationCleanSystemPrompt},
 			{Role: openai.ChatMessageRoleUser, Content: rawText},
@@ -108,19 +130,29 @@ func CleanExplanationText(
 		return nil, newServiceError("llm_empty_response", 502, "LLM 未返回内容")
 	}
 
-	content := strings.TrimSpace(resp.Choices[0].Message.Content)
+	choice := resp.Choices[0]
+	log.Printf("ingest: clean explanations usage in=%d out=%d total=%d finish=%s",
+		resp.Usage.PromptTokens, resp.Usage.CompletionTokens, resp.Usage.TotalTokens, choice.FinishReason)
+
+	content := strings.TrimSpace(choice.Message.Content)
 	items, err := parseItemsEnvelope(content)
 	if err != nil {
+		if choice.FinishReason == "length" {
+			return nil, newServiceError("llm_output_truncated", 502,
+				"LLM 输出被截断（题解过长，超过单次响应上限）。建议拆成两批分别上传。")
+		}
 		return nil, newServiceError("llm_invalid_json", 502, "LLM 返回不符合 JSON 结构: "+err.Error())
 	}
 	if len(items) == 0 {
 		return nil, newServiceError("llm_no_items", 502, "LLM 未识别到任何题解")
 	}
+	truncated := choice.FinishReason == "length"
 
 	return &IngestCleanResult{
-		Items:   items,
-		RawJSON: content,
-		Model:   llm.cfg.Model,
+		Items:     items,
+		RawJSON:   content,
+		Model:     llm.cfg.Model,
+		Truncated: truncated,
 	}, nil
 }
 
