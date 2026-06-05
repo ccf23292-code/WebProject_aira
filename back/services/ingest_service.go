@@ -596,6 +596,11 @@ func (s *IngestService) runPipeline(ctx context.Context, job *models.IngestJob) 
 		"status":      models.IngestStatusAwaitingReview,
 		"updated_at":  time.Now().UTC(),
 	}
+	// LLM 输出截断时给个非致命警告（依然入审核队列，让 admin 决定）
+	if result.Truncated {
+		updates["error_message"] = "⚠️ LLM 输出被截断（finish_reason=length），末尾几道题可能未被识别。建议核对原文 / 拆批上传。"
+		log.Printf("ingest: job %d LLM output truncated (finish_reason=length), %d items recovered", job.ID, len(result.Items))
+	}
 	log.Printf("ingest: job %d kind=%s course_id=%q items=%d", job.ID, job.Kind, job.CourseID, len(result.Items))
 	if job.Kind == models.IngestKindQuestion && job.CourseID != "" {
 		matches, derr := FindSimilarProblems(s.db, job.CourseID, result.Items)
