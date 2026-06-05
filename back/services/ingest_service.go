@@ -564,7 +564,8 @@ func (s *IngestService) runPipeline(ctx context.Context, job *models.IngestJob) 
 	var result *IngestCleanResult
 	switch job.Kind {
 	case models.IngestKindQuestion:
-		result, err = CleanQuestionText(ctx, s.llm, text)
+		// Smart 入口：小卷直走单次 LLM，大卷自动切块 + 并发清洗 + 合并
+		result, err = CleanQuestionTextSmart(ctx, s.llm, text)
 		if err == nil {
 			err = ValidateQuestionItems(result.Items)
 		}
